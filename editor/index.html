@@ -11,917 +11,1611 @@
   --ink:#1a1612;--ink-mid:#5a5248;--ink-light:#9a9088;
   --paper:#faf8f4;--paper-alt:#f2ede5;--paper-mid:#e8e0d4;--line:#d8d0c4;
   --accent:#b85c20;--accent-h:#d4703a;--accent-bg:#fdf0e8;
-  --green:#2a6b3a;--green-bg:#e8f5ec;--red:#8b1a1a;--red-bg:#fde8e8;
+  --green:#2a6b3a;--red:#8b1a1a;--red-bg:#fde8e8;
   --blue:#1a3a6b;--blue-bg:#e8eef8;--gold:#8b6914;--gold-bg:#fdf5e0;
   --gh:#161b22;--gh-b:#30363d;--gh-t:#c9d1d9;--gh-m:#8b949e;
   --font:system-ui,'Segoe UI',sans-serif;
   --mono:'Cascadia Code','Consolas','Courier New',monospace;
   --serif:Georgia,'Times New Roman',serif;
   --r:5px;--r2:10px;
-  --sh:0 2px 8px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.05);
-  --sh2:0 4px 20px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.07)
+  --sh:0 2px 8px rgba(0,0,0,.08);--sh2:0 4px 20px rgba(0,0,0,.12)
 }
-body{font-family:var(--font);font-size:14px;color:var(--ink);background:var(--paper-alt);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+body{font-family:var(--font);font-size:14px;color:var(--ink);
+  background:var(--paper-alt);height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-/* TOPBAR */
-#tb{background:var(--ink);color:#f0ebe3;display:flex;align-items:center;gap:.5rem;padding:0 .85rem;height:46px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+/* ── TOPBAR ── */
+#topbar{background:var(--ink);color:#f0ebe3;display:flex;align-items:center;
+  gap:.4rem;padding:0 .85rem;height:46px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3)}
 #tb-logo{font-family:var(--serif);font-size:1.05rem;font-weight:700;color:#f0ebe3;white-space:nowrap}
 #tb-logo span{color:#d4703a}
-#tb-proj{font-size:.8rem;color:rgba(255,255,255,.45);font-style:italic;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#tb-proj{font-size:.8rem;color:rgba(255,255,255,.45);font-style:italic;
+  max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #tb-proj.on{color:rgba(255,255,255,.8);font-style:normal}
-.sep{width:1px;height:22px;background:rgba(255,255,255,.15);flex-shrink:0}
+.vsep{width:1px;height:22px;background:rgba(255,255,255,.15);flex-shrink:0}
 .gap{flex:1}
-.tbtn{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--font);font-size:.8rem;font-weight:600;padding:.3rem .65rem;border-radius:var(--r);border:none;cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1}
+.tbtn{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--font);
+  font-size:.8rem;font-weight:600;padding:.3rem .65rem;border-radius:var(--r);
+  border:none;cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1}
 .tg{background:rgba(255,255,255,.08);color:rgba(255,255,255,.85)}
 .tg:hover{background:rgba(255,255,255,.16);color:#fff}
-.tgr{background:#238636;color:#fff}
-.tgr:hover{background:#2ea043}
+.tgr{background:#238636;color:#fff}.tgr:hover{background:#2ea043}
 .tbtn:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
 .tbtn:focus-visible{outline:2px solid #d4703a;outline-offset:2px}
 
-/* GH BAR */
-#ghb{background:var(--gh);border-bottom:1px solid var(--gh-b);padding:.38rem .85rem;display:flex;align-items:center;gap:.45rem;flex-shrink:0;flex-wrap:wrap}
-.ghl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gh-m);white-space:nowrap}
-.ghi{font-family:var(--mono);font-size:.78rem;background:#0d1117;border:1px solid var(--gh-b);border-radius:4px;color:var(--gh-t);padding:.26rem .5rem;outline:none;transition:border-color .15s}
+/* ── GH BAR ── */
+#ghbar{background:var(--gh);border-bottom:1px solid var(--gh-b);
+  padding:.38rem .85rem;display:flex;align-items:center;gap:.4rem;
+  flex-shrink:0;flex-wrap:wrap}
+.ghl{font-size:.7rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.06em;color:var(--gh-m);white-space:nowrap}
+.ghi{font-family:var(--mono);font-size:.78rem;background:#0d1117;
+  border:1px solid var(--gh-b);border-radius:4px;color:var(--gh-t);
+  padding:.26rem .5rem;outline:none;transition:border-color .15s}
 .ghi:focus{border-color:#58a6ff;box-shadow:0 0 0 2px rgba(88,166,255,.15)}
 .ghi::placeholder{color:#484f58}
-.io{width:100px}.ir{width:120px}.ib{width:72px}.ip{width:140px}.it{width:200px;font-size:.73rem}
-.gsep{width:1px;height:18px;background:var(--gh-b);flex-shrink:0}
-.gbtn{font-family:var(--font);font-size:.75rem;font-weight:600;padding:.28rem .65rem;border-radius:4px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap;transition:all .15s}
-.gpull{background:#21262d;color:#58a6ff;border:1px solid var(--gh-b)}.gpull:hover{background:var(--gh-b)}
-.gpush{background:#238636;color:#fff}.gpush:hover{background:#2ea043}
-.gg{background:#21262d;color:var(--gh-m);border:1px solid var(--gh-b)}.gg:hover{background:var(--gh-b);color:var(--gh-t)}
+.gi-o{width:100px}.gi-r{width:120px}.gi-b{width:70px}.gi-p{width:140px}.gi-t{width:200px;font-size:.73rem}
+.ghsep{width:1px;height:18px;background:var(--gh-b);flex-shrink:0}
+.gbtn{font-family:var(--font);font-size:.75rem;font-weight:600;
+  padding:.28rem .65rem;border-radius:4px;border:none;cursor:pointer;
+  display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap;transition:all .15s}
+.gb-pull{background:#21262d;color:#58a6ff;border:1px solid var(--gh-b)}.gb-pull:hover{background:var(--gh-b)}
+.gb-push{background:#238636;color:#fff}.gb-push:hover{background:#2ea043}
+.gb-g{background:#21262d;color:var(--gh-m);border:1px solid var(--gh-b)}.gb-g:hover{background:var(--gh-b);color:var(--gh-t)}
 .gbtn:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
 .gbtn:focus-visible{outline:2px solid #58a6ff;outline-offset:2px}
-#ghst{font-size:.73rem;color:var(--gh-m);font-family:var(--mono);margin-left:auto;white-space:nowrap}
-#ghst.ok{color:#3fb950}#ghst.err{color:#f85149}#ghst.busy{color:#d29922}
+#gh-st{font-size:.73rem;color:var(--gh-m);font-family:var(--mono);margin-left:auto;white-space:nowrap}
+#gh-st.ok{color:#3fb950}#gh-st.err{color:#f85149}#gh-st.busy{color:#d29922}
 
-/* DRAWERS */
-.drawer{background:#0d1117;border-bottom:1px solid var(--gh-b);padding:.55rem .85rem;display:none;gap:.45rem;align-items:center;flex-wrap:wrap}
+/* ── DRAWERS (token, url) ── */
+.drawer{background:#0d1117;border-bottom:1px solid var(--gh-b);
+  padding:.55rem .85rem;display:none;gap:.4rem;align-items:center;flex-wrap:wrap}
 .drawer.open{display:flex}
-.tnote{font-size:.7rem;color:#484f58;margin-left:auto}
-.url-val{font-family:var(--mono);font-size:.73rem;color:#58a6ff;background:#161b22;border:1px solid var(--gh-b);border-radius:4px;padding:.25rem .5rem;flex:1;user-select:all;word-break:break-all}
-.url-cp{font-family:var(--font);font-size:.73rem;font-weight:600;padding:.25rem .6rem;border-radius:4px;border:none;cursor:pointer;background:#21262d;color:#58a6ff;border:1px solid var(--gh-b);transition:all .15s}
+.drawer-note{font-size:.7rem;color:#484f58;margin-left:auto}
+.url-val{font-family:var(--mono);font-size:.73rem;color:#58a6ff;
+  background:#161b22;border:1px solid var(--gh-b);border-radius:4px;
+  padding:.25rem .5rem;flex:1;user-select:all;word-break:break-all;cursor:text}
+.url-cp{font-family:var(--font);font-size:.73rem;font-weight:600;
+  padding:.25rem .6rem;border-radius:4px;background:#21262d;
+  color:#58a6ff;border:1px solid var(--gh-b);cursor:pointer;transition:all .15s}
 .url-cp:hover{background:var(--gh-b)}
 
-/* MAIN */
+/* ── LAYOUT ── */
 #main{display:flex;flex:1;overflow:hidden}
 
-/* TREE */
-#tree{width:230px;flex-shrink:0;background:var(--paper);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
-#th{padding:.6rem .85rem .45rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-light);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-#tadd{background:none;border:none;cursor:pointer;color:var(--accent);font-size:1.15rem;line-height:1;padding:0 .2rem;border-radius:3px}
-#tadd:hover{background:var(--accent-bg)}
-#tadd:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#tb2{flex:1;overflow-y:auto;padding:.3rem 0}
-.ti{display:flex;align-items:center;cursor:pointer;padding:.35rem .7rem .35rem .8rem;border-left:3px solid transparent;transition:background .1s}
-.ti:hover{background:var(--paper-alt)}.ti.act{background:var(--accent-bg);border-left-color:var(--accent)}
-.ti.act .tl{color:var(--accent);font-weight:600}
-.tic{font-size:.82rem;margin-right:.38rem;flex-shrink:0;opacity:.65}
-.tl{flex:1;font-size:.8rem;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.3}
-.tbadge{font-size:.62rem;font-weight:700;padding:.08rem .3rem;border-radius:3px;flex-shrink:0;margin-left:.25rem}
-.bg{background:var(--blue-bg);color:var(--blue)}.ba{background:var(--gold-bg);color:var(--gold)}
-.tsub{padding-left:1.7rem!important}.tsub .tic{opacity:.45}
-.tas{display:none;gap:.12rem;flex-shrink:0}.ti:hover .tas,.ti.act .tas{display:flex}
-.ta{background:none;border:none;cursor:pointer;padding:.08rem .18rem;border-radius:3px;font-size:.72rem;color:var(--ink-mid);line-height:1}
-.ta:hover{background:var(--paper-mid);color:var(--ink)}.ta.d:hover{background:var(--red-bg);color:var(--red)}
-.ta:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.tac{padding:.28rem .7rem .28rem 2.1rem;font-size:.75rem;color:var(--accent);cursor:pointer;opacity:.65;display:flex;align-items:center;gap:.3rem;transition:opacity .12s}
-.tac:hover{opacity:1;background:var(--accent-bg)}
+/* ── LEFT PANEL ── */
+#left{width:240px;flex-shrink:0;background:var(--paper);
+  border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
+#left-head{padding:.55rem .85rem .4rem;font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--ink-light);
+  border-bottom:1px solid var(--line);display:flex;align-items:center;
+  justify-content:space-between;flex-shrink:0}
+#btn-add-sec{background:none;border:none;cursor:pointer;color:var(--accent);
+  font-size:1.1rem;line-height:1;padding:0 .2rem;border-radius:3px;
+  font-weight:700}
+#btn-add-sec:hover{background:var(--accent-bg)}
+#btn-add-sec:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#sec-nav{flex:1;overflow-y:auto;padding:.35rem 0}
 
-/* WORKSPACE */
-#ws{flex:1;display:flex;flex-direction:column;overflow:hidden}
+/* ── SECTION LIST — klasický přístupný seznam ── */
+#sec-nav ul{list-style:none;margin:0;padding:0}
+#sec-nav li{margin:0}
 
-/* TABS */
-#tabs{background:var(--paper);border-bottom:1px solid var(--line);flex-shrink:0;padding:0 1rem;display:flex;gap:.2rem;align-items:flex-end}
-.tab{padding:.5rem .9rem;font-size:.8rem;font-weight:600;color:var(--ink-light);cursor:pointer;border-bottom:2px solid transparent;transition:color .12s,border-color .12s;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font)}
-.tab:hover{color:var(--ink)}.tab.act{color:var(--accent);border-bottom-color:var(--accent)}
+/* Top-level section item */
+.sec-item{display:flex;align-items:flex-start;gap:0;
+  border-left:3px solid transparent;transition:background .1s}
+.sec-item:hover{background:var(--paper-alt)}
+.sec-item.active{background:var(--accent-bg);border-left-color:var(--accent)}
+.sec-item.active .sec-link{color:var(--accent);font-weight:700}
+
+.sec-link{flex:1;display:block;padding:.38rem .7rem .38rem .8rem;
+  font-size:.82rem;color:var(--ink);text-decoration:none;line-height:1.35;
+  cursor:pointer;background:none;border:none;text-align:left;font-family:var(--font);
+  min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sec-link:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+
+.sec-badge{font-size:.6rem;font-weight:700;padding:.07rem .28rem;
+  border-radius:3px;flex-shrink:0;align-self:center;margin-right:.25rem}
+.sb-group{background:var(--blue-bg);color:var(--blue)}
+.sb-art{background:var(--gold-bg);color:var(--gold)}
+
+.sec-btns{display:flex;flex-shrink:0;align-self:stretch;align-items:center}
+.sec-btn{background:none;border:none;cursor:pointer;padding:.2rem .22rem;
+  color:var(--ink-light);font-size:.72rem;line-height:1;transition:all .1s}
+.sec-btn:hover{color:var(--ink);background:var(--paper-mid)}
+.sec-btn.del:hover{color:var(--red);background:var(--red-bg)}
+.sec-btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.sec-btn:disabled{opacity:.3;cursor:not-allowed;pointer-events:none}
+
+/* Child items (sub-pages, articles) */
+.child-list{margin:0;padding:0;list-style:none;border-left:2px solid var(--line);margin-left:1.1rem}
+.child-item{display:flex;align-items:flex-start;transition:background .1s}
+.child-item:hover{background:var(--paper-alt)}
+.child-item.active{background:var(--accent-bg)}
+.child-item.active .sec-link{color:var(--accent);font-weight:600}
+.child-item .sec-link{font-size:.78rem;padding:.3rem .6rem .3rem .65rem;color:var(--ink-mid)}
+.child-item.active .sec-link{color:var(--accent)}
+
+/* Add child button */
+.add-child-btn{display:block;width:100%;text-align:left;padding:.25rem .65rem .25rem 1.9rem;
+  font-size:.75rem;color:var(--accent);background:none;border:none;cursor:pointer;
+  font-family:var(--font);opacity:.7;transition:opacity .12s}
+.add-child-btn:hover{opacity:1;background:var(--accent-bg)}
+.add-child-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ── WORKSPACE ── */
+#workspace{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── TABS ── */
+#tabs{background:var(--paper);border-bottom:1px solid var(--line);
+  flex-shrink:0;padding:0 1rem;display:flex;gap:.2rem;align-items:flex-end}
+.tab{padding:.5rem .9rem;font-size:.8rem;font-weight:600;color:var(--ink-light);
+  cursor:pointer;border-bottom:2px solid transparent;
+  transition:color .12s,border-color .12s;white-space:nowrap;
+  background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font)}
+.tab:hover{color:var(--ink)}.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
 .tab:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 
-/* PANELS */
-.panel{display:none;flex:1;overflow:hidden}.panel.act{display:flex;flex-direction:column}
+/* ── PANELS ── */
+.panel{display:none;flex:1;overflow:hidden}
+.panel.active{display:flex;flex-direction:column}
 
 /* Settings */
-#ps{overflow-y:auto;padding:1.25rem}
-.sg{max-width:700px;display:grid;gap:1.25rem}
-.sc{background:var(--paper);border:1px solid var(--line);border-radius:var(--r2);padding:1.1rem 1.35rem;box-shadow:var(--sh)}
-.sct{font-family:var(--serif);font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:.9rem;padding-bottom:.45rem;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:.45rem}
-.fr{display:flex;flex-direction:column;gap:.28rem;margin-bottom:.75rem}.fr:last-child{margin-bottom:0}
-.fl{font-size:.73rem;font-weight:700;color:var(--ink-mid);text-transform:uppercase;letter-spacing:.05em}
-.fi,.fsl{font-family:var(--font);font-size:.85rem;color:var(--ink);background:var(--paper-alt);border:1px solid var(--line);border-radius:var(--r);padding:.4rem .6rem;outline:none;transition:border-color .12s,box-shadow .12s;width:100%}
+#p-set{overflow-y:auto;padding:1.25rem}
+.sg{max-width:700px;display:grid;gap:1.2rem}
+.sc{background:var(--paper);border:1px solid var(--line);
+  border-radius:var(--r2);padding:1.1rem 1.35rem;box-shadow:var(--sh)}
+.sc-title{font-family:var(--serif);font-size:.95rem;font-weight:700;color:var(--ink);
+  margin-bottom:.85rem;padding-bottom:.4rem;border-bottom:1px solid var(--line)}
+.fr{display:flex;flex-direction:column;gap:.25rem;margin-bottom:.7rem}
+.fr:last-child{margin-bottom:0}
+.fl{font-size:.72rem;font-weight:700;color:var(--ink-mid);
+  text-transform:uppercase;letter-spacing:.05em}
+.fi,.fsl{font-family:var(--font);font-size:.85rem;color:var(--ink);
+  background:var(--paper-alt);border:1px solid var(--line);
+  border-radius:var(--r);padding:.38rem .6rem;outline:none;
+  transition:border-color .12s,box-shadow .12s;width:100%}
 .fi:focus,.fsl:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(184,92,32,.1)}
-.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:.35rem;margin-top:.35rem}
-.ps2{aspect-ratio:1;border-radius:var(--r);border:2px solid transparent;cursor:pointer;position:relative;overflow:hidden;transition:transform .1s,border-color .1s}
-.ps2:hover{transform:scale(1.09)}.ps2.sel{border-color:var(--ink)!important;box-shadow:0 0 0 1px var(--ink)}
-.ps2 span{position:absolute;bottom:0;left:0;right:0;font-size:.52rem;font-weight:700;text-align:center;padding:.08rem 0;background:rgba(0,0,0,.45);color:#fff;text-transform:uppercase}
-.ps2:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Palette grid */
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(50px,1fr));gap:.35rem;margin-top:.35rem}
+.psw{aspect-ratio:1;border-radius:var(--r);border:2px solid transparent;
+  cursor:pointer;position:relative;overflow:hidden;transition:transform .1s}
+.psw:hover{transform:scale(1.08)}.psw.sel{border-color:var(--ink)!important;box-shadow:0 0 0 1px var(--ink)}
+.psw span{position:absolute;bottom:0;left:0;right:0;font-size:.52rem;font-weight:700;
+  text-align:center;padding:.08rem 0;background:rgba(0,0,0,.45);color:#fff;text-transform:uppercase}
+.psw:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* Links table */
 .lt{width:100%;border-collapse:collapse;font-size:.82rem}
-.lt th{text-align:left;padding:.28rem .45rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-light);border-bottom:1px solid var(--line)}
-.lt td{padding:.22rem .3rem;vertical-align:top}
-.lt input{font-family:var(--font);font-size:.82rem;color:var(--ink);background:var(--paper-alt);border:1px solid var(--line);border-radius:4px;padding:.28rem .45rem;width:100%;outline:none}
+.lt th{text-align:left;padding:.25rem .4rem;font-size:.68rem;font-weight:700;
+  text-transform:uppercase;letter-spacing:.05em;color:var(--ink-light);
+  border-bottom:1px solid var(--line)}
+.lt td{padding:.2rem .28rem;vertical-align:middle}
+.lt input{font-family:var(--font);font-size:.82rem;color:var(--ink);
+  background:var(--paper-alt);border:1px solid var(--line);
+  border-radius:4px;padding:.25rem .4rem;width:100%;outline:none}
 .lt input:focus{border-color:var(--accent)}
-.ld{background:none;border:none;cursor:pointer;color:var(--ink-light);font-size:.88rem;padding:.18rem .28rem;border-radius:3px}
-.ld:hover{color:var(--red);background:var(--red-bg)}
-.ar{margin-top:.45rem;font-family:var(--font);font-size:.75rem;font-weight:600;color:var(--accent);background:none;border:1px dashed var(--line);border-radius:var(--r);padding:.3rem .7rem;cursor:pointer;width:100%;transition:all .12s}
-.ar:hover{background:var(--accent-bg);border-color:var(--accent)}
+.lt-del{background:none;border:none;cursor:pointer;color:var(--ink-light);
+  font-size:.85rem;padding:.15rem .25rem;border-radius:3px}
+.lt-del:hover{color:var(--red);background:var(--red-bg)}
+.add-row{margin-top:.4rem;font-family:var(--font);font-size:.75rem;font-weight:600;
+  color:var(--accent);background:none;border:1px dashed var(--line);
+  border-radius:var(--r);padding:.28rem .7rem;cursor:pointer;width:100%;transition:all .12s}
+.add-row:hover{background:var(--accent-bg);border-color:var(--accent)}
 
 /* Content panel */
-#pc{flex-direction:row}
-.ew{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
-.etb{background:var(--paper);border-bottom:1px solid var(--line);padding:.42rem .65rem;display:flex;align-items:center;gap:.28rem;flex-shrink:0;flex-wrap:wrap}
-.etl{font-size:.73rem;font-weight:700;color:var(--ink-mid);text-transform:uppercase;letter-spacing:.06em;margin-right:.2rem}
-.eds{width:1px;height:16px;background:var(--line)}
-.fb{background:none;border:none;border-radius:4px;padding:.22rem .38rem;cursor:pointer;font-size:.78rem;font-family:var(--mono);color:var(--ink-mid);transition:background .1s,color .1s;line-height:1.4;white-space:nowrap}
-.fb:hover{background:var(--paper-alt);color:var(--ink)}
-.fb.cr{font-size:.7rem;font-family:var(--font)}
-.fb:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
-.eta{flex:1;font-family:var(--mono);font-size:.875rem;line-height:1.65;color:var(--ink);background:var(--paper-alt);border:none;padding:.9rem 1.1rem;resize:none;outline:none;tab-size:2;overflow-y:auto}
-.eta::placeholder{color:var(--ink-light);font-style:italic}
-.eta:disabled{opacity:.5;cursor:not-allowed}
+#p-cnt{flex-direction:row}
+.ed-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.ed-tb{background:var(--paper);border-bottom:1px solid var(--line);
+  padding:.4rem .65rem;display:flex;align-items:center;gap:.25rem;
+  flex-shrink:0;flex-wrap:wrap}
+.ed-label{font-size:.72rem;font-weight:700;color:var(--ink-mid);
+  text-transform:uppercase;letter-spacing:.06em;margin-right:.15rem}
+.ed-sep{width:1px;height:15px;background:var(--line)}
+.fmtbtn{background:none;border:none;border-radius:4px;padding:.2rem .36rem;
+  cursor:pointer;font-size:.78rem;font-family:var(--mono);color:var(--ink-mid);
+  transition:background .1s,color .1s;line-height:1.4;white-space:nowrap}
+.fmtbtn:hover{background:var(--paper-alt);color:var(--ink)}
+.fmtbtn.cm{font-size:.7rem;font-family:var(--font)}
+.fmtbtn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.ed-ta{flex:1;font-family:var(--mono);font-size:.875rem;line-height:1.65;
+  color:var(--ink);background:var(--paper-alt);border:none;
+  padding:.9rem 1.1rem;resize:none;outline:none;tab-size:2;overflow-y:auto}
+.ed-ta::placeholder{color:var(--ink-light);font-style:italic}
+.ed-ta:disabled{opacity:.45;cursor:not-allowed}
 
-/* Art meta */
-#am{width:210px;flex-shrink:0;background:var(--paper);border-left:1px solid var(--line);display:flex;flex-direction:column;overflow-y:auto;padding:.9rem;gap:.75rem}
-#am.hide{display:none}
-.ml{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-light);margin-bottom:.35rem}
-.mi{font-family:var(--font);font-size:.82rem;color:var(--ink);background:var(--paper-alt);border:1px solid var(--line);border-radius:var(--r);padding:.32rem .5rem;width:100%;outline:none}
-.mi:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(184,92,32,.1)}
-.mn{font-size:.7rem;color:var(--ink-light);line-height:1.5;margin-top:auto;padding-top:.85rem;border-top:1px solid var(--line)}
+/* Article meta aside */
+#art-meta{width:210px;flex-shrink:0;background:var(--paper);
+  border-left:1px solid var(--line);display:flex;flex-direction:column;
+  overflow-y:auto;padding:.85rem;gap:.7rem}
+#art-meta.hidden{display:none}
+.meta-lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--ink-light);margin-bottom:.3rem}
+.meta-in{font-family:var(--font);font-size:.82rem;color:var(--ink);
+  background:var(--paper-alt);border:1px solid var(--line);
+  border-radius:var(--r);padding:.3rem .5rem;width:100%;outline:none}
+.meta-in:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(184,92,32,.1)}
+.meta-note{font-size:.7rem;color:var(--ink-light);line-height:1.5;
+  margin-top:auto;padding-top:.8rem;border-top:1px solid var(--line)}
 
 /* Sidebar panel */
-#pb{flex-direction:column}
+#p-sb{flex-direction:column}
 
-/* Empty */
-#empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;color:var(--ink-light);text-align:center;padding:2rem}
-.ei{font-size:3.5rem;opacity:.35}.eh{font-family:var(--serif);font-size:1.4rem;color:var(--ink-mid)}
-.ep{font-size:.88rem;line-height:1.6;max-width:400px}
-.ea{display:flex;gap:.65rem;flex-wrap:wrap;justify-content:center}
-.eb{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--font);font-size:.875rem;font-weight:600;padding:.55rem 1.15rem;border-radius:var(--r);border:none;cursor:pointer;transition:all .15s}
-.ep1{background:var(--accent);color:#fff}.ep1:hover{background:var(--accent-h)}
-.ep2{background:var(--paper-mid);color:var(--ink)}.ep2:hover{background:var(--line)}
-
-/* Modals */
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+/* ── MODALS ── */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);
+  z-index:1000;align-items:center;justify-content:center;padding:1rem}
 .ov.open{display:flex}
-.mo{background:var(--paper);border-radius:var(--r2);box-shadow:var(--sh2);padding:1.35rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto}
-.mo h2{font-family:var(--serif);font-size:1.15rem;margin-bottom:.9rem;color:var(--ink)}
-.ma{display:flex;gap:.45rem;justify-content:flex-end;margin-top:1.1rem}
-.mb{font-family:var(--font);font-size:.83rem;font-weight:600;padding:.42rem .9rem;border-radius:var(--r);border:none;cursor:pointer}
-.mok{background:var(--accent);color:#fff}.mok:hover{background:var(--accent-h)}
-.mcl{background:var(--paper-mid);color:var(--ink)}.mcl:hover{background:var(--line)}
-.mb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.tos{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.4rem}
-.to{flex:1;min-width:90px;border:2px solid var(--line);border-radius:var(--r);padding:.55rem .4rem;cursor:pointer;text-align:center;transition:border-color .12s,background .12s;background:var(--paper-alt)}
-.to:hover{border-color:var(--accent-h);background:var(--accent-bg)}.to.sel{border-color:var(--accent);background:var(--accent-bg)}
-.to-ic{font-size:1.2rem;display:block;margin-bottom:.2rem}.to-lb{font-size:.72rem;font-weight:700;color:var(--ink-mid)}
-.to:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.ita{width:100%;height:260px;font-family:var(--mono);font-size:.8rem;background:var(--paper-alt);border:1px solid var(--line);border-radius:var(--r);padding:.65rem;color:var(--ink);resize:vertical;outline:none;line-height:1.6;tab-size:2}
-.ita:focus{border-color:var(--accent)}
+.mo{background:var(--paper);border-radius:var(--r2);box-shadow:var(--sh2);
+  padding:1.35rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto}
+.mo h2{font-family:var(--serif);font-size:1.15rem;margin-bottom:.85rem;color:var(--ink)}
+.mo-acts{display:flex;gap:.4rem;justify-content:flex-end;margin-top:1rem}
+.mbtn{font-family:var(--font);font-size:.83rem;font-weight:600;
+  padding:.4rem .9rem;border-radius:var(--r);border:none;cursor:pointer}
+.mb-ok{background:var(--accent);color:#fff}.mb-ok:hover{background:var(--accent-h)}
+.mb-cl{background:var(--paper-mid);color:var(--ink)}.mb-cl:hover{background:var(--line)}
+.mbtn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.type-opts{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.4rem}
+.topt{flex:1;min-width:90px;border:2px solid var(--line);border-radius:var(--r);
+  padding:.5rem .35rem;cursor:pointer;text-align:center;
+  transition:border-color .12s,background .12s;background:var(--paper-alt)}
+.topt:hover{border-color:var(--accent-h);background:var(--accent-bg)}
+.topt.sel{border-color:var(--accent);background:var(--accent-bg)}
+.topt-ic{font-size:1.15rem;display:block;margin-bottom:.18rem}
+.topt-lb{font-size:.72rem;font-weight:700;color:var(--ink-mid)}
+.topt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.imp-ta{width:100%;height:255px;font-family:var(--mono);font-size:.8rem;
+  background:var(--paper-alt);border:1px solid var(--line);border-radius:var(--r);
+  padding:.65rem;color:var(--ink);resize:vertical;outline:none;line-height:1.6;tab-size:2}
+.imp-ta:focus{border-color:var(--accent)}
 
-/* Notifs */
-#notifs{position:fixed;bottom:1.25rem;right:1.25rem;z-index:2000;display:flex;flex-direction:column;gap:.4rem;pointer-events:none}
-.nf{font-family:var(--font);font-size:.83rem;font-weight:600;padding:.58rem .9rem;border-radius:var(--r);box-shadow:var(--sh2);animation:ni .18s ease;pointer-events:auto}
-.nok{background:var(--green);color:#fff}.nerr{background:var(--red);color:#fff}
-@keyframes ni{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* ── NOTIFICATIONS ── */
+#notifs{position:fixed;bottom:1.25rem;right:1.25rem;z-index:2000;
+  display:flex;flex-direction:column;gap:.4rem;pointer-events:none}
+.notif{font-family:var(--font);font-size:.83rem;font-weight:600;
+  padding:.55rem .9rem;border-radius:var(--r);box-shadow:var(--sh2);
+  animation:nfin .18s ease;pointer-events:auto}
+.n-ok{background:var(--green);color:#fff}.n-err{background:var(--red);color:#fff}
+@keyframes nfin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 
-/* Drop zone */
-#dz{position:fixed;inset:0;background:rgba(26,22,18,.72);z-index:3000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:1rem;color:#fff;font-size:1.1rem;font-weight:700;font-family:var(--serif)}
-#dz.open{display:flex}.dzi{font-size:3.5rem}
+/* ── DROP ZONE ── */
+#dropzone{position:fixed;inset:0;background:rgba(26,22,18,.72);z-index:3000;
+  display:none;align-items:center;justify-content:center;flex-direction:column;
+  gap:1rem;color:#fff;font-size:1.1rem;font-weight:700;font-family:var(--serif)}
+#dropzone.open{display:flex}
 
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--paper-mid);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--line)}
+::-webkit-scrollbar-thumb{background:var(--paper-mid);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--line)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
 </style>
 </head>
 <body>
-<div id="dz" aria-hidden="true"><div class="dzi">📦</div><div>Pusťte .md2web.zip pro otevření</div></div>
 
-<header id="tb">
+<div id="dropzone" aria-hidden="true" aria-live="polite">
+  <div style="font-size:3.5rem">📦</div>
+  <div>Pusťte .md2web.zip pro otevření</div>
+</div>
+
+<!-- TOP BAR -->
+<header id="topbar">
   <span id="tb-logo">md2web <span>Editor</span></span>
-  <div class="sep"></div>
-  <span id="tb-proj">Bez projektu</span>
-  <div class="sep"></div>
+  <div class="vsep" aria-hidden="true"></div>
+  <span id="tb-proj" aria-live="polite">Bez projektu</span>
+  <div class="vsep" aria-hidden="true"></div>
   <button class="tbtn tg" id="btn-new"  type="button">📄 Nový</button>
   <button class="tbtn tg" id="btn-open" type="button">📂 Otevřít ZIP</button>
-  <input type="file" id="fin" accept=".zip" style="display:none" aria-label="Otevřít ZIP">
+  <input type="file" id="file-in" accept=".zip" style="display:none" aria-label="Otevřít ZIP soubor">
   <div class="gap"></div>
-  <button class="tbtn tg" id="btn-cp"  type="button" disabled title="Kopírovat website.md do schránky">📋 Kopírovat MD</button>
-  <button class="tbtn tg" id="btn-imp" type="button" disabled title="Importovat website.md z textu">📥 Importovat MD</button>
-  <div class="sep"></div>
-  <button class="tbtn tgr" id="btn-save" type="button" disabled>💾 Uložit ZIP</button>
+  <button class="tbtn tg"  id="btn-copy-md"   type="button" disabled>📋 Kopírovat MD</button>
+  <button class="tbtn tg"  id="btn-import-md" type="button" disabled>📥 Importovat MD</button>
+  <div class="vsep" aria-hidden="true"></div>
+  <button class="tbtn tgr" id="btn-save"       type="button" disabled>💾 Uložit ZIP</button>
 </header>
 
-<div id="ghb">
+<!-- GITHUB BAR -->
+<div id="ghbar" role="region" aria-label="GitHub napojení">
   <span class="ghl">GitHub:</span>
-  <input class="ghi io" id="gh-o" placeholder="owner"           aria-label="Owner">
-  <span style="color:#484f58;font-size:.9rem">/</span>
-  <input class="ghi ir" id="gh-r" placeholder="repo"            aria-label="Repozitář">
-  <div class="gsep"></div>
-  <input class="ghi ib" id="gh-b" placeholder="main" value="main" aria-label="Branch">
-  <input class="ghi ip" id="gh-p" placeholder="cesta/k/webu"    aria-label="Cesta (prázdné = root)">
-  <div class="gsep"></div>
-  <button class="gbtn gpull" id="gh-pull" type="button" disabled>⬇ Načíst z GH</button>
-  <button class="gbtn gpush" id="gh-push" type="button" disabled>⬆ Uložit do GH</button>
-  <button class="gbtn gg" id="gh-tok-btn" type="button" aria-expanded="false" aria-controls="gh-dr">🔑 Token</button>
-  <button class="gbtn gg" id="gh-url-btn" type="button" aria-expanded="false" aria-controls="url-dr" title="URL pro přímé otevření">🔗 URL</button>
-  <span id="ghst" aria-live="polite"></span>
+  <input class="ghi gi-o" id="gh-owner"  type="text" placeholder="owner"        aria-label="GitHub owner / organizace">
+  <span style="color:#484f58;font-size:.9rem" aria-hidden="true">/</span>
+  <input class="ghi gi-r" id="gh-repo"   type="text" placeholder="repo"         aria-label="Název repozitáře">
+  <div class="ghsep" aria-hidden="true"></div>
+  <input class="ghi gi-b" id="gh-branch" type="text" placeholder="main" value="main" aria-label="Branch">
+  <input class="ghi gi-p" id="gh-path"   type="text" placeholder="cesta/k/webu" aria-label="Cesta k webu (prázdné = root repozitáře)">
+  <div class="ghsep" aria-hidden="true"></div>
+  <button class="gbtn gb-pull" id="gh-pull" type="button" disabled>⬇ Načíst z GH</button>
+  <button class="gbtn gb-push" id="gh-push" type="button" disabled>⬆ Uložit do GH</button>
+  <button class="gbtn gb-g"    id="gh-tok-btn" type="button" aria-expanded="false" aria-controls="gh-tok-drawer">🔑 Token</button>
+  <button class="gbtn gb-g"    id="gh-url-btn" type="button" aria-expanded="false" aria-controls="gh-url-drawer" title="URL pro přímé otevření editoru s tímto projektem">🔗 URL</button>
+  <span id="gh-st" aria-live="polite"></span>
 </div>
 
-<div class="drawer" id="gh-dr" role="region" aria-label="GitHub token">
+<!-- TOKEN DRAWER -->
+<div class="drawer" id="gh-tok-drawer" role="region" aria-label="GitHub Personal Access Token">
   <span class="ghl">Token:</span>
-  <input class="ghi it" id="gh-tok" type="password" placeholder="ghp_…" autocomplete="off" aria-label="Personal Access Token">
-  <button class="gbtn gpull" id="tok-save"  type="button">Uložit</button>
-  <button class="gbtn gg"    id="tok-clear" type="button">Smazat</button>
-  <span class="tnote">Uloženo jen v prohlížeči (localStorage). Nikdy nesdílejte.</span>
+  <input class="ghi gi-t" id="gh-tok" type="password" placeholder="ghp_…" autocomplete="off"
+    aria-label="GitHub Personal Access Token — repo scope">
+  <button class="gbtn gb-pull" id="gh-tok-save"  type="button">Uložit token</button>
+  <button class="gbtn gb-g"    id="gh-tok-clear" type="button">Smazat token</button>
+  <span class="drawer-note">Token se ukládá pouze v prohlížeči (localStorage). Nikdy ho nesdílejte.</span>
 </div>
 
-<div class="drawer" id="url-dr" role="region" aria-label="Přímá URL">
+<!-- URL DRAWER -->
+<div class="drawer" id="gh-url-drawer" role="region" aria-label="Přímá URL editoru">
   <span class="ghl">URL:</span>
-  <span class="url-val" id="url-val" aria-label="URL"></span>
+  <span class="url-val" id="url-val" tabindex="0" aria-label="Přímá URL — vyberte a zkopírujte"></span>
   <button class="url-cp" id="url-cp" type="button">📋 Kopírovat</button>
-  <span style="font-size:.7rem;color:#484f58">Otevřením této URL editor automaticky načte projekt (token musí být uložen v prohlížeči)</span>
+  <span class="drawer-note">Otevřením této URL se editor automaticky načte projekt (token musí být uložen v prohlížeči).</span>
 </div>
 
+<!-- MAIN -->
 <div id="main">
-  <nav id="tree" aria-label="Struktura webu">
-    <div id="th"><span>Struktura</span><button id="tadd" type="button" aria-label="Přidat sekci" title="Přidat sekci">+</button></div>
-    <div id="tb2" role="tree"></div>
+
+  <!-- LEFT: navigace sekcí -->
+  <nav id="left" aria-label="Sekce webu">
+    <div id="left-head">
+      <span>Struktura webu</span>
+      <button id="btn-add-sec" type="button" aria-label="Přidat novou sekci" title="Přidat sekci">+</button>
+    </div>
+    <div id="sec-nav">
+      <!-- Sem se vykresluje <ul> se sekcemi -->
+    </div>
   </nav>
 
-  <div id="ws">
-    <div id="empty">
-      <div class="ei">✍️</div>
-      <h1 class="eh">md2web Editor</h1>
-      <p class="ep">Otevřete existující projekt (.md2web.zip) nebo vytvořte nový. Projekt lze také načíst přímo z GitHub repozitáře.</p>
-      <div class="ea">
-        <button class="eb ep1" id="es-new"  type="button">📄 Nový projekt</button>
-        <button class="eb ep2" id="es-open" type="button">📂 Otevřít ZIP</button>
-      </div>
+  <!-- RIGHT: workspace -->
+  <div id="workspace">
+
+    <!-- Záložky -->
+    <div id="tabs" role="tablist" aria-label="Části projektu">
+      <button class="tab active" role="tab" id="tab-set" aria-selected="true"  aria-controls="p-set" type="button">⚙️ Nastavení</button>
+      <button class="tab"        role="tab" id="tab-cnt" aria-selected="false" aria-controls="p-cnt" type="button">📝 Obsah</button>
+      <button class="tab"        role="tab" id="tab-sb"  aria-selected="false" aria-controls="p-sb"  type="button">📌 Sidebar</button>
     </div>
 
-    <div id="editor" hidden style="display:none;flex-direction:column;flex:1;overflow:hidden">
-      <div id="tabs" role="tablist">
-        <button class="tab act" role="tab" aria-selected="true"  id="t-s" type="button">⚙️ Nastavení</button>
-        <button class="tab"     role="tab" aria-selected="false" id="t-c" type="button">📝 Obsah</button>
-        <button class="tab"     role="tab" aria-selected="false" id="t-b" type="button">📌 Sidebar</button>
-      </div>
+    <!-- Panel: Nastavení -->
+    <div class="panel active" id="p-set" role="tabpanel" aria-labelledby="tab-set">
+      <div style="overflow-y:auto;flex:1;padding:1.25rem"><div class="sg">
 
-      <div class="panel act" id="ps" role="tabpanel" aria-labelledby="t-s">
-        <div style="overflow-y:auto;flex:1;padding:1.25rem"><div class="sg">
-          <div class="sc">
-            <div class="sct">🌐 Základní informace</div>
-            <div class="fr"><label class="fl" for="s-ti">Název webu</label><input class="fi" id="s-ti" type="text" placeholder="Můj web"></div>
-            <div class="fr"><label class="fl" for="s-tg">Motto / tagline</label><input class="fi" id="s-tg" type="text" placeholder="Krátký popis"></div>
-            <div class="fr" style="max-width:200px"><label class="fl" for="s-la">Jazyk rozhraní</label>
-              <select class="fsl" id="s-la"><option value="cs">Čeština (cs)</option><option value="en">English (en)</option></select></div>
-          </div>
-          <div class="sc"><div class="sct">🎨 Barevná paleta</div><div class="pg" id="pg" role="radiogroup" aria-label="Paleta"></div></div>
-          <div class="sc">
-            <div class="sct">© Copyright</div>
-            <div class="fr"><label class="fl" for="s-cn">Jméno</label><input class="fi" id="s-cn" type="text" placeholder="Jan Novák"></div>
-            <div class="fr"><label class="fl" for="s-cu">URL</label><input class="fi" id="s-cu" type="url" placeholder="https://example.com"></div>
-            <div class="fr" style="max-width:120px"><label class="fl" for="s-cy">Rok</label><input class="fi" id="s-cy" type="number" placeholder="2026" min="1990" max="2100"></div>
-          </div>
-          <div class="sc">
-            <div class="sct">🔗 Navigační odkazy (vpravo)</div>
-            <table class="lt"><thead><tr><th>Popisek</th><th>URL</th><th></th></tr></thead><tbody id="mb"></tbody></table>
-            <button class="ar" id="m-add" type="button">+ Přidat</button>
-          </div>
-          <div class="sc">
-            <div class="sct">🔗 Patičkové odkazy</div>
-            <table class="lt"><thead><tr><th>Popisek</th><th>URL</th><th></th></tr></thead><tbody id="fb"></tbody></table>
-            <button class="ar" id="f-add" type="button">+ Přidat</button>
-          </div>
-        </div></div>
-      </div>
-
-      <div class="panel" id="pc" role="tabpanel" aria-labelledby="t-c">
-        <div class="ew">
-          <div class="etb" id="etb">
-            <span class="etl" id="etl">Vyberte sekci</span>
-            <div class="eds"></div>
-            <button class="fb" data-w="**"  title="Tučné Ctrl+B"  aria-label="Tučné">𝗕</button>
-            <button class="fb" data-w="*"   title="Kurzíva Ctrl+I" aria-label="Kurzíva">𝐼</button>
-            <button class="fb" data-w="`"   title="Kód"            aria-label="Kód">&#96;&#96;</button>
-            <button class="fb" data-w="~~"  title="Přeškrtnutí"    aria-label="Přeškrtnutí">~~</button>
-            <div class="eds"></div>
-            <button class="fb" data-l="## "  title="H2" aria-label="H2">H2</button>
-            <button class="fb" data-l="### " title="H3" aria-label="H3">H3</button>
-            <button class="fb" data-l="- "   title="Odrážka" aria-label="Odrážka">—</button>
-            <button class="fb" data-l="> "   title="Citace"  aria-label="Citace">❝</button>
-            <div class="eds"></div>
-            <button class="fb cr" data-c="ins"     title="Vložení"    style="color:#2a6b3a" aria-label="CriticMarkup vložení">{++}</button>
-            <button class="fb cr" data-c="del"     title="Smazání"    style="color:#8b1a1a" aria-label="CriticMarkup smazání">{--}</button>
-            <button class="fb cr" data-c="mark"    title="Zvýraznění" style="color:#8b6914" aria-label="CriticMarkup zvýraznění">{==}</button>
-            <button class="fb cr" data-c="comment" title="Komentář"   style="color:#1a3a6b" aria-label="CriticMarkup komentář">{>>}</button>
-          </div>
-          <textarea class="eta" id="eta" spellcheck="true" aria-label="Obsah sekce" placeholder="Vyberte sekci vlevo…"></textarea>
+        <div class="sc">
+          <div class="sc-title">🌐 Základní informace</div>
+          <div class="fr"><label class="fl" for="s-title">Název webu</label>
+            <input class="fi" id="s-title" type="text" placeholder="Můj web"></div>
+          <div class="fr"><label class="fl" for="s-tagline">Motto / tagline</label>
+            <input class="fi" id="s-tagline" type="text" placeholder="Krátký popis webu"></div>
+          <div class="fr" style="max-width:200px"><label class="fl" for="s-lang">Jazyk rozhraní</label>
+            <select class="fsl" id="s-lang">
+              <option value="cs">Čeština (cs)</option>
+              <option value="en">English (en)</option>
+            </select></div>
         </div>
-        <aside id="am" class="hide" aria-label="Metadata článku">
-          <div><div class="ml">📅 Datum</div><input class="mi" id="a-dt" type="text" placeholder="18.5.2026" aria-label="Datum"></div>
-          <div><div class="ml">🏷 Tagy</div><input class="mi" id="a-tg" type="text" placeholder="tag1, tag2" aria-label="Tagy"></div>
-          <p class="mn">Formáty: <code>D.M.YYYY</code>, <code>DD.MM.YYYY</code>,<br><code>YYYY-MM-DD</code>, <code>M/D/YYYY</code></p>
-        </aside>
-      </div>
 
-      <div class="panel" id="pb" role="tabpanel" aria-labelledby="t-b">
-        <div class="etb" id="stb">
-          <span class="etl">sidebar.md</span><div class="eds"></div>
-          <button class="fb" data-w="**" data-ta="sta" aria-label="Tučné">𝗕</button>
-          <button class="fb" data-w="*"  data-ta="sta" aria-label="Kurzíva">𝐼</button>
-          <button class="fb" data-w="`"  data-ta="sta" aria-label="Kód">&#96;&#96;</button>
-          <button class="fb" data-l="## " data-ta="sta" aria-label="H2">H2</button>
-          <button class="fb" data-l="- "  data-ta="sta" aria-label="Odrážka">—</button>
+        <div class="sc">
+          <div class="sc-title">🎨 Barevná paleta</div>
+          <div class="pg" id="pal-grid" role="radiogroup" aria-label="Výběr barevné palety"></div>
         </div>
-        <textarea class="eta" id="sta" spellcheck="true" aria-label="Sidebar obsah"
-          placeholder="Obsah sidebaru v Markdownu…&#10;Interní odkaz: [Název sekce]&#10;(prázdné = sidebar.md nebude v zipu)"></textarea>
-      </div>
+
+        <div class="sc">
+          <div class="sc-title">© Copyright</div>
+          <div class="fr"><label class="fl" for="s-cname">Jméno / název</label>
+            <input class="fi" id="s-cname" type="text" placeholder="Jan Novák"></div>
+          <div class="fr"><label class="fl" for="s-curl">URL</label>
+            <input class="fi" id="s-curl" type="url" placeholder="https://example.com"></div>
+          <div class="fr" style="max-width:120px"><label class="fl" for="s-cyear">Rok</label>
+            <input class="fi" id="s-cyear" type="number" placeholder="2026" min="1990" max="2100"></div>
+        </div>
+
+        <div class="sc">
+          <div class="sc-title">🔗 Navigační odkazy (vpravo v menu)</div>
+          <table class="lt" role="grid">
+            <thead><tr><th scope="col">Popisek</th><th scope="col">URL</th><th scope="col"><span class="sr-only">Akce</span></th></tr></thead>
+            <tbody id="menu-tbody"></tbody>
+          </table>
+          <button class="add-row" id="menu-add" type="button">+ Přidat odkaz</button>
+        </div>
+
+        <div class="sc">
+          <div class="sc-title">🔗 Patičkové odkazy</div>
+          <table class="lt" role="grid">
+            <thead><tr><th scope="col">Popisek</th><th scope="col">URL</th><th scope="col"><span class="sr-only">Akce</span></th></tr></thead>
+            <tbody id="footer-tbody"></tbody>
+          </table>
+          <button class="add-row" id="footer-add" type="button">+ Přidat odkaz</button>
+        </div>
+
+      </div></div>
     </div>
-  </div>
-</div>
+
+    <!-- Panel: Obsah -->
+    <div class="panel" id="p-cnt" role="tabpanel" aria-labelledby="tab-cnt">
+      <div class="ed-wrap">
+        <div class="ed-tb" id="ed-toolbar">
+          <span class="ed-label" id="ed-label" aria-live="polite">Vyberte sekci vlevo</span>
+          <div class="ed-sep" aria-hidden="true"></div>
+          <button class="fmtbtn" data-wrap="**"  title="Tučné (Ctrl+B)"     aria-label="Tučné">𝗕</button>
+          <button class="fmtbtn" data-wrap="*"   title="Kurzíva (Ctrl+I)"   aria-label="Kurzíva">𝐼</button>
+          <button class="fmtbtn" data-wrap="`"   title="Inline kód"         aria-label="Inline kód">&#96;&#96;</button>
+          <button class="fmtbtn" data-wrap="~~"  title="Přeškrtnutí"        aria-label="Přeškrtnutí">~~</button>
+          <div class="ed-sep" aria-hidden="true"></div>
+          <button class="fmtbtn" data-line="## "  title="Nadpis H2"         aria-label="Nadpis H2">H2</button>
+          <button class="fmtbtn" data-line="### " title="Nadpis H3"         aria-label="Nadpis H3">H3</button>
+          <button class="fmtbtn" data-line="- "   title="Odrážka"           aria-label="Odrážka">—</button>
+          <button class="fmtbtn" data-line="> "   title="Citace"            aria-label="Citace">❝</button>
+          <div class="ed-sep" aria-hidden="true"></div>
+          <button class="fmtbtn cm" data-critic="ins"     title="CriticMarkup: Vložení"    style="color:#2a6b3a" aria-label="CriticMarkup vložení">{++}</button>
+          <button class="fmtbtn cm" data-critic="del"     title="CriticMarkup: Smazání"    style="color:#8b1a1a" aria-label="CriticMarkup smazání">{--}</button>
+          <button class="fmtbtn cm" data-critic="mark"    title="CriticMarkup: Zvýraznění" style="color:#8b6914" aria-label="CriticMarkup zvýraznění">{==}</button>
+          <button class="fmtbtn cm" data-critic="comment" title="CriticMarkup: Komentář"   style="color:#1a3a6b" aria-label="CriticMarkup komentář">{>>}</button>
+        </div>
+        <textarea class="ed-ta" id="ed-ta" spellcheck="true"
+          placeholder="Vyberte sekci v levém panelu…"
+          aria-label="Obsah sekce — Markdown editor"></textarea>
+      </div>
+      <aside id="art-meta" class="hidden" aria-label="Metadata článku">
+        <div>
+          <div class="meta-lbl">📅 Datum</div>
+          <input class="meta-in" id="art-date" type="text" placeholder="18.5.2026"
+            aria-label="Datum publikace článku">
+        </div>
+        <div>
+          <div class="meta-lbl">🏷 Tagy</div>
+          <input class="meta-in" id="art-tags" type="text" placeholder="tag1, tag2, tag3"
+            aria-label="Tagy článku oddělené čárkou">
+        </div>
+        <p class="meta-note">
+          Datum: <code>D.M.YYYY</code><br>
+          nebo <code>DD.MM.YYYY</code><br>
+          nebo <code>YYYY-MM-DD</code><br>
+          nebo <code>M/D/YYYY</code>
+        </p>
+      </aside>
+    </div>
+
+    <!-- Panel: Sidebar -->
+    <div class="panel" id="p-sb" role="tabpanel" aria-labelledby="tab-sb">
+      <div class="ed-tb" id="sb-toolbar">
+        <span class="ed-label">sidebar.md</span>
+        <div class="ed-sep" aria-hidden="true"></div>
+        <button class="fmtbtn" data-wrap="**" data-target="sb-ta" aria-label="Tučné">𝗕</button>
+        <button class="fmtbtn" data-wrap="*"  data-target="sb-ta" aria-label="Kurzíva">𝐼</button>
+        <button class="fmtbtn" data-wrap="`"  data-target="sb-ta" aria-label="Inline kód">&#96;&#96;</button>
+        <button class="fmtbtn" data-line="## " data-target="sb-ta" aria-label="Nadpis H2">H2</button>
+        <button class="fmtbtn" data-line="- "  data-target="sb-ta" aria-label="Odrážka">—</button>
+      </div>
+      <textarea class="ed-ta" id="sb-ta" spellcheck="true"
+        aria-label="Obsah sidebar.md — Markdown editor"
+        placeholder="Obsah sidebaru v Markdownu…&#10;Interní odkaz: [Název sekce]&#10;(Prázdné pole = sidebar.md nebude součástí ZIP)"></textarea>
+    </div>
+
+  </div><!-- /workspace -->
+</div><!-- /main -->
 
 <!-- MODAL: nová sekce -->
-<div class="ov" id="m-ns" role="dialog" aria-modal="true" aria-labelledby="m-ns-h">
+<div class="ov" id="m-new-sec" role="dialog" aria-modal="true" aria-labelledby="m-ns-title">
   <div class="mo">
-    <h2 id="m-ns-h">Nová sekce</h2>
-    <div class="fr" style="margin-bottom:.75rem"><label class="fl" for="ns-t">Název</label><input class="fi" id="ns-t" type="text" placeholder="Název stránky"></div>
-    <div class="fr"><label class="fl">Typ</label>
-      <div class="tos" role="radiogroup" aria-label="Typ sekce">
-        <div class="to sel" data-type="normal"       role="radio" aria-checked="true"  tabindex="0"><span class="to-ic">📄</span><span class="to-lb">Stránka</span></div>
-        <div class="to"     data-type="multisection" role="radio" aria-checked="false" tabindex="0"><span class="to-ic">📂</span><span class="to-lb">Multisection</span></div>
-        <div class="to"     data-type="articles"     role="radio" aria-checked="false" tabindex="0"><span class="to-ic">📰</span><span class="to-lb">Články</span></div>
-      </div></div>
-    <div class="ma"><button class="mb mcl" id="ns-cl" type="button">Zrušit</button><button class="mb mok" id="ns-ok" type="button">Přidat</button></div>
+    <h2 id="m-ns-title">Přidat novou sekci</h2>
+    <div class="fr" style="margin-bottom:.7rem">
+      <label class="fl" for="ns-name">Název sekce</label>
+      <input class="fi" id="ns-name" type="text" placeholder="Název stránky">
+    </div>
+    <div class="fr">
+      <span class="fl" id="ns-type-lbl">Typ sekce</span>
+      <div class="type-opts" role="radiogroup" aria-labelledby="ns-type-lbl">
+        <div class="topt sel" data-type="normal"       role="radio" aria-checked="true"  tabindex="0">
+          <span class="topt-ic">📄</span><span class="topt-lb">Stránka</span></div>
+        <div class="topt"     data-type="multisection" role="radio" aria-checked="false" tabindex="0">
+          <span class="topt-ic">📂</span><span class="topt-lb">Multisection</span></div>
+        <div class="topt"     data-type="articles"     role="radio" aria-checked="false" tabindex="0">
+          <span class="topt-ic">📰</span><span class="topt-lb">Články</span></div>
+      </div>
+    </div>
+    <div class="mo-acts">
+      <button class="mbtn mb-cl" id="ns-cancel" type="button">Zrušit</button>
+      <button class="mbtn mb-ok" id="ns-ok"     type="button">Přidat sekci</button>
+    </div>
   </div>
 </div>
 
-<!-- MODAL: nová podstránka -->
-<div class="ov" id="m-sub" role="dialog" aria-modal="true" aria-labelledby="m-sub-h">
+<!-- MODAL: nová podstránka / článek -->
+<div class="ov" id="m-new-child" role="dialog" aria-modal="true" aria-labelledby="m-ch-title">
   <div class="mo">
-    <h2 id="m-sub-h">Nová podstránka</h2>
-    <div class="fr"><label class="fl" for="sub-t">Název</label><input class="fi" id="sub-t" type="text" placeholder="Název"></div>
-    <div class="ma"><button class="mb mcl" id="sub-cl" type="button">Zrušit</button><button class="mb mok" id="sub-ok" type="button">Přidat</button></div>
+    <h2 id="m-ch-title">Přidat podstránku</h2>
+    <div class="fr">
+      <label class="fl" for="ch-name">Název</label>
+      <input class="fi" id="ch-name" type="text" placeholder="Název">
+    </div>
+    <div class="mo-acts">
+      <button class="mbtn mb-cl" id="ch-cancel" type="button">Zrušit</button>
+      <button class="mbtn mb-ok" id="ch-ok"     type="button">Přidat</button>
+    </div>
   </div>
 </div>
 
 <!-- MODAL: import MD -->
-<div class="ov" id="m-imp" role="dialog" aria-modal="true" aria-labelledby="m-imp-h">
+<div class="ov" id="m-import" role="dialog" aria-modal="true" aria-labelledby="m-imp-title">
   <div class="mo" style="max-width:620px">
-    <h2 id="m-imp-h">📥 Importovat website.md</h2>
-    <p style="font-size:.8rem;color:var(--ink-mid);margin-bottom:.65rem;line-height:1.5">Vložte obsah website.md — přepíše celou strukturu webu.</p>
-    <textarea class="ita" id="imp-ta" spellcheck="false" aria-label="Markdown k importu" placeholder="# Úvod&#10;&#10;Obsah…&#10;&#10;# Druhá sekce"></textarea>
+    <h2 id="m-imp-title">📥 Importovat website.md</h2>
+    <p style="font-size:.8rem;color:var(--ink-mid);margin-bottom:.6rem;line-height:1.5">
+      Vložte obsah souboru website.md. Import přepíše celou stávající strukturu stránek.
+    </p>
+    <textarea class="imp-ta" id="imp-ta" spellcheck="false"
+      aria-label="Markdown obsah k importu"
+      placeholder="# Úvod&#10;&#10;Obsah první sekce…&#10;&#10;# Druhá sekce&#10;&#10;multisection&#10;&#10;## Podstránka"></textarea>
     <div style="display:flex;gap:.5rem;align-items:center;margin-top:.45rem">
-      <button class="mb mcl" id="imp-cb" type="button">📋 Vložit ze schránky</button>
-      <span style="font-size:.72rem;color:var(--ink-light)">nebo vložte (Ctrl+V) · Ctrl+Enter potvrdí</span>
+      <button class="mbtn mb-cl" id="imp-from-clip" type="button">📋 Vložit ze schránky</button>
+      <span style="font-size:.72rem;color:var(--ink-light)">nebo vložte text přímo (Ctrl+V) · Ctrl+Enter potvrdí import</span>
     </div>
-    <div class="ma"><button class="mb mcl" id="imp-cl" type="button">Zrušit</button><button class="mb mok" id="imp-ok" type="button">✓ Importovat</button></div>
+    <div class="mo-acts">
+      <button class="mbtn mb-cl" id="imp-cancel" type="button">Zrušit</button>
+      <button class="mbtn mb-ok" id="imp-ok"     type="button">✓ Importovat</button>
+    </div>
   </div>
 </div>
 
+<!-- NOTIFIKACE -->
 <div id="notifs" aria-live="polite" aria-atomic="false"></div>
 
 <script>
 'use strict';
 
-const PALETTES={
-  blue:['#1a3a5c','#fafaf7'],green:['#1a4a2e','#f7faf5'],red:['#5c1a1a','#faf7f7'],
-  purple:['#3a1a5c','#f9f7fa'],teal:['#1a4a4a','#f5fafa'],orange:['#5c2e1a','#faf8f5'],
-  dark:['#2a2a2a','#1a1a1a'],slate:['#2a3550','#f5f7fa'],rose:['#5c1a30','#faf7f8'],
-  brown:['#4a2e1a','#faf8f5'],indigo:['#1e2a6a','#f5f6fa'],gold:['#3a2a0a','#fdfaf0'],
-  cyan:['#0e3a4a','#f2fafc'],forest:['#1e3820','#f5f8f2'],dusk:['#4a3050','#f8f5fa'],
-  mint:['#1a4040','#f2faf8'],night:['#0a0e2a','#0e1228'],warm:['#4a2a10','#fdf8f0'],
-  cool:['#1a2a4a','#f4f7fc'],earth:['#3a2e20','#faf5ee']
+// ── PALETY ────────────────────────────────────────────────────────────────────
+const PALETTES = {
+  blue:  ['#1a3a5c','#fafaf7'], green: ['#1a4a2e','#f7faf5'],
+  red:   ['#5c1a1a','#faf7f7'], purple:['#3a1a5c','#f9f7fa'],
+  teal:  ['#1a4a4a','#f5fafa'], orange:['#5c2e1a','#faf8f5'],
+  dark:  ['#2a2a2a','#1a1a1a'], slate: ['#2a3550','#f5f7fa'],
+  rose:  ['#5c1a30','#faf7f8'], brown: ['#4a2e1a','#faf8f5'],
+  indigo:['#1e2a6a','#f5f6fa'], gold:  ['#3a2a0a','#fdfaf0'],
+  cyan:  ['#0e3a4a','#f2fafc'], forest:['#1e3820','#f5f8f2'],
+  dusk:  ['#4a3050','#f8f5fa'], mint:  ['#1a4040','#f2faf8'],
+  night: ['#0a0e2a','#0e1228'], warm:  ['#4a2a10','#fdf8f0'],
+  cool:  ['#1a2a4a','#f4f7fc'], earth: ['#3a2e20','#faf5ee'],
 };
-const CRITIC={ins:['{++','++}'],del:['{--','--}'],mark:['{==','==}'],comment:['{>>','<<}']};
+const CRITIC = {
+  ins: ['{++','++}'], del: ['{--','--}'],
+  mark: ['{==','==}'], comment: ['{>>','<<}']
+};
 
-const S={loaded:false,sections:[],sidebarMD:'',activeSec:null,activeChild:null,
-  palette:'blue',dirty:false,ghSha:{},origZip:null,projectName:'web',subIdx:null};
+// ── STAV ──────────────────────────────────────────────────────────────────────
+const S = {
+  loaded: false,
+  sections: [],
+  sidebarMD: '',
+  activeSec: null,
+  activeChild: null,
+  palette: 'blue',
+  dirty: false,
+  ghSha: {},
+  origZip: null,
+  projectName: 'web',
+  childTargetIdx: null,
+};
 
-function uid(){return Math.random().toString(36).slice(2,9)}
-function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-function slugify(t){return t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
-function $(id){return document.getElementById(id)}
-function notify(msg,type='ok'){const e=document.createElement('div');e.className='nf n'+type;e.textContent=msg;$('notifs').appendChild(e);setTimeout(()=>e.remove(),3200)}
+// ── UTILITY ───────────────────────────────────────────────────────────────────
+function uid() { return Math.random().toString(36).slice(2, 9); }
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function slugify(t) {
+  return t.toLowerCase().normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+function g(id) { return document.getElementById(id); }
+function notify(msg, type='ok') {
+  const el = document.createElement('div');
+  el.className = 'notif n-' + type;
+  el.textContent = msg;
+  g('notifs').appendChild(el);
+  setTimeout(() => el.remove(), 3200);
+}
 
-// Parse
-function parseMD(md){
-  const lines=md.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
-  const secs=[];let cur=null;
-  for(const ln of lines){
-    const h1=ln.match(/^#(?!#)\s+(.+)$/);
-    if(h1){if(cur)secs.push(cur);cur={id:uid(),title:h1[1].trim(),type:'normal',content:'',children:null}}
-    else if(cur)cur.content+=ln+'\n';
-  }
-  if(cur)secs.push(cur);
-  return secs.map(s=>{
-    const tr=s.content.trimStart(),f=tr.split('\n')[0].trim().toLowerCase();
-    if(f==='multisection'||f==='articles'){
-      const type=f,body=tr.replace(/^(multisection|articles)[ \t]*\n/i,'');
-      const children=[];let ch=null;
-      for(const ln of body.split('\n')){
-        const h2=ln.match(/^##(?!#)\s+(.+)$/);
-        if(h2){if(ch)children.push(ch);ch={id:uid(),title:h2[1].trim(),content:''}}
-        else if(ch)ch.content+=ln+'\n';
-      }
-      if(ch)children.push(ch);
-      return{...s,type,content:'',children:children.map(c=>type==='articles'?{...c,...artMeta(c.content)}:c)};
+// ── PARSE website.md ──────────────────────────────────────────────────────────
+function parseMD(md) {
+  const lines = md.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+  const secs = [];
+  let cur = null;
+  for (const ln of lines) {
+    const h1 = ln.match(/^#(?!#)\s+(.+)$/);
+    if (h1) {
+      if (cur) secs.push(cur);
+      cur = { id: uid(), title: h1[1].trim(), type: 'normal', content: '', children: null };
+    } else if (cur) {
+      cur.content += ln + '\n';
     }
-    return{...s,children:null};
+  }
+  if (cur) secs.push(cur);
+
+  return secs.map(sec => {
+    const trimmed = sec.content.trimStart();
+    const firstLine = trimmed.split('\n')[0].trim().toLowerCase();
+
+    if (firstLine === 'multisection' || firstLine === 'articles') {
+      const type = firstLine;
+      const body = trimmed.replace(/^(multisection|articles)[ \t]*\n/i, '');
+      const children = [];
+      let ch = null;
+      for (const ln of body.split('\n')) {
+        const h2 = ln.match(/^##(?!#)\s+(.+)$/);
+        if (h2) {
+          if (ch) children.push(ch);
+          ch = { id: uid(), title: h2[1].trim(), content: '' };
+        } else if (ch) {
+          ch.content += ln + '\n';
+        }
+      }
+      if (ch) children.push(ch);
+      return {
+        ...sec, type, content: '',
+        children: children.map(c => type === 'articles' ? { ...c, ...extractArtMeta(c.content) } : c)
+      };
+    }
+    return { ...sec, children: null };
   });
 }
 
-function artMeta(raw){
-  const lines=raw.split('\n');let date='',tags='';const body=[];let done=false;
-  for(const ln of lines){
-    if(!done){
-      const dm=ln.match(/^(?:datum|date)\s*:\s*(.+)$/i);
-      const tm=ln.match(/^(?:tagy|tags)\s*:\s*(.+)$/i);
-      if(dm){date=dm[1].trim();continue}if(tm){tags=tm[1].trim();continue}
-      if(!ln.trim()&&!date&&!tags)continue;done=true;
+function extractArtMeta(raw) {
+  const lines = raw.split('\n');
+  let date = '', tags = '';
+  const bodyLines = [];
+  let metaDone = false;
+  for (const ln of lines) {
+    if (!metaDone) {
+      const dm = ln.match(/^(?:datum|date)\s*:\s*(.+)$/i);
+      const tm = ln.match(/^(?:tagy|tags)\s*:\s*(.+)$/i);
+      if (dm) { date = dm[1].trim(); continue; }
+      if (tm) { tags = tm[1].trim(); continue; }
+      if (!ln.trim() && !date && !tags) continue;
+      metaDone = true;
     }
-    body.push(ln);
+    bodyLines.push(ln);
   }
-  return{date,tags,body:body.join('\n').replace(/^\n+/,'')};
+  return { date, tags, body: bodyLines.join('\n').replace(/^\n+/, '') };
 }
 
-function toMD(sections){
-  let out='';
-  for(const sec of sections){
-    out+=`# ${sec.title}\n\n`;
-    if(sec.type==='multisection'){
-      out+='multisection\n\n';
-      for(const ch of(sec.children||[])){out+=`## ${ch.title}\n\n`;out+=(ch.content||'').trimEnd()+'\n\n';}
-    }else if(sec.type==='articles'){
-      out+='articles\n\n';
-      for(const ch of(sec.children||[])){
-        out+=`## ${ch.title}\n\n`;
-        if(ch.date)out+=`Datum: ${ch.date}\n`;
-        if(ch.tags)out+=`Tagy: ${ch.tags}\n`;
-        if(ch.date||ch.tags)out+='\n';
-        out+=((ch.body!==undefined?ch.body:ch.content)||'').trimEnd()+'\n\n';
+// ── SERIALIZE → website.md ────────────────────────────────────────────────────
+function toMD(sections) {
+  let out = '';
+  for (const sec of sections) {
+    out += `# ${sec.title}\n\n`;
+    if (sec.type === 'multisection') {
+      out += 'multisection\n\n';
+      for (const ch of (sec.children || [])) {
+        out += `## ${ch.title}\n\n${(ch.content || '').trimEnd()}\n\n`;
       }
-    }else{out+=(sec.content||'').trimEnd()+'\n\n';}
+    } else if (sec.type === 'articles') {
+      out += 'articles\n\n';
+      for (const ch of (sec.children || [])) {
+        out += `## ${ch.title}\n\n`;
+        if (ch.date) out += `Datum: ${ch.date}\n`;
+        if (ch.tags) out += `Tagy: ${ch.tags}\n`;
+        if (ch.date || ch.tags) out += '\n';
+        out += ((ch.body !== undefined ? ch.body : ch.content) || '').trimEnd() + '\n\n';
+      }
+    } else {
+      out += (sec.content || '').trimEnd() + '\n\n';
+    }
   }
-  return out.trimEnd()+'\n';
+  return out.trimEnd() + '\n';
 }
 
-function setDirty(v=true){
-  S.dirty=v;
-  const on=S.loaded;
-  $('btn-save').disabled=!on;$('btn-cp').disabled=!on;$('btn-imp').disabled=!on;
+// ── DIRTY / ENABLE ────────────────────────────────────────────────────────────
+function setDirty(v = true) {
+  S.dirty = v;
+  g('btn-save').disabled = !S.loaded;
+  g('btn-copy-md').disabled = !S.loaded;
+  g('btn-import-md').disabled = !S.loaded;
   ghUpdateBtns();
 }
 
-// Project
-async function openZip(file){
-  try{
-    const zip=await JSZip.loadAsync(file);
-    const find=n=>{if(zip.files[n])return zip.files[n];for(const[p,f]of Object.entries(zip.files))if(!f.dir&&p.endsWith('/'+n))return f;return null};
-    const jf=find('website.json'),mf=find('website.md');
-    if(!jf||!mf){notify('Chybí website.json nebo website.md','err');return;}
-    const cfg=JSON.parse(await jf.async('text')),md=await mf.async('text');
-    const sf=find('sidebar.md');
-    S.sections=parseMD(md);S.sidebarMD=sf?(await sf.async('text')).replace(/\r\n/g,'\n'):'';
-    S.origZip=zip;S.projectName=file.name.replace(/\.md2web\.zip$|\.zip$/,'');S.ghSha={};
-    applyConfig(cfg);S.loaded=true;setDirty(false);showEditor();renderTree();
-    setProjName(cfg.title||S.projectName);notify('Projekt načten ✓');
-  }catch(e){notify('Chyba: '+e.message,'err');console.error(e);}
+// ── PROJEKT: načtení ZIP ──────────────────────────────────────────────────────
+async function openZip(file) {
+  try {
+    const zip = await JSZip.loadAsync(file);
+    const find = name => {
+      if (zip.files[name]) return zip.files[name];
+      for (const [p, f] of Object.entries(zip.files))
+        if (!f.dir && p.endsWith('/' + name)) return f;
+      return null;
+    };
+    const jf = find('website.json');
+    const mf = find('website.md');
+    if (!jf || !mf) { notify('Chybí website.json nebo website.md', 'err'); return; }
+    const cfg = JSON.parse(await jf.async('text'));
+    const md  = await mf.async('text');
+    const sf  = find('sidebar.md');
+    S.sections   = parseMD(md);
+    S.sidebarMD  = sf ? (await sf.async('text')).replace(/\r\n/g,'\n') : '';
+    S.origZip    = zip;
+    S.projectName = file.name.replace(/\.md2web\.zip$|\.zip$/, '');
+    S.ghSha = {};
+    applyConfig(cfg);
+    S.loaded = true;
+    setDirty(false);
+    renderNav();
+    setProjName(cfg.title || S.projectName);
+    notify('Projekt načten ✓');
+  } catch(e) { notify('Chyba: ' + e.message, 'err'); console.error(e); }
 }
 
-function newProject(){
-  S.sections=[{id:uid(),title:'Úvod',type:'normal',content:'## Vítejte\n\nZde začíná váš web.\n',children:null}];
-  S.sidebarMD='';S.origZip=null;S.projectName='novy-web';S.ghSha={};
-  applyConfig({title:'Nový web',tagline:'',language:'cs',color:'blue',
-    copyright:{name:'',url:'',year:new Date().getFullYear()},menu_links:[],footer_links:[]});
-  S.loaded=true;setDirty(true);showEditor();renderTree();setProjName('Nový web');
+function newProject() {
+  S.sections = [{
+    id: uid(), title: 'Úvod', type: 'normal',
+    content: '## Vítejte\n\nZde začíná váš web.\n', children: null
+  }];
+  S.sidebarMD = '';
+  S.origZip = null;
+  S.projectName = 'novy-web';
+  S.ghSha = {};
+  applyConfig({
+    title: 'Nový web', tagline: '', language: 'cs', color: 'blue',
+    copyright: { name: '', url: '', year: new Date().getFullYear() },
+    menu_links: [], footer_links: []
+  });
+  S.loaded = true;
+  setDirty(true);
+  renderNav();
+  setProjName('Nový web');
   notify('Nový projekt vytvořen');
 }
 
-function showEditor(){
-  $('empty').hidden=true;const ed=$('editor');ed.hidden=false;ed.style.display='flex';
+function setProjName(t) {
+  const el = g('tb-proj');
+  el.textContent = t || 'Bez názvu';
+  el.classList.toggle('on', !!t);
 }
 
-function setProjName(t){const el=$('tb-proj');el.textContent=t||'Bez názvu';el.classList.toggle('on',!!t);}
-
-// Config
-function applyConfig(c){
-  $('s-ti').value=c.title||'';$('s-tg').value=c.tagline||'';
-  $('s-la').value=c.language||'cs';$('s-cn').value=c.copyright?.name||'';
-  $('s-cu').value=c.copyright?.url||'';$('s-cy').value=c.copyright?.year||new Date().getFullYear();
-  selectPalette(c.color||'blue');
-  renderLinks('mb',c.menu_links||[]);renderLinks('fb',c.footer_links||[]);
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+function applyConfig(c) {
+  g('s-title').value   = c.title    || '';
+  g('s-tagline').value = c.tagline  || '';
+  g('s-lang').value    = c.language || 'cs';
+  g('s-cname').value   = c.copyright?.name || '';
+  g('s-curl').value    = c.copyright?.url  || '';
+  g('s-cyear').value   = c.copyright?.year || new Date().getFullYear();
+  selectPalette(c.color || 'blue');
+  renderLinksTable('menu-tbody',   c.menu_links   || []);
+  renderLinksTable('footer-tbody', c.footer_links || []);
 }
 
-function readConfig(){
-  return{title:$('s-ti').value.trim(),tagline:$('s-tg').value.trim(),language:$('s-la').value,
-    color:S.palette,copyright:{name:$('s-cn').value.trim(),url:$('s-cu').value.trim(),
-    year:parseInt($('s-cy').value)||new Date().getFullYear()},
-    menu_links:readLinks('mb'),footer_links:readLinks('fb')};
+function readConfig() {
+  return {
+    title:    g('s-title').value.trim(),
+    tagline:  g('s-tagline').value.trim(),
+    language: g('s-lang').value,
+    color:    S.palette,
+    copyright: {
+      name:  g('s-cname').value.trim(),
+      url:   g('s-curl').value.trim(),
+      year:  parseInt(g('s-cyear').value) || new Date().getFullYear(),
+    },
+    menu_links:   readLinksTable('menu-tbody'),
+    footer_links: readLinksTable('footer-tbody'),
+  };
 }
 
-// Palette
-function buildPalette(){
-  const g=$('pg');g.innerHTML='';
-  for(const[name,[pri,bg]]of Object.entries(PALETTES)){
-    const sw=document.createElement('div');sw.className='ps2';
-    sw.style.background=`linear-gradient(135deg,${pri} 50%,${bg} 50%)`;
-    sw.style.border='2px solid '+pri+'44';sw.dataset.p=name;
-    sw.setAttribute('role','radio');sw.setAttribute('aria-label',name);sw.setAttribute('tabindex','0');
-    sw.innerHTML=`<span>${name}</span>`;
-    sw.addEventListener('click',()=>selectPalette(name));
-    sw.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectPalette(name);}});
-    g.appendChild(sw);
+// ── PALETA ────────────────────────────────────────────────────────────────────
+function buildPaletteGrid() {
+  const grid = g('pal-grid');
+  grid.innerHTML = '';
+  for (const [name, [pri, bg]] of Object.entries(PALETTES)) {
+    const sw = document.createElement('div');
+    sw.className = 'psw';
+    sw.style.background = `linear-gradient(135deg,${pri} 50%,${bg} 50%)`;
+    sw.style.border = '2px solid ' + pri + '44';
+    sw.dataset.palette = name;
+    sw.setAttribute('role', 'radio');
+    sw.setAttribute('aria-label', name);
+    sw.setAttribute('tabindex', '0');
+    sw.innerHTML = `<span>${name}</span>`;
+    sw.addEventListener('click', () => selectPalette(name));
+    sw.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectPalette(name); }
+    });
+    grid.appendChild(sw);
   }
 }
 
-function selectPalette(name){
-  S.palette=name;
-  document.querySelectorAll('.ps2').forEach(s=>{const on=s.dataset.p===name;s.classList.toggle('sel',on);s.setAttribute('aria-checked',on?'true':'false');});
+function selectPalette(name) {
+  S.palette = name;
+  document.querySelectorAll('.psw').forEach(s => {
+    const on = s.dataset.palette === name;
+    s.classList.toggle('sel', on);
+    s.setAttribute('aria-checked', on ? 'true' : 'false');
+  });
   setDirty();
 }
 
-// Links
-function renderLinks(tbodyId,links){const tb=$(tbodyId);tb.innerHTML='';links.forEach(l=>addLink(tb,l.label||'',l.url||''));}
-function addLink(tbody,label='',url=''){
-  const tr=document.createElement('tr');
-  tr.innerHTML=`<td><input type="text" value="${esc(label)}" placeholder="Popisek" aria-label="Popisek"></td><td><input type="text" value="${esc(url)}" placeholder="https://…" aria-label="URL"></td><td><button class="ld" type="button" aria-label="Odebrat">✕</button></td>`;
-  tr.querySelector('.ld').addEventListener('click',()=>{tr.remove();setDirty();});
-  tr.querySelectorAll('input').forEach(i=>i.addEventListener('input',()=>setDirty()));
-  tbody.appendChild(tr);setDirty();
-}
-function readLinks(tbodyId){
-  return[...document.querySelectorAll(`#${tbodyId} tr`)].map(tr=>{const ins=tr.querySelectorAll('input');return{label:ins[0].value.trim(),url:ins[1].value.trim()};}).filter(l=>l.label||l.url);
+// ── LINKS TABULKY ─────────────────────────────────────────────────────────────
+function renderLinksTable(tbodyId, links) {
+  const tb = g(tbodyId);
+  tb.innerHTML = '';
+  links.forEach(l => addLinkRow(tb, l.label || '', l.url || ''));
 }
 
-// Save ZIP
-async function saveZip(){
-  saveItem();
-  try{
-    const zip=new JSZip();
-    zip.file('website.json',JSON.stringify(readConfig(),null,2));
-    zip.file('website.md',toMD(S.sections));
-    const sb=$('sta').value.trim();if(sb)zip.file('sidebar.md',sb+'\n');
-    if(S.origZip){
-      for(const name of['index.html','cs.json','en.json']){
-        const find=n=>{if(S.origZip.files[n])return S.origZip.files[n];for(const[p,f]of Object.entries(S.origZip.files))if(!f.dir&&p.endsWith('/'+n))return f;return null};
-        const f=find(name);if(f)zip.file(name,await f.async('uint8array'));
+function addLinkRow(tbody, label = '', url = '') {
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td><input type="text" value="${esc(label)}" placeholder="Popisek" aria-label="Popisek odkazu"></td>
+    <td><input type="text" value="${esc(url)}"   placeholder="https://…" aria-label="URL odkazu"></td>
+    <td><button class="lt-del" type="button" aria-label="Odebrat tento odkaz">✕</button></td>`;
+  tr.querySelector('.lt-del').addEventListener('click', () => { tr.remove(); setDirty(); });
+  tr.querySelectorAll('input').forEach(i => i.addEventListener('input', () => setDirty()));
+  tbody.appendChild(tr);
+  setDirty();
+}
+
+function readLinksTable(tbodyId) {
+  return [...document.querySelectorAll(`#${tbodyId} tr`)].map(tr => {
+    const ins = tr.querySelectorAll('input');
+    return { label: ins[0].value.trim(), url: ins[1].value.trim() };
+  }).filter(l => l.label || l.url);
+}
+
+// ── ULOŽIT ZIP ────────────────────────────────────────────────────────────────
+async function saveZip() {
+  saveCurrentItem();
+  try {
+    const zip = new JSZip();
+    zip.file('website.json', JSON.stringify(readConfig(), null, 2));
+    zip.file('website.md', toMD(S.sections));
+    const sb = g('sb-ta').value.trim();
+    if (sb) zip.file('sidebar.md', sb + '\n');
+    if (S.origZip) {
+      for (const name of ['index.html', 'cs.json', 'en.json']) {
+        const find = n => {
+          if (S.origZip.files[n]) return S.origZip.files[n];
+          for (const [p, f] of Object.entries(S.origZip.files))
+            if (!f.dir && p.endsWith('/' + n)) return f;
+          return null;
+        };
+        const f = find(name);
+        if (f) zip.file(name, await f.async('uint8array'));
       }
     }
-    const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE'});
-    const fname=slugify($('s-ti').value||S.projectName||'web')+'.md2web.zip';
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fname;a.click();URL.revokeObjectURL(a.href);
-    setDirty(false);notify('Uloženo jako '+fname+' ✓');
-  }catch(e){notify('Chyba: '+e.message,'err');}
+    const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+    const fname = slugify(g('s-title').value || S.projectName || 'web') + '.md2web.zip';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fname;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    setDirty(false);
+    notify('Uloženo jako ' + fname + ' ✓');
+  } catch(e) { notify('Chyba při ukládání: ' + e.message, 'err'); }
 }
 
-// Tree
-function renderTree(){
-  const body=$('tb2');body.innerHTML='';
-  S.sections.forEach((sec,si)=>{
-    body.appendChild(makeItem(sec,si,null,null));
-    if(sec.children!==null){
-      (sec.children||[]).forEach((ch,ci)=>body.appendChild(makeItem(ch,si,ci,sec)));
-      const ab=document.createElement('div');ab.className='tac';
-      ab.setAttribute('role','button');ab.setAttribute('tabindex','0');
-      ab.setAttribute('aria-label','Přidat '+(sec.type==='articles'?'článek':'podstránku'));
-      ab.innerHTML=`<span style="font-size:.9rem">+</span> Přidat ${sec.type==='articles'?'článek':'podstránku'}`;
-      ab.addEventListener('click',()=>openSubModal(si));
-      ab.addEventListener('keydown',e=>{if(e.key==='Enter')openSubModal(si);});
-      body.appendChild(ab);
+// ── NAVIGACE SEKCÍ (přístupný seznam) ────────────────────────────────────────
+function renderNav() {
+  const nav = g('sec-nav');
+  nav.innerHTML = '';
+  if (!S.sections.length) {
+    nav.innerHTML = '<p style="padding:.75rem .85rem;font-size:.8rem;color:var(--ink-light)">Žádné sekce. Přidejte +</p>';
+    return;
+  }
+  const ul = document.createElement('ul');
+  ul.setAttribute('aria-label', 'Sekce webu');
+  S.sections.forEach((sec, si) => {
+    const li = document.createElement('li');
+    // ── Top-level item
+    const item = document.createElement('div');
+    item.className = 'sec-item' + (S.activeSec === sec.id && !S.activeChild ? ' active' : '');
+
+    // Hlavní odkaz (tlačítko) — název sekce
+    const link = document.createElement('button');
+    link.className = 'sec-link';
+    link.type = 'button';
+    link.textContent = sec.title;
+    link.setAttribute('aria-label', sec.title + (sec.type !== 'normal' ? ', ' + sec.type : ''));
+    link.addEventListener('click', () => selectItem(sec.id, null));
+
+    // Badge pro typ
+    let badgeEl = null;
+    if (sec.type === 'multisection') {
+      badgeEl = document.createElement('span');
+      badgeEl.className = 'sec-badge sb-group';
+      badgeEl.textContent = 'skupina';
+      badgeEl.setAttribute('aria-hidden', 'true');
+    } else if (sec.type === 'articles') {
+      badgeEl = document.createElement('span');
+      badgeEl.className = 'sec-badge sb-art';
+      badgeEl.textContent = 'články';
+      badgeEl.setAttribute('aria-hidden', 'true');
     }
+
+    // Akční tlačítka
+    const btns = document.createElement('div');
+    btns.className = 'sec-btns';
+    btns.setAttribute('aria-label', `Akce pro sekci ${sec.title}`);
+
+    const btnUp = document.createElement('button');
+    btnUp.type = 'button';
+    btnUp.className = 'sec-btn';
+    btnUp.textContent = '↑';
+    btnUp.setAttribute('aria-label', `Přesunout sekci "${sec.title}" nahoru`);
+    btnUp.disabled = si === 0;
+    btnUp.addEventListener('click', e => { e.stopPropagation(); moveSec(si, -1); });
+
+    const btnDown = document.createElement('button');
+    btnDown.type = 'button';
+    btnDown.className = 'sec-btn';
+    btnDown.textContent = '↓';
+    btnDown.setAttribute('aria-label', `Přesunout sekci "${sec.title}" dolů`);
+    btnDown.disabled = si === S.sections.length - 1;
+    btnDown.addEventListener('click', e => { e.stopPropagation(); moveSec(si, 1); });
+
+    const btnDel = document.createElement('button');
+    btnDel.type = 'button';
+    btnDel.className = 'sec-btn del';
+    btnDel.textContent = '✕';
+    btnDel.setAttribute('aria-label', `Smazat sekci "${sec.title}"`);
+    btnDel.addEventListener('click', e => { e.stopPropagation(); deleteSec(si); });
+
+    btns.appendChild(btnUp);
+    btns.appendChild(btnDown);
+    btns.appendChild(btnDel);
+
+    item.appendChild(link);
+    if (badgeEl) item.appendChild(badgeEl);
+    item.appendChild(btns);
+    li.appendChild(item);
+
+    // ── Podstránky / články
+    if (sec.children !== null) {
+      const childUl = document.createElement('ul');
+      childUl.className = 'child-list';
+      childUl.setAttribute('aria-label', `Podstránky sekce ${sec.title}`);
+
+      (sec.children || []).forEach((ch, ci) => {
+        const chLi = document.createElement('li');
+        const chItem = document.createElement('div');
+        chItem.className = 'child-item' + (S.activeSec === sec.id && S.activeChild === ch.id ? ' active' : '');
+
+        const chLink = document.createElement('button');
+        chLink.type = 'button';
+        chLink.className = 'sec-link';
+        chLink.textContent = ch.title;
+        chLink.setAttribute('aria-label', ch.title);
+        chLink.addEventListener('click', () => selectItem(sec.id, ch.id));
+
+        const chBtns = document.createElement('div');
+        chBtns.className = 'sec-btns';
+
+        const chUp = document.createElement('button');
+        chUp.type = 'button'; chUp.className = 'sec-btn'; chUp.textContent = '↑';
+        chUp.setAttribute('aria-label', `Přesunout "${ch.title}" nahoru`);
+        chUp.disabled = ci === 0;
+        chUp.addEventListener('click', e => { e.stopPropagation(); moveChild(si, ci, -1); });
+
+        const chDown = document.createElement('button');
+        chDown.type = 'button'; chDown.className = 'sec-btn'; chDown.textContent = '↓';
+        chDown.setAttribute('aria-label', `Přesunout "${ch.title}" dolů`);
+        chDown.disabled = ci === sec.children.length - 1;
+        chDown.addEventListener('click', e => { e.stopPropagation(); moveChild(si, ci, 1); });
+
+        const chDel = document.createElement('button');
+        chDel.type = 'button'; chDel.className = 'sec-btn del'; chDel.textContent = '✕';
+        chDel.setAttribute('aria-label', `Smazat "${ch.title}"`);
+        chDel.addEventListener('click', e => { e.stopPropagation(); deleteChild(si, ci); });
+
+        chBtns.appendChild(chUp); chBtns.appendChild(chDown); chBtns.appendChild(chDel);
+        chItem.appendChild(chLink); chItem.appendChild(chBtns);
+        chLi.appendChild(chItem);
+        childUl.appendChild(chLi);
+      });
+
+      // Tlačítko přidat podstránku
+      const addLi = document.createElement('li');
+      const addBtn = document.createElement('button');
+      addBtn.type = 'button';
+      addBtn.className = 'add-child-btn';
+      addBtn.textContent = '+ Přidat ' + (sec.type === 'articles' ? 'článek' : 'podstránku');
+      addBtn.setAttribute('aria-label', 'Přidat ' + (sec.type === 'articles' ? 'nový článek' : 'novou podstránku') + ' do sekce ' + sec.title);
+      addBtn.addEventListener('click', () => openChildModal(si, sec.type));
+      addLi.appendChild(addBtn);
+      childUl.appendChild(addLi);
+
+      li.appendChild(childUl);
+    }
+
+    ul.appendChild(li);
+  });
+  nav.appendChild(ul);
+}
+
+// ── PŘESUNY & MAZÁNÍ ─────────────────────────────────────────────────────────
+function moveSec(si, d) {
+  const ni = si + d;
+  if (ni < 0 || ni >= S.sections.length) return;
+  [S.sections[si], S.sections[ni]] = [S.sections[ni], S.sections[si]];
+  setDirty(); renderNav();
+}
+
+function moveChild(si, ci, d) {
+  const arr = S.sections[si].children;
+  const ni = ci + d;
+  if (ni < 0 || ni >= arr.length) return;
+  [arr[ci], arr[ni]] = [arr[ni], arr[ci]];
+  setDirty(); renderNav();
+}
+
+function deleteSec(si) {
+  if (!confirm(`Smazat sekci "${S.sections[si].title}" a veškerý její obsah?`)) return;
+  if (S.activeSec === S.sections[si].id) { S.activeSec = null; S.activeChild = null; clearEditor(); }
+  S.sections.splice(si, 1);
+  setDirty(); renderNav();
+}
+
+function deleteChild(si, ci) {
+  const ch = S.sections[si].children[ci];
+  if (!confirm(`Smazat "${ch.title}"?`)) return;
+  if (S.activeChild === ch.id) { S.activeChild = null; clearEditor(); }
+  S.sections[si].children.splice(ci, 1);
+  setDirty(); renderNav();
+}
+
+// ── VÝBĚR A EDITACE POLOŽKY ───────────────────────────────────────────────────
+function selectItem(secId, childId) {
+  saveCurrentItem();
+  S.activeSec   = secId;
+  S.activeChild = childId || null;
+  renderNav();
+
+  const sec = S.sections.find(s => s.id === secId);
+  if (!sec) return;
+
+  activateTab('tab-cnt');
+
+  const ta = g('ed-ta');
+  ta.disabled = false;
+
+  if (childId) {
+    const ch = sec.children?.find(c => c.id === childId);
+    if (!ch) return;
+    g('ed-label').textContent = sec.title + ' › ' + ch.title;
+    if (sec.type === 'articles') {
+      g('art-date').value = ch.date || '';
+      g('art-tags').value = ch.tags || '';
+      ta.value = ch.body !== undefined ? ch.body : (ch.content || '');
+      g('art-meta').classList.remove('hidden');
+    } else {
+      ta.value = ch.content || '';
+      g('art-meta').classList.add('hidden');
+    }
+  } else {
+    g('art-meta').classList.add('hidden');
+    g('ed-label').textContent = sec.title;
+    if (sec.type !== 'normal') {
+      ta.value = '';
+      ta.disabled = true;
+      g('ed-label').textContent = sec.title + ' — obsah editujte v podstránkách';
+    } else {
+      ta.value = sec.content || '';
+    }
+  }
+}
+
+function saveCurrentItem() {
+  if (!S.activeSec) return;
+  const sec = S.sections.find(s => s.id === S.activeSec);
+  if (!sec) return;
+  const ta = g('ed-ta');
+  if (S.activeChild) {
+    const ch = sec.children?.find(c => c.id === S.activeChild);
+    if (!ch) return;
+    if (sec.type === 'articles') {
+      ch.date = g('art-date').value.trim();
+      ch.tags = g('art-tags').value.trim();
+      ch.body = ta.value;
+    } else {
+      ch.content = ta.value;
+    }
+  } else if (sec.type === 'normal') {
+    sec.content = ta.value;
+  }
+}
+
+function clearEditor() {
+  const ta = g('ed-ta');
+  ta.value = '';
+  ta.disabled = false;
+  g('ed-label').textContent = 'Vyberte sekci vlevo';
+  g('art-meta').classList.add('hidden');
+}
+
+// ── ZÁLOŽKY ───────────────────────────────────────────────────────────────────
+function activateTab(id) {
+  if (id !== 'tab-cnt') saveCurrentItem();
+  const map = { 'tab-set': 'p-set', 'tab-cnt': 'p-cnt', 'tab-sb': 'p-sb' };
+  document.querySelectorAll('.tab').forEach(t => {
+    const on = t.id === id;
+    t.classList.toggle('active', on);
+    t.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const panel = g(map[id]);
+  if (panel) panel.classList.add('active');
+  if (id === 'tab-sb') g('sb-ta').value = S.sidebarMD;
+}
+
+// ── MD TOOLBAR ────────────────────────────────────────────────────────────────
+function wrapText(ta, before, after) {
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  const sel = ta.value.slice(s, e);
+  ta.setRangeText(before + (sel || 'text') + after, s, e, 'select');
+  if (!sel) { ta.selectionStart = s + before.length; ta.selectionEnd = s + before.length + 4; }
+  ta.focus();
+  setDirty();
+}
+
+function insertLinePrefix(ta, prefix) {
+  const s = ta.selectionStart;
+  const ls = ta.value.lastIndexOf('\n', s - 1) + 1;
+  ta.setRangeText(prefix, ls, ls, 'end');
+  ta.focus();
+  setDirty();
+}
+
+function setupToolbar(tbEl) {
+  tbEl.querySelectorAll('[data-wrap]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const taId = btn.dataset.target || 'ed-ta';
+      wrapText(g(taId), btn.dataset.wrap, btn.dataset.wrap);
+    });
+  });
+  tbEl.querySelectorAll('[data-line]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const taId = btn.dataset.target || 'ed-ta';
+      insertLinePrefix(g(taId), btn.dataset.line);
+    });
+  });
+  tbEl.querySelectorAll('[data-critic]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const [b, a] = CRITIC[btn.dataset.critic];
+      wrapText(g('ed-ta'), b, a);
+    });
   });
 }
 
-function makeItem(item,si,ci,parentSec){
-  const isChild=ci!==null,sec=isChild?parentSec:item;
-  const isAct=S.activeSec===sec.id&&(isChild?S.activeChild===item.id:!S.activeChild);
-  const div=document.createElement('div');
-  div.className='ti'+(isChild?' tsub':'')+(isAct?' act':'');
-  div.setAttribute('role','treeitem');div.setAttribute('tabindex','0');
-  div.setAttribute('aria-selected',isAct?'true':'false');
-  const icon=isChild?(sec.type==='articles'?'📰':'📄'):(item.type==='multisection'?'📂':item.type==='articles'?'📰':'📄');
-  const badge=!isChild&&item.type!=='normal'?`<span class="tbadge ${item.type==='multisection'?'bg':'ba'}">${item.type==='multisection'?'skupina':'články'}</span>`:'';
-  const canUp=isChild?ci>0:si>0;
-  const canDown=isChild?ci<sec.children.length-1:si<S.sections.length-1;
-  div.innerHTML=`<span class="tic" aria-hidden="true">${icon}</span><span class="tl">${esc(item.title)}</span>${badge}<div class="tas"><button class="ta" data-d="up" ${canUp?'':'disabled'} aria-label="Nahoru">↑</button><button class="ta" data-d="down" ${canDown?'':'disabled'} aria-label="Dolů">↓</button><button class="ta d" aria-label="Smazat">✕</button></div>`;
-  div.addEventListener('click',e=>{if(!e.target.closest('.tas'))selectItem(sec.id,isChild?item.id:null);});
-  div.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.target.closest('.tas'))selectItem(sec.id,isChild?item.id:null);});
-  div.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();moveItem(si,isChild?ci:null,b.dataset.d);}));
-  div.querySelector('.d').addEventListener('click',e=>{e.stopPropagation();deleteItem(si,isChild?ci:null);});
-  return div;
+// ── MODALY ────────────────────────────────────────────────────────────────────
+function openModal(id) { g(id).classList.add('open'); }
+function closeModal(id) { g(id).classList.remove('open'); }
+function onOverlay(id) {
+  g(id).addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(id); });
 }
 
-function moveItem(si,ci,dir){
-  const d=dir==='up'?-1:1;
-  if(ci===null){const a=S.sections,n=si+d;if(n<0||n>=a.length)return;[a[si],a[n]]=[a[n],a[si]];}
-  else{const a=S.sections[si].children,n=ci+d;if(n<0||n>=a.length)return;[a[ci],a[n]]=[a[n],a[ci]];}
-  setDirty();renderTree();
+function openChildModal(si, secType) {
+  S.childTargetIdx = si;
+  g('ch-name').value = '';
+  g('m-ch-title').textContent = secType === 'articles' ? 'Přidat nový článek' : 'Přidat novou podstránku';
+  openModal('m-new-child');
+  g('ch-name').focus();
 }
 
-function deleteItem(si,ci){
-  if(ci===null){if(!confirm(`Smazat sekci "${S.sections[si].title}"?`))return;S.sections.splice(si,1);}
-  else{const s=S.sections[si];if(!confirm(`Smazat "${s.children[ci].title}"?`))return;s.children.splice(ci,1);}
-  S.activeSec=null;S.activeChild=null;clearEditor();setDirty();renderTree();
-}
-
-// Selection
-function selectItem(secId,childId){
-  saveItem();S.activeSec=secId;S.activeChild=childId||null;renderTree();
-  const sec=S.sections.find(s=>s.id===secId);if(!sec)return;
-  activateTab('t-c');
-  const ta=$('eta');ta.disabled=false;
-  if(childId){
-    const ch=sec.children?.find(c=>c.id===childId);if(!ch)return;
-    $('etl').textContent=sec.title+' › '+ch.title;
-    if(sec.type==='articles'){
-      $('a-dt').value=ch.date||'';$('a-tg').value=ch.tags||'';
-      ta.value=ch.body!==undefined?ch.body:(ch.content||'');
-      $('am').classList.remove('hide');
-    }else{ta.value=ch.content||'';$('am').classList.add('hide');}
-  }else{
-    $('am').classList.add('hide');$('etl').textContent=sec.title;
-    if(sec.type!=='normal'){ta.value='';ta.disabled=true;$('etl').textContent=sec.title+' — editujte podstránky';}
-    else{ta.value=sec.content||'';}
-  }
-}
-
-function saveItem(){
-  if(!S.activeSec)return;
-  const sec=S.sections.find(s=>s.id===S.activeSec);if(!sec)return;
-  const ta=$('eta');
-  if(S.activeChild){
-    const ch=sec.children?.find(c=>c.id===S.activeChild);if(!ch)return;
-    if(sec.type==='articles'){ch.date=$('a-dt').value.trim();ch.tags=$('a-tg').value.trim();ch.body=ta.value;}
-    else ch.content=ta.value;
-  }else if(sec.type==='normal'){sec.content=ta.value;}
-}
-
-function clearEditor(){
-  const ta=$('eta');ta.value='';ta.disabled=false;
-  $('etl').textContent='Vyberte sekci';$('am').classList.add('hide');
-}
-
-// Tabs
-function activateTab(id){
-  if(id!=='t-c')saveItem();
-  const map={'t-s':'ps','t-c':'pc','t-b':'pb'};
-  document.querySelectorAll('.tab').forEach(t=>{const on=t.id===id;t.classList.toggle('act',on);t.setAttribute('aria-selected',on?'true':'false');});
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('act'));
-  const p=$(map[id]);if(p)p.classList.add('act');
-  if(id==='t-b')$('sta').value=S.sidebarMD;
-}
-
-// Toolbar
-function wrapText(ta,b,a){
-  const s=ta.selectionStart,e=ta.selectionEnd,sel=ta.value.slice(s,e);
-  ta.setRangeText(b+(sel||'text')+a,s,e,'select');
-  if(!sel){ta.selectionStart=s+b.length;ta.selectionEnd=s+b.length+4;}
-  ta.focus();setDirty();
-}
-function insertLine(ta,pre){
-  const s=ta.selectionStart,ls=ta.value.lastIndexOf('\n',s-1)+1;
-  ta.setRangeText(pre,ls,ls,'end');ta.focus();setDirty();
-}
-function setupTb(tbEl){
-  tbEl.querySelectorAll('[data-w]').forEach(b=>b.addEventListener('click',()=>{const ta=$(b.dataset.ta||'eta');wrapText(ta,b.dataset.w,b.dataset.w);}));
-  tbEl.querySelectorAll('[data-l]').forEach(b=>b.addEventListener('click',()=>{insertLine($(b.dataset.ta||'eta'),b.dataset.l);}));
-  tbEl.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>{const[bk,ak]=CRITIC[b.dataset.c];wrapText($('eta'),bk,ak);}));
-}
-
-// Modals
-function openMo(id){$(id).classList.add('open');}
-function closeMo(id){$(id).classList.remove('open');}
-function ovClick(id){$(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeMo(id);});}
-
-function openSubModal(si){S.subIdx=si;$('sub-t').value='';openMo('m-sub');$('sub-t').focus();}
-
-// GitHub
-const GH={
-  KEY:'md2web_gh_token',
-  get token(){try{return localStorage.getItem(this.KEY)||'';}catch{return'';}},
-  set token(v){try{v?localStorage.setItem(this.KEY,v):localStorage.removeItem(this.KEY);}catch{}},
-  get o(){return $('gh-o').value.trim();},
-  get r(){return $('gh-r').value.trim();},
-  get b(){return $('gh-b').value.trim()||'main';},
-  get p(){return $('gh-p').value.trim().replace(/^\/|\/$/g,'');},
-  fp(n){const p=this.p;return p?p+'/'+n:n;},
-  ready(){return!!(this.o&&this.r&&this.token);},
-  st(msg,type=''){const el=$('ghst');el.textContent=msg;el.className=type?'ghst '+type:'ghst';},
-  hd(){return{'Authorization':'token '+this.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'};},
-  async get(name){
-    const url=`https://api.github.com/repos/${this.o}/${this.r}/contents/${this.fp(name)}?ref=${encodeURIComponent(this.b)}`;
-    const res=await fetch(url,{headers:this.hd()});
-    if(res.status===404)return null;
-    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(`GH ${res.status}: ${e.message||res.statusText}`);}
-    const d=await res.json();
-    return{content:decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))).replace(/\r\n/g,'\n').replace(/\r/g,'\n'),sha:d.sha};
+// ── GITHUB ────────────────────────────────────────────────────────────────────
+const GH = {
+  KEY: 'md2web_gh_token',
+  get token() { try { return localStorage.getItem(this.KEY) || ''; } catch { return ''; } },
+  set token(v) { try { v ? localStorage.setItem(this.KEY, v) : localStorage.removeItem(this.KEY); } catch {} },
+  get owner()  { return g('gh-owner').value.trim(); },
+  get repo()   { return g('gh-repo').value.trim(); },
+  get branch() { return g('gh-branch').value.trim() || 'main'; },
+  get path()   { return g('gh-path').value.trim().replace(/^\/|\/$/g, ''); },
+  fp(name)     { const p = this.path; return p ? p + '/' + name : name; },
+  ready()      { return !!(this.owner && this.repo && this.token); },
+  status(msg, type = '') {
+    const el = g('gh-st');
+    el.textContent = msg;
+    el.className = type ? 'gh-st ' + type : 'gh-st';  // poznámka: id je gh-st ale class na divu
+    el.setAttribute('class', type ? type : '');
+    el.id = 'gh-st';
   },
-  async put(name,content,sha,msg){
-    const url=`https://api.github.com/repos/${this.o}/${this.r}/contents/${this.fp(name)}`;
-    const body={message:msg||`md2web editor: update ${name}`,content:btoa(unescape(encodeURIComponent(content))),branch:this.b};
-    if(sha)body.sha=sha;
-    const res=await fetch(url,{method:'PUT',headers:this.hd(),body:JSON.stringify(body)});
-    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(`GH ${res.status}: ${e.message||res.statusText}`);}
-    return res.json();
+  headers() {
+    return {
+      'Authorization': 'token ' + this.token,
+      'Accept': 'application/vnd.github.v3+json',
+      'Content-Type': 'application/json',
+    };
   },
-  async pull(){
-    if(!this.ready()){this.st('Vyplňte owner, repo a token','err');return;}
-    this.st('Načítám…','busy');ghBusy(true);
-    try{
-      const jf=await this.get('website.json');if(!jf)throw new Error('website.json nenalezen');
-      const mf=await this.get('website.md');if(!mf)throw new Error('website.md nenalezen');
-      const sf=await this.get('sidebar.md');
-      S.sections=parseMD(mf.content);S.sidebarMD=sf?sf.content:'';
-      S.ghSha={'website.json':jf.sha,'website.md':mf.sha,'sidebar.md':sf?.sha||null};
-      const cfg=JSON.parse(jf.content);
-      applyConfig(cfg);S.loaded=true;setDirty(false);showEditor();renderTree();
-      setProjName(cfg.title||this.r);this.st('✓ '+this.o+'/'+this.r,'ok');notify('Načteno z GitHubu ✓');
-    }catch(e){this.st(e.message,'err');notify('Chyba: '+e.message,'err');}
-    finally{ghBusy(false);}
+  async getFile(name) {
+    const url = `https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.fp(name)}?ref=${encodeURIComponent(this.branch)}`;
+    const r = await fetch(url, { headers: this.headers() });
+    if (r.status === 404) return null;
+    if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(`GH ${r.status}: ${e.message || r.statusText}`); }
+    const d = await r.json();
+    const content = decodeURIComponent(escape(atob(d.content.replace(/\n/g, ''))));
+    return { content: content.replace(/\r\n/g,'\n').replace(/\r/g,'\n'), sha: d.sha };
   },
-  async push(){
-    if(!this.ready()||!S.loaded)return;
-    saveItem();this.st('Ukládám…','busy');ghBusy(true);
-    try{
-      const cfg=readConfig(),mdTx=toMD(S.sections),sbTx=$('sta').value.trim();
-      const sha=S.ghSha;
-      const msg=`md2web editor: ${new Date().toISOString().slice(0,16).replace('T',' ')}`;
-      if(!sha['website.json']){const f=await this.get('website.json');if(f)sha['website.json']=f.sha;}
-      if(!sha['website.md']){const f=await this.get('website.md');if(f)sha['website.md']=f.sha;}
-      await this.put('website.json',JSON.stringify(cfg,null,2),sha['website.json']||null,msg);
-      await this.put('website.md',mdTx,sha['website.md']||null,msg);
-      if(sbTx){if(!sha['sidebar.md']){const f=await this.get('sidebar.md');if(f)sha['sidebar.md']=f.sha;}await this.put('sidebar.md',sbTx+'\n',sha['sidebar.md']||null,msg);}
-      const nj=await this.get('website.json'),nm=await this.get('website.md');
-      S.ghSha={'website.json':nj?.sha||null,'website.md':nm?.sha||null,'sidebar.md':sbTx?(await this.get('sidebar.md'))?.sha||null:null};
-      setDirty(false);this.st('✓ Uloženo do '+this.o+'/'+this.r,'ok');notify('Uloženo na GitHub ✓');
-    }catch(e){this.st(e.message,'err');notify('Chyba: '+e.message,'err');}
-    finally{ghBusy(false);}
-  }
+  async putFile(name, content, sha, msg) {
+    const url = `https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.fp(name)}`;
+    const body = {
+      message: msg || `md2web editor: update ${name}`,
+      content: btoa(unescape(encodeURIComponent(content))),
+      branch: this.branch,
+    };
+    if (sha) body.sha = sha;
+    const r = await fetch(url, { method: 'PUT', headers: this.headers(), body: JSON.stringify(body) });
+    if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(`GH ${r.status}: ${e.message || r.statusText}`); }
+    return r.json();
+  },
+  async pull() {
+    if (!this.ready()) { g('gh-st').textContent = 'Vyplňte owner, repo a token'; g('gh-st').className = 'err'; return; }
+    g('gh-st').textContent = 'Načítám…'; g('gh-st').className = 'busy';
+    ghBusy(true);
+    try {
+      const jf = await this.getFile('website.json');
+      if (!jf) throw new Error('website.json nenalezen v zadané cestě');
+      const mf = await this.getFile('website.md');
+      if (!mf) throw new Error('website.md nenalezen v zadané cestě');
+      const sf = await this.getFile('sidebar.md');
+      const cfg = JSON.parse(jf.content);
+      S.sections  = parseMD(mf.content);
+      S.sidebarMD = sf ? sf.content : '';
+      S.ghSha = { 'website.json': jf.sha, 'website.md': mf.sha, 'sidebar.md': sf?.sha || null };
+      applyConfig(cfg);
+      S.loaded = true;
+      setDirty(false);
+      renderNav();
+      setProjName(cfg.title || this.repo);
+      g('gh-st').textContent = '✓ ' + this.owner + '/' + this.repo;
+      g('gh-st').className = 'ok';
+      notify('Načteno z GitHubu ✓');
+    } catch(e) {
+      g('gh-st').textContent = e.message; g('gh-st').className = 'err';
+      notify('Chyba: ' + e.message, 'err');
+    } finally { ghBusy(false); }
+  },
+  async push() {
+    if (!this.ready() || !S.loaded) return;
+    saveCurrentItem();
+    g('gh-st').textContent = 'Ukládám…'; g('gh-st').className = 'busy';
+    ghBusy(true);
+    try {
+      const cfg  = readConfig();
+      const mdTx = toMD(S.sections);
+      const sbTx = g('sb-ta').value.trim();
+      const sha  = S.ghSha;
+      const msg  = `md2web editor: ${new Date().toISOString().slice(0,16).replace('T',' ')}`;
+      if (!sha['website.json']) { const f = await this.getFile('website.json'); if (f) sha['website.json'] = f.sha; }
+      if (!sha['website.md'])   { const f = await this.getFile('website.md');   if (f) sha['website.md']   = f.sha; }
+      await this.putFile('website.json', JSON.stringify(cfg, null, 2), sha['website.json'] || null, msg);
+      await this.putFile('website.md', mdTx, sha['website.md'] || null, msg);
+      if (sbTx) {
+        if (!sha['sidebar.md']) { const f = await this.getFile('sidebar.md'); if (f) sha['sidebar.md'] = f.sha; }
+        await this.putFile('sidebar.md', sbTx + '\n', sha['sidebar.md'] || null, msg);
+      }
+      const nj = await this.getFile('website.json');
+      const nm = await this.getFile('website.md');
+      S.ghSha = {
+        'website.json': nj?.sha || null,
+        'website.md':   nm?.sha || null,
+        'sidebar.md':   sbTx ? (await this.getFile('sidebar.md'))?.sha || null : null,
+      };
+      setDirty(false);
+      g('gh-st').textContent = '✓ Uloženo do ' + this.owner + '/' + this.repo;
+      g('gh-st').className = 'ok';
+      notify('Uloženo na GitHub ✓');
+    } catch(e) {
+      g('gh-st').textContent = e.message; g('gh-st').className = 'err';
+      notify('Chyba: ' + e.message, 'err');
+    } finally { ghBusy(false); }
+  },
 };
 
-function ghBusy(v){
-  ['gh-pull','gh-push','btn-save'].forEach(id=>{const el=$(id);if(!el)return;el.disabled=v||(id==='btn-save'&&!S.loaded);});
-  if(!v)ghUpdateBtns();
-}
-function ghUpdateBtns(){
-  const ok=!!(GH.o&&GH.r),tok=!!GH.token;
-  $('gh-pull').disabled=!ok||!tok;$('gh-push').disabled=!ok||!tok||!S.loaded;
-}
-function buildUrlHint(){
-  const o=GH.o,r=GH.r,b=GH.b,p=GH.p;
-  if(!o||!r){$('url-val').textContent='Vyplňte owner a repo';return;}
-  let url=location.href.split('?')[0];
-  url+=`?owner=${encodeURIComponent(o)}&repo=${encodeURIComponent(r)}`;
-  if(b&&b!=='main')url+=`&branch=${encodeURIComponent(b)}`;
-  if(p)url+=`&path=${encodeURIComponent(p)}`;
-  $('url-val').textContent=url;
-}
-function loadFromUrl(){
-  const p=new URLSearchParams(location.search);
-  const o=p.get('owner')||p.get('o')||'',r=p.get('repo')||p.get('r')||'';
-  const b=p.get('branch')||p.get('b')||'',pt=p.get('path')||p.get('p')||'';
-  if(o)$('gh-o').value=o;if(r)$('gh-r').value=r;if(b)$('gh-b').value=b;if(pt)$('gh-p').value=pt;
-  ghUpdateBtns();
-  if(o&&r&&GH.token)GH.pull();
-  else if(o||r)GH.st('Uložte token a klikněte Načíst z GH');
+function ghBusy(v) {
+  ['gh-pull', 'gh-push', 'btn-save'].forEach(id => {
+    const el = g(id);
+    if (!el) return;
+    el.disabled = v || (id === 'btn-save' && !S.loaded);
+  });
+  if (!v) ghUpdateBtns();
 }
 
-// Copy MD
-function copyMD(){
-  saveItem();const md=toMD(S.sections);
-  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(md).then(()=>notify('website.md zkopírován ✓')).catch(()=>fallbackCopy(md));
-  else fallbackCopy(md);
+function ghUpdateBtns() {
+  const ok = !!(GH.owner && GH.repo);
+  const tok = !!GH.token;
+  g('gh-pull').disabled = !ok || !tok;
+  g('gh-push').disabled = !ok || !tok || !S.loaded;
 }
-function fallbackCopy(text){
-  const ta=Object.assign(document.createElement('textarea'),{value:text,style:'position:fixed;top:-9999px;opacity:0'});
-  document.body.appendChild(ta);ta.select();
-  try{document.execCommand('copy');notify('website.md zkopírován ✓');}catch{notify('Kopírování selhalo','err');}
+
+function buildUrlHint() {
+  const o = GH.owner, r = GH.repo, b = GH.branch, p = GH.path;
+  if (!o || !r) { g('url-val').textContent = 'Vyplňte owner a repo výše'; return; }
+  let url = location.href.split('?')[0];
+  url += `?owner=${encodeURIComponent(o)}&repo=${encodeURIComponent(r)}`;
+  if (b && b !== 'main') url += `&branch=${encodeURIComponent(b)}`;
+  if (p) url += `&path=${encodeURIComponent(p)}`;
+  g('url-val').textContent = url;
+}
+
+function loadFromUrl() {
+  const p = new URLSearchParams(location.search);
+  const owner  = p.get('owner')  || p.get('o') || '';
+  const repo   = p.get('repo')   || p.get('r') || '';
+  const branch = p.get('branch') || p.get('b') || '';
+  const path   = p.get('path')   || p.get('p') || '';
+  if (owner)  g('gh-owner').value  = owner;
+  if (repo)   g('gh-repo').value   = repo;
+  if (branch) g('gh-branch').value = branch;
+  if (path)   g('gh-path').value   = path;
+  ghUpdateBtns();
+  if (owner && repo && GH.token) {
+    GH.pull();
+  } else if (owner || repo) {
+    g('gh-st').textContent = 'Uložte token a klikněte Načíst z GH';
+  }
+}
+
+// ── KOPÍROVAT / IMPORTOVAT MD ─────────────────────────────────────────────────
+function copyMD() {
+  saveCurrentItem();
+  const md = toMD(S.sections);
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(md)
+      .then(() => notify('website.md zkopírován do schránky ✓'))
+      .catch(() => fallbackCopy(md));
+  } else { fallbackCopy(md); }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); notify('website.md zkopírován ✓'); }
+  catch { notify('Kopírování selhalo — použijte Ctrl+A, Ctrl+C', 'err'); }
   document.body.removeChild(ta);
 }
 
-// Drop zone
-function setupDrop(){
-  const dz=$('dz');let dc=0;
-  document.addEventListener('dragenter',e=>{if([...e.dataTransfer.items].some(i=>i.kind==='file')){dc++;if(dc===1){dz.classList.add('open');dz.setAttribute('aria-hidden','false');}}});
-  document.addEventListener('dragleave',()=>{dc=Math.max(0,dc-1);if(dc===0){dz.classList.remove('open');dz.setAttribute('aria-hidden','true');}});
-  document.addEventListener('dragover',e=>e.preventDefault());
-  document.addEventListener('drop',e=>{
-    e.preventDefault();dc=0;dz.classList.remove('open');dz.setAttribute('aria-hidden','true');
-    const f=e.dataTransfer.files[0];
-    if(f&&f.name.endsWith('.zip'))openZip(f);else notify('Přetáhněte .md2web.zip soubor','err');
+// ── DROP ZONE ─────────────────────────────────────────────────────────────────
+function setupDrop() {
+  const dz = g('dropzone');
+  let dc = 0;
+  document.addEventListener('dragenter', e => {
+    if ([...e.dataTransfer.items].some(i => i.kind === 'file')) {
+      if (++dc === 1) { dz.classList.add('open'); dz.setAttribute('aria-hidden', 'false'); }
+    }
+  });
+  document.addEventListener('dragleave', () => {
+    if (--dc <= 0) { dc = 0; dz.classList.remove('open'); dz.setAttribute('aria-hidden', 'true'); }
+  });
+  document.addEventListener('dragover', e => e.preventDefault());
+  document.addEventListener('drop', e => {
+    e.preventDefault();
+    dc = 0; dz.classList.remove('open'); dz.setAttribute('aria-hidden', 'true');
+    const file = e.dataTransfer.files[0];
+    if (file && file.name.endsWith('.zip')) openZip(file);
+    else notify('Přetáhněte .md2web.zip soubor', 'err');
   });
 }
 
-// INIT
-document.addEventListener('DOMContentLoaded',()=>{
-  buildPalette();setupDrop();
-  setupTb($('etb'));setupTb($('stb'));
+// ── INIT ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  buildPaletteGrid();
+  setupDrop();
+  setupToolbar(g('ed-toolbar'));
+  setupToolbar(g('sb-toolbar'));
 
-  $('eta').addEventListener('input',()=>setDirty());
-  $('sta').addEventListener('input',()=>{S.sidebarMD=$('sta').value;setDirty();});
-  ['a-dt','a-tg'].forEach(id=>$(id).addEventListener('input',()=>setDirty()));
-  ['s-ti','s-tg','s-la','s-cn','s-cu','s-cy'].forEach(id=>$(id).addEventListener('input',()=>{setDirty();if(id==='s-ti')setProjName($('s-ti').value);}));
+  // Textarea input events
+  g('ed-ta').addEventListener('input', () => setDirty());
+  g('sb-ta').addEventListener('input', () => { S.sidebarMD = g('sb-ta').value; setDirty(); });
+  g('art-date').addEventListener('input', () => setDirty());
+  g('art-tags').addEventListener('input', () => setDirty());
 
-  $('eta').addEventListener('keydown',e=>{
-    if((e.ctrlKey||e.metaKey)&&e.key==='b'){e.preventDefault();wrapText($('eta'),'**','**');}
-    if((e.ctrlKey||e.metaKey)&&e.key==='i'){e.preventDefault();wrapText($('eta'),'*','*');}
-    if(e.key==='Tab'){e.preventDefault();const ta=$('eta');ta.setRangeText('  ',ta.selectionStart,ta.selectionEnd,'end');}
+  // Klávesové zkratky v editoru
+  g('ed-ta').addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); wrapText(g('ed-ta'), '**', '**'); }
+    if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); wrapText(g('ed-ta'), '*', '*'); }
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const ta = g('ed-ta');
+      ta.setRangeText('  ', ta.selectionStart, ta.selectionEnd, 'end');
+    }
   });
 
-  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>activateTab(t.id)));
+  // Settings inputs
+  ['s-title','s-tagline','s-lang','s-cname','s-curl','s-cyear'].forEach(id => {
+    g(id).addEventListener('input', () => {
+      setDirty();
+      if (id === 's-title') setProjName(g('s-title').value);
+    });
+  });
 
-  // Topbar
-  $('btn-new').addEventListener('click',()=>{if(S.dirty&&!confirm('Neuložené změny budou ztraceny. Pokračovat?'))return;newProject();});
-  $('btn-open').addEventListener('click',()=>$('fin').click());
-  $('fin').addEventListener('change',e=>{if(e.target.files[0])openZip(e.target.files[0]);e.target.value='';});
-  $('btn-save').addEventListener('click',saveZip);
-  $('es-new').addEventListener('click',newProject);
-  $('es-open').addEventListener('click',()=>$('fin').click());
-  $('btn-cp').addEventListener('click',copyMD);
+  // Záložky
+  document.querySelectorAll('.tab').forEach(tab =>
+    tab.addEventListener('click', () => activateTab(tab.id)));
+
+  // Topbar tlačítka
+  g('btn-new').addEventListener('click', () => {
+    if (S.dirty && !confirm('Neuložené změny budou ztraceny. Pokračovat?')) return;
+    newProject();
+  });
+  g('btn-open').addEventListener('click', () => g('file-in').click());
+  g('file-in').addEventListener('change', e => {
+    if (e.target.files[0]) openZip(e.target.files[0]);
+    e.target.value = '';
+  });
+  g('btn-save').addEventListener('click', saveZip);
+  g('btn-copy-md').addEventListener('click', copyMD);
 
   // Import MD
-  $('btn-imp').addEventListener('click',()=>{$('imp-ta').value='';openMo('m-imp');$('imp-ta').focus();});
-  $('imp-cb').addEventListener('click',async()=>{try{const t=await navigator.clipboard.readText();$('imp-ta').value=t;}catch{notify('Nelze číst schránku — vložte ručně (Ctrl+V)','err');}});
-  $('imp-cl').addEventListener('click',()=>closeMo('m-imp'));ovClick('m-imp');
-  $('imp-ta').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')$('imp-ok').click();if(e.key==='Escape')closeMo('m-imp');});
-  $('imp-ok').addEventListener('click',()=>{
-    const text=$('imp-ta').value.trim();if(!text){notify('Textarea je prázdná','err');return;}
-    if(S.sections.length>0&&!confirm('Přepsat celý obsah webu?'))return;
-    S.sections=parseMD(text);setDirty(true);renderTree();closeMo('m-imp');
-    S.activeSec=null;S.activeChild=null;clearEditor();activateTab('t-c');
+  g('btn-import-md').addEventListener('click', () => {
+    g('imp-ta').value = '';
+    openModal('m-import');
+    g('imp-ta').focus();
+  });
+  g('imp-from-clip').addEventListener('click', async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      g('imp-ta').value = text;
+    } catch { notify('Nelze číst schránku — vložte text ručně (Ctrl+V)', 'err'); }
+  });
+  g('imp-cancel').addEventListener('click', () => closeModal('m-import'));
+  onOverlay('m-import');
+  g('imp-ta').addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') g('imp-ok').click();
+    if (e.key === 'Escape') closeModal('m-import');
+  });
+  g('imp-ok').addEventListener('click', () => {
+    const text = g('imp-ta').value.trim();
+    if (!text) { notify('Textarea je prázdná', 'err'); return; }
+    if (S.sections.length > 0 && !confirm('Import přepíše celý obsah webu. Pokračovat?')) return;
+    S.sections = parseMD(text);
+    S.activeSec = null; S.activeChild = null;
+    setDirty(true);
+    renderNav();
+    clearEditor();
+    closeModal('m-import');
+    activateTab('tab-cnt');
     notify(`Importováno ${S.sections.length} sekcí ✓`);
   });
 
-  // Tree add
-  $('tadd').addEventListener('click',()=>{
-    $('ns-t').value='';
-    document.querySelectorAll('.to').forEach(o=>{const on=o.dataset.type==='normal';o.classList.toggle('sel',on);o.setAttribute('aria-checked',on?'true':'false');});
-    openMo('m-ns');$('ns-t').focus();
+  // Tlačítko přidat sekci
+  g('btn-add-sec').addEventListener('click', () => {
+    g('ns-name').value = '';
+    document.querySelectorAll('.topt').forEach(o => {
+      const on = o.dataset.type === 'normal';
+      o.classList.toggle('sel', on);
+      o.setAttribute('aria-checked', on ? 'true' : 'false');
+    });
+    openModal('m-new-sec');
+    g('ns-name').focus();
   });
-  document.querySelectorAll('.to').forEach(opt=>{
-    const sel=()=>{document.querySelectorAll('.to').forEach(o=>{o.classList.toggle('sel',o===opt);o.setAttribute('aria-checked',o===opt?'true':'false');});};
-    opt.addEventListener('click',sel);opt.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();sel();}});
+
+  // Výběr typu sekce
+  document.querySelectorAll('.topt').forEach(opt => {
+    const select = () => {
+      document.querySelectorAll('.topt').forEach(o => {
+        o.classList.toggle('sel', o === opt);
+        o.setAttribute('aria-checked', o === opt ? 'true' : 'false');
+      });
+    };
+    opt.addEventListener('click', select);
+    opt.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); } });
   });
-  $('ns-cl').addEventListener('click',()=>closeMo('m-ns'));ovClick('m-ns');
-  $('ns-t').addEventListener('keydown',e=>{if(e.key==='Enter')$('ns-ok').click();});
-  $('ns-ok').addEventListener('click',()=>{
-    const title=$('ns-t').value.trim();if(!title){notify('Zadejte název','err');return;}
-    const type=document.querySelector('.to.sel')?.dataset.type||'normal';
-    const sec={id:uid(),title,type,content:'',children:type!=='normal'?[]:null};
-    S.sections.push(sec);setDirty();renderTree();closeMo('m-ns');selectItem(sec.id,null);
+
+  // Modal: nová sekce
+  g('ns-cancel').addEventListener('click', () => closeModal('m-new-sec'));
+  onOverlay('m-new-sec');
+  g('ns-name').addEventListener('keydown', e => { if (e.key === 'Enter') g('ns-ok').click(); });
+  g('ns-ok').addEventListener('click', () => {
+    const title = g('ns-name').value.trim();
+    if (!title) { notify('Zadejte název sekce', 'err'); return; }
+    const type  = document.querySelector('.topt.sel')?.dataset.type || 'normal';
+    const sec   = { id: uid(), title, type, content: '', children: type !== 'normal' ? [] : null };
+    S.sections.push(sec);
+    setDirty();
+    renderNav();
+    closeModal('m-new-sec');
+    selectItem(sec.id, null);
     notify(`Sekce "${title}" přidána`);
   });
 
-  // Sub modal
-  $('sub-cl').addEventListener('click',()=>closeMo('m-sub'));ovClick('m-sub');
-  $('sub-t').addEventListener('keydown',e=>{if(e.key==='Enter')$('sub-ok').click();});
-  $('sub-ok').addEventListener('click',()=>{
-    const title=$('sub-t').value.trim();if(!title){notify('Zadejte název','err');return;}
-    if(S.subIdx===null)return;
-    const sec=S.sections[S.subIdx];if(!sec.children)sec.children=[];
-    const ch={id:uid(),title,content:''};
-    if(sec.type==='articles'){ch.date='';ch.tags='';ch.body='';}
-    sec.children.push(ch);setDirty();renderTree();closeMo('m-sub');selectItem(sec.id,ch.id);
+  // Modal: nová podstránka
+  g('ch-cancel').addEventListener('click', () => closeModal('m-new-child'));
+  onOverlay('m-new-child');
+  g('ch-name').addEventListener('keydown', e => { if (e.key === 'Enter') g('ch-ok').click(); });
+  g('ch-ok').addEventListener('click', () => {
+    const title = g('ch-name').value.trim();
+    if (!title) { notify('Zadejte název', 'err'); return; }
+    if (S.childTargetIdx === null) return;
+    const sec = S.sections[S.childTargetIdx];
+    if (!sec.children) sec.children = [];
+    const ch = { id: uid(), title, content: '' };
+    if (sec.type === 'articles') { ch.date = ''; ch.tags = ''; ch.body = ''; }
+    sec.children.push(ch);
+    setDirty();
+    renderNav();
+    closeModal('m-new-child');
+    selectItem(sec.id, ch.id);
     notify(`"${title}" přidáno`);
   });
 
   // Links
-  $('m-add').addEventListener('click',()=>addLink($('mb')));
-  $('f-add').addEventListener('click',()=>addLink($('fb')));
+  g('menu-add').addEventListener('click',   () => addLinkRow(g('menu-tbody')));
+  g('footer-add').addEventListener('click', () => addLinkRow(g('footer-tbody')));
 
-  // GitHub
-  if(GH.token)$('gh-tok').value='••••••••••••••••';
+  // GitHub: token drawer
+  g('gh-tok-btn').addEventListener('click', () => {
+    const d = g('gh-tok-drawer');
+    const open = d.classList.toggle('open');
+    g('gh-tok-btn').setAttribute('aria-expanded', String(open));
+    if (open) {
+      g('gh-url-drawer').classList.remove('open');
+      g('gh-url-btn').setAttribute('aria-expanded', 'false');
+      g('gh-tok').focus();
+    }
+  });
 
-  $('gh-tok-btn').addEventListener('click',()=>{
-    const d=$('gh-dr'),open=d.classList.toggle('open');
-    $('gh-tok-btn').setAttribute('aria-expanded',String(open));
-    if(open){$('gh-tok').focus();$('url-dr').classList.remove('open');$('gh-url-btn').setAttribute('aria-expanded','false');}
+  // GitHub: URL drawer
+  g('gh-url-btn').addEventListener('click', () => {
+    const d = g('gh-url-drawer');
+    const open = d.classList.toggle('open');
+    g('gh-url-btn').setAttribute('aria-expanded', String(open));
+    if (open) {
+      g('gh-tok-drawer').classList.remove('open');
+      g('gh-tok-btn').setAttribute('aria-expanded', 'false');
+      buildUrlHint();
+    }
   });
-  $('gh-url-btn').addEventListener('click',()=>{
-    const h=$('url-dr'),open=h.classList.toggle('open');
-    $('gh-url-btn').setAttribute('aria-expanded',String(open));
-    if(open){buildUrlHint();$('gh-dr').classList.remove('open');$('gh-tok-btn').setAttribute('aria-expanded','false');}
-  });
-  $('url-cp').addEventListener('click',()=>{
-    const text=$('url-val').textContent;
-    if(navigator.clipboard?.writeText)navigator.clipboard.writeText(text).then(()=>notify('URL zkopírována ✓')).catch(()=>fallbackCopy(text));
-    else fallbackCopy(text);
-  });
-  $('tok-save').addEventListener('click',()=>{
-    const val=$('gh-tok').value.trim();if(!val||val.startsWith('•')){notify('Zadejte platný token','err');return;}
-    GH.token=val;$('gh-tok').value='••••••••••••••••';
-    $('gh-dr').classList.remove('open');$('gh-tok-btn').setAttribute('aria-expanded','false');
-    ghUpdateBtns();notify('Token uložen ✓');
-  });
-  $('gh-tok').addEventListener('keydown',e=>{if(e.key==='Enter')$('tok-save').click();});
-  $('tok-clear').addEventListener('click',()=>{if(!confirm('Smazat uložený token?'))return;GH.token='';$('gh-tok').value='';ghUpdateBtns();notify('Token smazán');});
-  $('gh-pull').addEventListener('click',()=>GH.pull());
-  $('gh-push').addEventListener('click',()=>GH.push());
-  ['gh-o','gh-r','gh-b','gh-p'].forEach(id=>$(id).addEventListener('input',()=>{ghUpdateBtns();if($('url-dr').classList.contains('open'))buildUrlHint();}));
 
-  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'&&S.loaded){e.preventDefault();saveZip();}});
-  window.addEventListener('beforeunload',e=>{if(S.dirty){e.preventDefault();e.returnValue='';}});
+  // GitHub: URL kopírovat
+  g('url-cp').addEventListener('click', () => {
+    const text = g('url-val').textContent;
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(() => notify('URL zkopírována ✓')).catch(() => fallbackCopy(text));
+    } else { fallbackCopy(text); }
+  });
 
-  ghUpdateBtns();loadFromUrl();
+  // GitHub: token uložit
+  if (GH.token) g('gh-tok').value = '••••••••••••••••';
+  g('gh-tok-save').addEventListener('click', () => {
+    const val = g('gh-tok').value.trim();
+    if (!val || val.startsWith('•')) { notify('Zadejte platný token', 'err'); return; }
+    GH.token = val;
+    g('gh-tok').value = '••••••••••••••••';
+    g('gh-tok-drawer').classList.remove('open');
+    g('gh-tok-btn').setAttribute('aria-expanded', 'false');
+    ghUpdateBtns();
+    notify('Token uložen ✓');
+  });
+  g('gh-tok').addEventListener('keydown', e => { if (e.key === 'Enter') g('gh-tok-save').click(); });
+
+  // GitHub: token smazat
+  g('gh-tok-clear').addEventListener('click', () => {
+    if (!confirm('Opravdu smazat uložený token?')) return;
+    GH.token = '';
+    g('gh-tok').value = '';
+    ghUpdateBtns();
+    notify('Token smazán');
+  });
+
+  // GitHub: pull / push
+  g('gh-pull').addEventListener('click', () => GH.pull());
+  g('gh-push').addEventListener('click', () => GH.push());
+
+  // GitHub: aktualizace tlačítek při změně souřadnic
+  ['gh-owner','gh-repo','gh-branch','gh-path'].forEach(id => {
+    g(id).addEventListener('input', () => {
+      ghUpdateBtns();
+      if (g('gh-url-drawer').classList.contains('open')) buildUrlHint();
+    });
+  });
+
+  // Ctrl+S globálně
+  document.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's' && S.loaded) {
+      e.preventDefault();
+      saveZip();
+    }
+  });
+
+  // Varování při zavírání
+  window.addEventListener('beforeunload', e => {
+    if (S.dirty) { e.preventDefault(); e.returnValue = ''; }
+  });
+
+  ghUpdateBtns();
+  loadFromUrl();
 });
 </script>
 </body>
