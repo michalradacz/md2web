@@ -6,2323 +6,923 @@
 <title>md2web Editor</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
-/* ===== RESET ===== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1a1612;--ink-mid:#5a5248;--ink-light:#9a9088;
+  --paper:#faf8f4;--paper-alt:#f2ede5;--paper-mid:#e8e0d4;--line:#d8d0c4;
+  --accent:#b85c20;--accent-h:#d4703a;--accent-bg:#fdf0e8;
+  --green:#2a6b3a;--green-bg:#e8f5ec;--red:#8b1a1a;--red-bg:#fde8e8;
+  --blue:#1a3a6b;--blue-bg:#e8eef8;--gold:#8b6914;--gold-bg:#fdf5e0;
+  --gh:#161b22;--gh-b:#30363d;--gh-t:#c9d1d9;--gh-m:#8b949e;
+  --font:system-ui,'Segoe UI',sans-serif;
+  --mono:'Cascadia Code','Consolas','Courier New',monospace;
+  --serif:Georgia,'Times New Roman',serif;
+  --r:5px;--r2:10px;
+  --sh:0 2px 8px rgba(0,0,0,.08),0 1px 3px rgba(0,0,0,.05);
+  --sh2:0 4px 20px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.07)
+}
+body{font-family:var(--font);font-size:14px;color:var(--ink);background:var(--paper-alt);height:100vh;display:flex;flex-direction:column;overflow:hidden}
 
-:root {
-  --ink:       #1a1612;
-  --ink-mid:   #5a5248;
-  --ink-light: #9a9088;
-  --paper:     #faf8f4;
-  --paper-alt: #f2ede5;
-  --paper-mid: #e8e0d4;
-  --line:      #d8d0c4;
-  --accent:    #b85c20;
-  --accent-h:  #d4703a;
-  --accent-bg: #fdf0e8;
-  --green:     #2a6b3a;
-  --green-bg:  #e8f5ec;
-  --red:       #8b1a1a;
-  --red-bg:    #fde8e8;
-  --blue:      #1a3a6b;
-  --blue-bg:   #e8eef8;
-  --gold:      #8b6914;
-  --gold-bg:   #fdf5e0;
+/* TOPBAR */
+#tb{background:var(--ink);color:#f0ebe3;display:flex;align-items:center;gap:.5rem;padding:0 .85rem;height:46px;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#tb-logo{font-family:var(--serif);font-size:1.05rem;font-weight:700;color:#f0ebe3;white-space:nowrap}
+#tb-logo span{color:#d4703a}
+#tb-proj{font-size:.8rem;color:rgba(255,255,255,.45);font-style:italic;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#tb-proj.on{color:rgba(255,255,255,.8);font-style:normal}
+.sep{width:1px;height:22px;background:rgba(255,255,255,.15);flex-shrink:0}
+.gap{flex:1}
+.tbtn{display:inline-flex;align-items:center;gap:.35rem;font-family:var(--font);font-size:.8rem;font-weight:600;padding:.3rem .65rem;border-radius:var(--r);border:none;cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1}
+.tg{background:rgba(255,255,255,.08);color:rgba(255,255,255,.85)}
+.tg:hover{background:rgba(255,255,255,.16);color:#fff}
+.tgr{background:#238636;color:#fff}
+.tgr:hover{background:#2ea043}
+.tbtn:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
+.tbtn:focus-visible{outline:2px solid #d4703a;outline-offset:2px}
 
-  --font-ui:   'Segoe UI', system-ui, sans-serif;
-  --font-mono: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
-  --font-head: Georgia, 'Times New Roman', serif;
+/* GH BAR */
+#ghb{background:var(--gh);border-bottom:1px solid var(--gh-b);padding:.38rem .85rem;display:flex;align-items:center;gap:.45rem;flex-shrink:0;flex-wrap:wrap}
+.ghl{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gh-m);white-space:nowrap}
+.ghi{font-family:var(--mono);font-size:.78rem;background:#0d1117;border:1px solid var(--gh-b);border-radius:4px;color:var(--gh-t);padding:.26rem .5rem;outline:none;transition:border-color .15s}
+.ghi:focus{border-color:#58a6ff;box-shadow:0 0 0 2px rgba(88,166,255,.15)}
+.ghi::placeholder{color:#484f58}
+.io{width:100px}.ir{width:120px}.ib{width:72px}.ip{width:140px}.it{width:200px;font-size:.73rem}
+.gsep{width:1px;height:18px;background:var(--gh-b);flex-shrink:0}
+.gbtn{font-family:var(--font);font-size:.75rem;font-weight:600;padding:.28rem .65rem;border-radius:4px;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:.3rem;white-space:nowrap;transition:all .15s}
+.gpull{background:#21262d;color:#58a6ff;border:1px solid var(--gh-b)}.gpull:hover{background:var(--gh-b)}
+.gpush{background:#238636;color:#fff}.gpush:hover{background:#2ea043}
+.gg{background:#21262d;color:var(--gh-m);border:1px solid var(--gh-b)}.gg:hover{background:var(--gh-b);color:var(--gh-t)}
+.gbtn:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
+.gbtn:focus-visible{outline:2px solid #58a6ff;outline-offset:2px}
+#ghst{font-size:.73rem;color:var(--gh-m);font-family:var(--mono);margin-left:auto;white-space:nowrap}
+#ghst.ok{color:#3fb950}#ghst.err{color:#f85149}#ghst.busy{color:#d29922}
 
-  --r:  5px;
-  --r2: 10px;
-  --sh: 0 2px 8px rgba(0,0,0,.08), 0 1px 3px rgba(0,0,0,.05);
-  --sh2: 0 4px 20px rgba(0,0,0,.12), 0 2px 8px rgba(0,0,0,.07);
-}
+/* DRAWERS */
+.drawer{background:#0d1117;border-bottom:1px solid var(--gh-b);padding:.55rem .85rem;display:none;gap:.45rem;align-items:center;flex-wrap:wrap}
+.drawer.open{display:flex}
+.tnote{font-size:.7rem;color:#484f58;margin-left:auto}
+.url-val{font-family:var(--mono);font-size:.73rem;color:#58a6ff;background:#161b22;border:1px solid var(--gh-b);border-radius:4px;padding:.25rem .5rem;flex:1;user-select:all;word-break:break-all}
+.url-cp{font-family:var(--font);font-size:.73rem;font-weight:600;padding:.25rem .6rem;border-radius:4px;border:none;cursor:pointer;background:#21262d;color:#58a6ff;border:1px solid var(--gh-b);transition:all .15s}
+.url-cp:hover{background:var(--gh-b)}
 
-body {
-  font-family: var(--font-ui);
-  font-size: 14px;
-  color: var(--ink);
-  background: var(--paper-alt);
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+/* MAIN */
+#main{display:flex;flex:1;overflow:hidden}
 
-/* ===== TOPBAR ===== */
-#topbar {
-  background: var(--ink);
-  color: #f0ebe3;
-  display: flex;
-  align-items: center;
-  gap: .75rem;
-  padding: 0 1rem;
-  height: 48px;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0,0,0,.3);
-}
-#topbar-logo {
-  font-family: var(--font-head);
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #f0ebe3;
-  white-space: nowrap;
-  margin-right: .25rem;
-}
-#topbar-logo span { color: var(--accent-h); }
-.topbar-sep { width: 1px; height: 24px; background: rgba(255,255,255,.15); }
-.topbar-spacer { flex: 1; }
+/* TREE */
+#tree{width:230px;flex-shrink:0;background:var(--paper);border-right:1px solid var(--line);display:flex;flex-direction:column;overflow:hidden}
+#th{padding:.6rem .85rem .45rem;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-light);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+#tadd{background:none;border:none;cursor:pointer;color:var(--accent);font-size:1.15rem;line-height:1;padding:0 .2rem;border-radius:3px}
+#tadd:hover{background:var(--accent-bg)}
+#tadd:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#tb2{flex:1;overflow-y:auto;padding:.3rem 0}
+.ti{display:flex;align-items:center;cursor:pointer;padding:.35rem .7rem .35rem .8rem;border-left:3px solid transparent;transition:background .1s}
+.ti:hover{background:var(--paper-alt)}.ti.act{background:var(--accent-bg);border-left-color:var(--accent)}
+.ti.act .tl{color:var(--accent);font-weight:600}
+.tic{font-size:.82rem;margin-right:.38rem;flex-shrink:0;opacity:.65}
+.tl{flex:1;font-size:.8rem;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.3}
+.tbadge{font-size:.62rem;font-weight:700;padding:.08rem .3rem;border-radius:3px;flex-shrink:0;margin-left:.25rem}
+.bg{background:var(--blue-bg);color:var(--blue)}.ba{background:var(--gold-bg);color:var(--gold)}
+.tsub{padding-left:1.7rem!important}.tsub .tic{opacity:.45}
+.tas{display:none;gap:.12rem;flex-shrink:0}.ti:hover .tas,.ti.act .tas{display:flex}
+.ta{background:none;border:none;cursor:pointer;padding:.08rem .18rem;border-radius:3px;font-size:.72rem;color:var(--ink-mid);line-height:1}
+.ta:hover{background:var(--paper-mid);color:var(--ink)}.ta.d:hover{background:var(--red-bg);color:var(--red)}
+.ta:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.tac{padding:.28rem .7rem .28rem 2.1rem;font-size:.75rem;color:var(--accent);cursor:pointer;opacity:.65;display:flex;align-items:center;gap:.3rem;transition:opacity .12s}
+.tac:hover{opacity:1;background:var(--accent-bg)}
 
-#project-name {
-  font-size: .82rem;
-  color: rgba(255,255,255,.5);
-  font-style: italic;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-#project-name.has-project { color: rgba(255,255,255,.8); font-style: normal; }
+/* WORKSPACE */
+#ws{flex:1;display:flex;flex-direction:column;overflow:hidden}
 
-.tb-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  font-family: var(--font-ui);
-  font-size: .82rem;
-  font-weight: 600;
-  padding: .35rem .75rem;
-  border-radius: var(--r);
-  border: none;
-  cursor: pointer;
-  transition: all .15s;
-  white-space: nowrap;
-}
-.tb-btn-ghost {
-  background: rgba(255,255,255,.08);
-  color: rgba(255,255,255,.85);
-}
-.tb-btn-ghost:hover { background: rgba(255,255,255,.15); color: #fff; }
-.tb-btn-accent {
-  background: var(--accent);
-  color: #fff;
-}
-.tb-btn-accent:hover { background: var(--accent-h); }
-.tb-btn-green {
-  background: var(--green);
-  color: #fff;
-}
-.tb-btn-green:hover { background: #3a8b4a; }
-.tb-btn:focus-visible { outline: 2px solid var(--accent-h); outline-offset: 2px; }
-.tb-btn:disabled { opacity: .4; cursor: not-allowed; }
+/* TABS */
+#tabs{background:var(--paper);border-bottom:1px solid var(--line);flex-shrink:0;padding:0 1rem;display:flex;gap:.2rem;align-items:flex-end}
+.tab{padding:.5rem .9rem;font-size:.8rem;font-weight:600;color:var(--ink-light);cursor:pointer;border-bottom:2px solid transparent;transition:color .12s,border-color .12s;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:var(--font)}
+.tab:hover{color:var(--ink)}.tab.act{color:var(--accent);border-bottom-color:var(--accent)}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 
-/* ===== MAIN LAYOUT ===== */
-#main {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
+/* PANELS */
+.panel{display:none;flex:1;overflow:hidden}.panel.act{display:flex;flex-direction:column}
 
-/* ===== LEFT PANEL — TREE ===== */
-#tree-panel {
-  width: 240px;
-  flex-shrink: 0;
-  background: var(--paper);
-  border-right: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-#tree-header {
-  padding: .75rem 1rem .5rem;
-  font-size: .7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .1em;
-  color: var(--ink-light);
-  border-bottom: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-}
-#tree-add {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--accent);
-  font-size: 1.1rem;
-  line-height: 1;
-  padding: 0 .25rem;
-  border-radius: 3px;
-}
-#tree-add:hover { background: var(--accent-bg); }
-#tree-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: .35rem 0;
-}
-.tree-item {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  cursor: pointer;
-  padding: .38rem .75rem .38rem .85rem;
-  border-left: 3px solid transparent;
-  transition: background .12s;
-  position: relative;
-}
-.tree-item:hover { background: var(--paper-alt); }
-.tree-item.active {
-  background: var(--accent-bg);
-  border-left-color: var(--accent);
-}
-.tree-item.active .tree-label { color: var(--accent); font-weight: 600; }
-.tree-icon { font-size: .85rem; margin-right: .4rem; flex-shrink: 0; opacity: .7; }
-.tree-label {
-  flex: 1;
-  font-size: .82rem;
-  color: var(--ink);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1.3;
-}
-.tree-badge {
-  font-size: .65rem;
-  font-weight: 700;
-  padding: .1rem .35rem;
-  border-radius: 3px;
-  flex-shrink: 0;
-  margin-left: .3rem;
-}
-.tree-badge-group { background: var(--blue-bg); color: var(--blue); }
-.tree-badge-articles { background: var(--gold-bg); color: var(--gold); }
-.tree-badge-news { background: var(--green-bg); color: var(--green); }
-.tree-sub { padding-left: 1.8rem !important; }
-.tree-sub .tree-icon { opacity: .5; }
-.tree-actions {
-  display: none;
-  gap: .15rem;
-  flex-shrink: 0;
-}
-.tree-item:hover .tree-actions,
-.tree-item.active .tree-actions { display: flex; }
-.tree-act {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: .1rem .2rem;
-  border-radius: 3px;
-  font-size: .75rem;
-  color: var(--ink-mid);
-  line-height: 1;
-}
-.tree-act:hover { background: var(--paper-mid); color: var(--ink); }
-.tree-act.danger:hover { background: var(--red-bg); color: var(--red); }
+/* Settings */
+#ps{overflow-y:auto;padding:1.25rem}
+.sg{max-width:700px;display:grid;gap:1.25rem}
+.sc{background:var(--paper);border:1px solid var(--line);border-radius:var(--r2);padding:1.1rem 1.35rem;box-shadow:var(--sh)}
+.sct{font-family:var(--serif);font-size:.95rem;font-weight:700;color:var(--ink);margin-bottom:.9rem;padding-bottom:.45rem;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:.45rem}
+.fr{display:flex;flex-direction:column;gap:.28rem;margin-bottom:.75rem}.fr:last-child{margin-bottom:0}
+.fl{font-size:.73rem;font-weight:700;color:var(--ink-mid);text-transform:uppercase;letter-spacing:.05em}
+.fi,.fsl{font-family:var(--font);font-size:.85rem;color:var(--ink);background:var(--paper-alt);border:1px solid var(--line);border-radius:var(--r);padding:.4rem .6rem;outline:none;transition:border-color .12s,box-shadow .12s;width:100%}
+.fi:focus,.fsl:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(184,92,32,.1)}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:.35rem;margin-top:.35rem}
+.ps2{aspect-ratio:1;border-radius:var(--r);border:2px solid transparent;cursor:pointer;position:relative;overflow:hidden;transition:transform .1s,border-color .1s}
+.ps2:hover{transform:scale(1.09)}.ps2.sel{border-color:var(--ink)!important;box-shadow:0 0 0 1px var(--ink)}
+.ps2 span{position:absolute;bottom:0;left:0;right:0;font-size:.52rem;font-weight:700;text-align:center;padding:.08rem 0;background:rgba(0,0,0,.45);color:#fff;text-transform:uppercase}
+.ps2:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.lt{width:100%;border-collapse:collapse;font-size:.82rem}
+.lt th{text-align:left;padding:.28rem .45rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-light);border-bottom:1px solid var(--line)}
+.lt td{padding:.22rem .3rem;vertical-align:top}
+.lt input{font-family:var(--font);font-size:.82rem;color:var(--ink);background:var(--paper-alt);border:1px solid var(--line);border-radius:4px;padding:.28rem .45rem;width:100%;outline:none}
+.lt input:focus{border-color:var(--accent)}
+.ld{background:none;border:none;cursor:pointer;color:var(--ink-light);font-size:.88rem;padding:.18rem .28rem;border-radius:3px}
+.ld:hover{color:var(--red);background:var(--red-bg)}
+.ar{margin-top:.45rem;font-family:var(--font);font-size:.75rem;font-weight:600;color:var(--accent);background:none;border:1px dashed var(--line);border-radius:var(--r);padding:.3rem .7rem;cursor:pointer;width:100%;transition:all .12s}
+.ar:hover{background:var(--accent-bg);border-color:var(--accent)}
 
-/* ===== RIGHT PANEL — CONTENT ===== */
-#content-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--paper-alt);
-}
+/* Content panel */
+#pc{flex-direction:row}
+.ew{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.etb{background:var(--paper);border-bottom:1px solid var(--line);padding:.42rem .65rem;display:flex;align-items:center;gap:.28rem;flex-shrink:0;flex-wrap:wrap}
+.etl{font-size:.73rem;font-weight:700;color:var(--ink-mid);text-transform:uppercase;letter-spacing:.06em;margin-right:.2rem}
+.eds{width:1px;height:16px;background:var(--line)}
+.fb{background:none;border:none;border-radius:4px;padding:.22rem .38rem;cursor:pointer;font-size:.78rem;font-family:var(--mono);color:var(--ink-mid);transition:background .1s,color .1s;line-height:1.4;white-space:nowrap}
+.fb:hover{background:var(--paper-alt);color:var(--ink)}
+.fb.cr{font-size:.7rem;font-family:var(--font)}
+.fb:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.eta{flex:1;font-family:var(--mono);font-size:.875rem;line-height:1.65;color:var(--ink);background:var(--paper-alt);border:none;padding:.9rem 1.1rem;resize:none;outline:none;tab-size:2;overflow-y:auto}
+.eta::placeholder{color:var(--ink-light);font-style:italic}
+.eta:disabled{opacity:.5;cursor:not-allowed}
 
-/* ===== TAB BAR ===== */
-#tabs {
-  display: flex;
-  background: var(--paper);
-  border-bottom: 1px solid var(--line);
-  flex-shrink: 0;
-  padding: 0 1rem;
-  gap: .25rem;
-  align-items: flex-end;
-}
-.tab {
-  padding: .55rem 1rem;
-  font-size: .82rem;
-  font-weight: 600;
-  color: var(--ink-light);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: color .12s, border-color .12s;
-  white-space: nowrap;
-  background: none;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  font-family: var(--font-ui);
-}
-.tab:hover { color: var(--ink); }
-.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-.tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+/* Art meta */
+#am{width:210px;flex-shrink:0;background:var(--paper);border-left:1px solid var(--line);display:flex;flex-direction:column;overflow-y:auto;padding:.9rem;gap:.75rem}
+#am.hide{display:none}
+.ml{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-light);margin-bottom:.35rem}
+.mi{font-family:var(--font);font-size:.82rem;color:var(--ink);background:var(--paper-alt);border:1px solid var(--line);border-radius:var(--r);padding:.32rem .5rem;width:100%;outline:none}
+.mi:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(184,92,32,.1)}
+.mn{font-size:.7rem;color:var(--ink-light);line-height:1.5;margin-top:auto;padding-top:.85rem;border-top:1px solid var(--line)}
 
-/* ===== EDITOR PANELS ===== */
-.editor-panel {
-  display: none;
-  flex: 1;
-  overflow: hidden;
-}
-.editor-panel.active {
-  display: flex;
-  flex-direction: column;
-}
+/* Sidebar panel */
+#pb{flex-direction:column}
 
-/* ===== SETTINGS FORM ===== */
-#panel-settings {
-  overflow-y: auto;
-  padding: 1.5rem;
-}
-.settings-grid {
-  max-width: 720px;
-  display: grid;
-  gap: 1.5rem;
-}
-.settings-card {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--r2);
-  padding: 1.25rem 1.5rem;
-  box-shadow: var(--sh);
-}
-.settings-card-title {
-  font-family: var(--font-head);
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--ink);
-  margin-bottom: 1rem;
-  padding-bottom: .5rem;
-  border-bottom: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-}
-.form-row { display: flex; flex-direction: column; gap: .3rem; margin-bottom: .85rem; }
-.form-row:last-child { margin-bottom: 0; }
-.form-row-inline { flex-direction: row; align-items: center; gap: .75rem; }
-.form-label {
-  font-size: .78rem;
-  font-weight: 700;
-  color: var(--ink-mid);
-  text-transform: uppercase;
-  letter-spacing: .05em;
-}
-.form-input, .form-select, .form-textarea {
-  font-family: var(--font-ui);
-  font-size: .88rem;
-  color: var(--ink);
-  background: var(--paper-alt);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  padding: .45rem .65rem;
-  outline: none;
-  transition: border-color .12s, box-shadow .12s;
-  width: 100%;
-}
-.form-input:focus, .form-select:focus, .form-textarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(184,92,32,.12);
-}
-.form-textarea { resize: vertical; min-height: 80px; }
+/* Empty */
+#empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;color:var(--ink-light);text-align:center;padding:2rem}
+.ei{font-size:3.5rem;opacity:.35}.eh{font-family:var(--serif);font-size:1.4rem;color:var(--ink-mid)}
+.ep{font-size:.88rem;line-height:1.6;max-width:400px}
+.ea{display:flex;gap:.65rem;flex-wrap:wrap;justify-content:center}
+.eb{display:inline-flex;align-items:center;gap:.45rem;font-family:var(--font);font-size:.875rem;font-weight:600;padding:.55rem 1.15rem;border-radius:var(--r);border:none;cursor:pointer;transition:all .15s}
+.ep1{background:var(--accent);color:#fff}.ep1:hover{background:var(--accent-h)}
+.ep2{background:var(--paper-mid);color:var(--ink)}.ep2:hover{background:var(--line)}
 
-/* Palette picker */
-.palette-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
-  gap: .4rem;
-  margin-top: .4rem;
-}
-.palette-swatch {
-  aspect-ratio: 1;
-  border-radius: var(--r);
-  border: 2px solid transparent;
-  cursor: pointer;
-  position: relative;
-  transition: transform .1s, border-color .1s;
-  overflow: hidden;
-}
-.palette-swatch:hover { transform: scale(1.08); }
-.palette-swatch.selected { border-color: var(--ink) !important; box-shadow: 0 0 0 1px var(--ink); }
-.palette-swatch span {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
-  font-size: .55rem;
-  font-weight: 700;
-  text-align: center;
-  padding: .1rem 0;
-  background: rgba(0,0,0,.4);
-  color: #fff;
-  text-transform: uppercase;
-}
+/* Modals */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.52);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+.ov.open{display:flex}
+.mo{background:var(--paper);border-radius:var(--r2);box-shadow:var(--sh2);padding:1.35rem;width:100%;max-width:440px;max-height:90vh;overflow-y:auto}
+.mo h2{font-family:var(--serif);font-size:1.15rem;margin-bottom:.9rem;color:var(--ink)}
+.ma{display:flex;gap:.45rem;justify-content:flex-end;margin-top:1.1rem}
+.mb{font-family:var(--font);font-size:.83rem;font-weight:600;padding:.42rem .9rem;border-radius:var(--r);border:none;cursor:pointer}
+.mok{background:var(--accent);color:#fff}.mok:hover{background:var(--accent-h)}
+.mcl{background:var(--paper-mid);color:var(--ink)}.mcl:hover{background:var(--line)}
+.mb:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tos{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.4rem}
+.to{flex:1;min-width:90px;border:2px solid var(--line);border-radius:var(--r);padding:.55rem .4rem;cursor:pointer;text-align:center;transition:border-color .12s,background .12s;background:var(--paper-alt)}
+.to:hover{border-color:var(--accent-h);background:var(--accent-bg)}.to.sel{border-color:var(--accent);background:var(--accent-bg)}
+.to-ic{font-size:1.2rem;display:block;margin-bottom:.2rem}.to-lb{font-size:.72rem;font-weight:700;color:var(--ink-mid)}
+.to:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ita{width:100%;height:260px;font-family:var(--mono);font-size:.8rem;background:var(--paper-alt);border:1px solid var(--line);border-radius:var(--r);padding:.65rem;color:var(--ink);resize:vertical;outline:none;line-height:1.6;tab-size:2}
+.ita:focus{border-color:var(--accent)}
 
-/* Links table */
-.links-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
-.links-table th {
-  text-align: left;
-  padding: .3rem .5rem;
-  font-size: .72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  color: var(--ink-light);
-  border-bottom: 1px solid var(--line);
-}
-.links-table td { padding: .25rem .35rem; vertical-align: top; }
-.links-table input {
-  font-family: var(--font-ui);
-  font-size: .83rem;
-  color: var(--ink);
-  background: var(--paper-alt);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: .3rem .5rem;
-  width: 100%;
-  outline: none;
-}
-.links-table input:focus { border-color: var(--accent); }
-.links-table .del-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--ink-light);
-  font-size: .9rem;
-  padding: .2rem .3rem;
-  border-radius: 3px;
-}
-.links-table .del-btn:hover { color: var(--red); background: var(--red-bg); }
-.add-row-btn {
-  margin-top: .5rem;
-  font-family: var(--font-ui);
-  font-size: .78rem;
-  font-weight: 600;
-  color: var(--accent);
-  background: none;
-  border: 1px dashed var(--line);
-  border-radius: var(--r);
-  padding: .35rem .75rem;
-  cursor: pointer;
-  width: 100%;
-  transition: background .12s, border-color .12s;
-}
-.add-row-btn:hover { background: var(--accent-bg); border-color: var(--accent); }
-
-/* ===== MD EDITOR PANEL ===== */
-#panel-content {
-  flex-direction: row;
-}
-#panel-sidebar-md { flex-direction: column; }
-
-.md-editor-wrap {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-width: 0;
-}
-.md-editor-header {
-  background: var(--paper);
-  border-bottom: 1px solid var(--line);
-  padding: .5rem .75rem;
-  display: flex;
-  align-items: center;
-  gap: .35rem;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-}
-.md-editor-title {
-  font-size: .78rem;
-  font-weight: 700;
-  color: var(--ink-mid);
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  margin-right: .25rem;
-}
-.md-sep { width: 1px; height: 18px; background: var(--line); margin: 0 .2rem; }
-.fmt-btn {
-  background: none;
-  border: none;
-  border-radius: 4px;
-  padding: .25rem .4rem;
-  cursor: pointer;
-  font-size: .8rem;
-  font-family: var(--font-mono);
-  color: var(--ink-mid);
-  transition: background .1s, color .1s;
-  line-height: 1.4;
-  white-space: nowrap;
-}
-.fmt-btn:hover { background: var(--paper-alt); color: var(--ink); }
-.fmt-btn.critic { font-size: .72rem; font-family: var(--font-ui); }
-.fmt-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
-
-.md-textarea {
-  flex: 1;
-  font-family: var(--font-mono);
-  font-size: .875rem;
-  line-height: 1.65;
-  color: var(--ink);
-  background: var(--paper-alt);
-  border: none;
-  padding: 1rem 1.25rem;
-  resize: none;
-  outline: none;
-  tab-size: 2;
-  overflow-y: auto;
-}
-.md-textarea::placeholder { color: var(--ink-light); font-style: italic; }
-
-/* ===== ARTICLE META SIDEBAR ===== */
-#article-meta-panel {
-  width: 220px;
-  flex-shrink: 0;
-  background: var(--paper);
-  border-left: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  padding: 1rem;
-  gap: .85rem;
-}
-#article-meta-panel.hidden { display: none; }
-.meta-section-title {
-  font-size: .7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  color: var(--ink-light);
-  margin-bottom: .4rem;
-}
-.meta-input {
-  font-family: var(--font-ui);
-  font-size: .83rem;
-  color: var(--ink);
-  background: var(--paper-alt);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  padding: .35rem .55rem;
-  width: 100%;
-  outline: none;
-}
-.meta-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(184,92,32,.1); }
-
-/* ===== EMPTY STATE ===== */
-#empty-state {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1.5rem;
-  color: var(--ink-light);
-  text-align: center;
-  padding: 2rem;
-}
-#empty-state .es-icon { font-size: 4rem; opacity: .4; }
-#empty-state h2 { font-family: var(--font-head); font-size: 1.5rem; color: var(--ink-mid); }
-#empty-state p { font-size: .9rem; line-height: 1.6; max-width: 420px; }
-.es-actions { display: flex; gap: .75rem; flex-wrap: wrap; justify-content: center; }
-.es-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  font-family: var(--font-ui);
-  font-size: .88rem;
-  font-weight: 600;
-  padding: .6rem 1.25rem;
-  border-radius: var(--r);
-  border: none;
-  cursor: pointer;
-  transition: all .15s;
-}
-.es-btn-primary { background: var(--accent); color: #fff; }
-.es-btn-primary:hover { background: var(--accent-h); }
-.es-btn-secondary { background: var(--paper-mid); color: var(--ink); }
-.es-btn-secondary:hover { background: var(--line); }
-
-/* ===== MODAL ===== */
-.modal-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  background: rgba(0,0,0,.5);
-  z-index: 1000;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-.modal-overlay.active { display: flex; }
-.modal {
-  background: var(--paper);
-  border-radius: var(--r2);
-  box-shadow: var(--sh2);
-  padding: 1.5rem;
-  width: 100%;
-  max-width: 460px;
-  max-height: 90vh;
-  overflow-y: auto;
-}
-.modal h2 { font-family: var(--font-head); font-size: 1.2rem; margin-bottom: 1rem; color: var(--ink); }
-.modal-actions { display: flex; gap: .5rem; justify-content: flex-end; margin-top: 1.25rem; }
-.modal-btn {
-  font-family: var(--font-ui);
-  font-size: .85rem;
-  font-weight: 600;
-  padding: .45rem 1rem;
-  border-radius: var(--r);
-  border: none;
-  cursor: pointer;
-}
-.modal-btn-primary { background: var(--accent); color: #fff; }
-.modal-btn-primary:hover { background: var(--accent-h); }
-.modal-btn-secondary { background: var(--paper-mid); color: var(--ink); }
-.modal-btn-secondary:hover { background: var(--line); }
-.modal-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-/* Typ sekce výběr */
-.type-options { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .5rem; }
-.type-opt {
-  flex: 1;
-  min-width: 100px;
-  border: 2px solid var(--line);
-  border-radius: var(--r);
-  padding: .65rem .5rem;
-  cursor: pointer;
-  text-align: center;
-  transition: border-color .12s, background .12s;
-  background: var(--paper-alt);
-}
-.type-opt:hover { border-color: var(--accent-h); background: var(--accent-bg); }
-.type-opt.selected { border-color: var(--accent); background: var(--accent-bg); }
-.type-opt-icon { font-size: 1.3rem; display: block; margin-bottom: .25rem; }
-.type-opt-label { font-size: .75rem; font-weight: 700; color: var(--ink-mid); }
-
-/* ===== NOTIFICATIONS ===== */
-#notif {
-  position: fixed;
-  bottom: 1.5rem; right: 1.5rem;
-  z-index: 2000;
-  display: flex;
-  flex-direction: column;
-  gap: .5rem;
-  pointer-events: none;
-}
-.notif-item {
-  font-family: var(--font-ui);
-  font-size: .85rem;
-  font-weight: 600;
-  padding: .65rem 1rem;
-  border-radius: var(--r);
-  box-shadow: var(--sh2);
-  animation: notif-in .2s ease;
-  pointer-events: auto;
-}
-.notif-ok { background: var(--green); color: #fff; }
-.notif-err { background: var(--red); color: #fff; }
-@keyframes notif-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-
-/* ===== GITHUB PANEL ===== */
-#gh-bar {
-  background: #161b22;
-  border-bottom: 1px solid #30363d;
-  padding: .4rem 1rem;
-  display: flex;
-  align-items: center;
-  gap: .6rem;
-  flex-shrink: 0;
-  flex-wrap: wrap;
-}
-.gh-label {
-  font-size: .72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  color: #8b949e;
-  white-space: nowrap;
-}
-.gh-input {
-  font-family: var(--font-mono);
-  font-size: .78rem;
-  background: #0d1117;
-  border: 1px solid #30363d;
-  border-radius: 4px;
-  color: #c9d1d9;
-  padding: .28rem .55rem;
-  outline: none;
-  transition: border-color .15s;
-}
-.gh-input:focus { border-color: #58a6ff; box-shadow: 0 0 0 2px rgba(88,166,255,.15); }
-.gh-input::placeholder { color: #484f58; }
-.gh-input-owner { width: 110px; }
-.gh-input-repo  { width: 130px; }
-.gh-input-branch{ width: 80px; }
-.gh-input-path  { width: 150px; }
-.gh-input-token { width: 180px; font-size: .72rem; }
-.gh-sep { width: 1px; height: 20px; background: #30363d; }
-.gh-btn {
-  font-family: var(--font-ui);
-  font-size: .75rem;
-  font-weight: 600;
-  padding: .3rem .7rem;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: .3rem;
-  white-space: nowrap;
-  transition: all .15s;
-}
-.gh-btn-pull  { background: #21262d; color: #58a6ff; border: 1px solid #30363d; }
-.gh-btn-pull:hover  { background: #30363d; }
-.gh-btn-push  { background: #238636; color: #fff; }
-.gh-btn-push:hover  { background: #2ea043; }
-.gh-btn-cfg   { background: #21262d; color: #8b949e; border: 1px solid #30363d; }
-.gh-btn-cfg:hover   { background: #30363d; color: #c9d1d9; }
-.gh-btn:disabled    { opacity: .4; cursor: not-allowed; }
-.gh-btn:focus-visible { outline: 2px solid #58a6ff; outline-offset: 2px; }
-.gh-status {
-  font-size: .75rem;
-  color: #8b949e;
-  font-family: var(--font-mono);
-  margin-left: auto;
-  white-space: nowrap;
-}
-.gh-status.ok  { color: #3fb950; }
-.gh-status.err { color: #f85149; }
-.gh-status.working { color: #d29922; }
-/* Config drawer */
-#gh-config-drawer {
-  background: #0d1117;
-  border-bottom: 1px solid #30363d;
-  padding: .65rem 1rem;
-  display: none;
-  gap: .5rem;
-  align-items: center;
-  flex-wrap: wrap;
-}
-#gh-config-drawer.open { display: flex; }
-.gh-token-note {
-  font-size: .72rem;
-  color: #484f58;
-  margin-left: auto;
-}
-
-/* ===== GITHUB PANEL ===== */
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--paper-mid); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--line); }
-
-/* Focus */
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+/* Notifs */
+#notifs{position:fixed;bottom:1.25rem;right:1.25rem;z-index:2000;display:flex;flex-direction:column;gap:.4rem;pointer-events:none}
+.nf{font-family:var(--font);font-size:.83rem;font-weight:600;padding:.58rem .9rem;border-radius:var(--r);box-shadow:var(--sh2);animation:ni .18s ease;pointer-events:auto}
+.nok{background:var(--green);color:#fff}.nerr{background:var(--red);color:#fff}
+@keyframes ni{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* Drop zone */
-#dropzone {
-  position: fixed; inset: 0;
-  background: rgba(26,22,18,.7);
-  z-index: 3000;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 1rem;
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: 700;
-  font-family: var(--font-head);
-}
-#dropzone.active { display: flex; }
-#dropzone .dz-icon { font-size: 4rem; }
+#dz{position:fixed;inset:0;background:rgba(26,22,18,.72);z-index:3000;display:none;align-items:center;justify-content:center;flex-direction:column;gap:1rem;color:#fff;font-size:1.1rem;font-weight:700;font-family:var(--serif)}
+#dz.open{display:flex}.dzi{font-size:3.5rem}
+
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--paper-mid);border-radius:3px}::-webkit-scrollbar-thumb:hover{background:var(--line)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
 </style>
 </head>
 <body>
+<div id="dz" aria-hidden="true"><div class="dzi">📦</div><div>Pusťte .md2web.zip pro otevření</div></div>
 
-<!-- DROP ZONE -->
-<div id="dropzone" aria-live="polite" aria-hidden="true">
-  <div class="dz-icon">📦</div>
-  <div>Pusťte .md2web.zip pro otevření projektu</div>
-</div>
-
-<!-- TOP BAR -->
-<header id="topbar" role="banner">
-  <div id="topbar-logo">md2web <span>Editor</span></div>
-  <div class="topbar-sep" aria-hidden="true"></div>
-  <span id="project-name" aria-live="polite">Žádný projekt</span>
-  <div class="topbar-sep" aria-hidden="true"></div>
-  <button class="tb-btn tb-btn-ghost" id="btn-new" type="button">📄 Nový</button>
-  <button class="tb-btn tb-btn-ghost" id="btn-open" type="button">📂 Otevřít</button>
-  <input type="file" id="file-input" accept=".zip,.md2web.zip" style="display:none" aria-label="Otevřít zip soubor">
-  <div class="topbar-spacer"></div>
-  <button class="tb-btn tb-btn-green" id="btn-save" type="button" disabled>💾 Uložit jako .zip</button>
-  <div class="topbar-sep" aria-hidden="true"></div>
-  <button class="tb-btn tb-btn-ghost" id="btn-copy-md" type="button" disabled title="Zkopírovat celý website.md do schránky">📋 Kopírovat MD</button>
-  <button class="tb-btn tb-btn-ghost" id="btn-import-md" type="button" disabled title="Importovat MD ze schránky nebo textu">📥 Importovat MD</button>
+<header id="tb">
+  <span id="tb-logo">md2web <span>Editor</span></span>
+  <div class="sep"></div>
+  <span id="tb-proj">Bez projektu</span>
+  <div class="sep"></div>
+  <button class="tbtn tg" id="btn-new"  type="button">📄 Nový</button>
+  <button class="tbtn tg" id="btn-open" type="button">📂 Otevřít ZIP</button>
+  <input type="file" id="fin" accept=".zip" style="display:none" aria-label="Otevřít ZIP">
+  <div class="gap"></div>
+  <button class="tbtn tg" id="btn-cp"  type="button" disabled title="Kopírovat website.md do schránky">📋 Kopírovat MD</button>
+  <button class="tbtn tg" id="btn-imp" type="button" disabled title="Importovat website.md z textu">📥 Importovat MD</button>
+  <div class="sep"></div>
+  <button class="tbtn tgr" id="btn-save" type="button" disabled>💾 Uložit ZIP</button>
 </header>
 
-<!-- GITHUB BAR -->
-<div id="gh-bar" aria-label="GitHub propojení" role="region">
-  <span class="gh-label">GitHub:</span>
-  <input class="gh-input gh-input-owner" id="gh-owner" type="text" placeholder="owner" aria-label="GitHub owner">
-  <span style="color:#484f58">/</span>
-  <input class="gh-input gh-input-repo" id="gh-repo" type="text" placeholder="repo" aria-label="GitHub repozitář">
-  <span class="gh-sep" aria-hidden="true"></span>
-  <input class="gh-input gh-input-branch" id="gh-branch" type="text" placeholder="main" aria-label="Branch" value="main">
-  <input class="gh-input gh-input-path" id="gh-path" type="text" placeholder="cesta/k/webu" aria-label="Cesta k webu (prázdné = root)">
-  <span class="gh-sep" aria-hidden="true"></span>
-  <button class="gh-btn gh-btn-pull" id="gh-btn-pull" type="button" disabled>⬇ Načíst z GH</button>
-  <button class="gh-btn gh-btn-push" id="gh-btn-push" type="button" disabled>⬆ Uložit do GH</button>
-  <button class="gh-btn gh-btn-cfg" id="gh-btn-cfg" type="button" aria-expanded="false" aria-controls="gh-config-drawer">🔑 Token</button>
-  <span class="gh-status" id="gh-status" aria-live="polite"></span>
-</div>
-<div id="gh-config-drawer" role="region" aria-label="GitHub token nastavení">
-  <span class="gh-label">Token:</span>
-  <input class="gh-input gh-input-token" id="gh-token" type="password"
-    placeholder="ghp_xxxx" autocomplete="off" aria-label="GitHub Personal Access Token">
-  <button class="gh-btn gh-btn-pull" id="gh-token-save" type="button">Uložit token</button>
-  <button class="gh-btn gh-btn-cfg" id="gh-token-clear" type="button">Smazat token</button>
-  <span class="gh-token-note">Token se ukládá pouze v prohlížeči (localStorage). Nikdy ho nesdílejte.</span>
+<div id="ghb">
+  <span class="ghl">GitHub:</span>
+  <input class="ghi io" id="gh-o" placeholder="owner"           aria-label="Owner">
+  <span style="color:#484f58;font-size:.9rem">/</span>
+  <input class="ghi ir" id="gh-r" placeholder="repo"            aria-label="Repozitář">
+  <div class="gsep"></div>
+  <input class="ghi ib" id="gh-b" placeholder="main" value="main" aria-label="Branch">
+  <input class="ghi ip" id="gh-p" placeholder="cesta/k/webu"    aria-label="Cesta (prázdné = root)">
+  <div class="gsep"></div>
+  <button class="gbtn gpull" id="gh-pull" type="button" disabled>⬇ Načíst z GH</button>
+  <button class="gbtn gpush" id="gh-push" type="button" disabled>⬆ Uložit do GH</button>
+  <button class="gbtn gg" id="gh-tok-btn" type="button" aria-expanded="false" aria-controls="gh-dr">🔑 Token</button>
+  <button class="gbtn gg" id="gh-url-btn" type="button" aria-expanded="false" aria-controls="url-dr" title="URL pro přímé otevření">🔗 URL</button>
+  <span id="ghst" aria-live="polite"></span>
 </div>
 
-<!-- MAIN -->
-<div id="main" role="main">
+<div class="drawer" id="gh-dr" role="region" aria-label="GitHub token">
+  <span class="ghl">Token:</span>
+  <input class="ghi it" id="gh-tok" type="password" placeholder="ghp_…" autocomplete="off" aria-label="Personal Access Token">
+  <button class="gbtn gpull" id="tok-save"  type="button">Uložit</button>
+  <button class="gbtn gg"    id="tok-clear" type="button">Smazat</button>
+  <span class="tnote">Uloženo jen v prohlížeči (localStorage). Nikdy nesdílejte.</span>
+</div>
 
-  <!-- LEFT: TREE -->
-  <nav id="tree-panel" aria-label="Struktura webu">
-    <div id="tree-header">
-      <span>Struktura</span>
-      <button id="tree-add" type="button" title="Přidat sekci" aria-label="Přidat sekci">+</button>
-    </div>
-    <div id="tree-list" role="tree" aria-label="Sekce webu"></div>
+<div class="drawer" id="url-dr" role="region" aria-label="Přímá URL">
+  <span class="ghl">URL:</span>
+  <span class="url-val" id="url-val" aria-label="URL"></span>
+  <button class="url-cp" id="url-cp" type="button">📋 Kopírovat</button>
+  <span style="font-size:.7rem;color:#484f58">Otevřením této URL editor automaticky načte projekt (token musí být uložen v prohlížeči)</span>
+</div>
+
+<div id="main">
+  <nav id="tree" aria-label="Struktura webu">
+    <div id="th"><span>Struktura</span><button id="tadd" type="button" aria-label="Přidat sekci" title="Přidat sekci">+</button></div>
+    <div id="tb2" role="tree"></div>
   </nav>
 
-  <!-- RIGHT: CONTENT -->
-  <div id="content-panel">
-
-    <!-- EMPTY STATE -->
-    <div id="empty-state" role="region" aria-label="Úvodní obrazovka">
-      <div class="es-icon" aria-hidden="true">✍️</div>
-      <h2>md2web Editor</h2>
-      <p>Otevřete existující projekt (.md2web.zip) nebo začněte nový.</p>
-      <div class="es-actions">
-        <button class="es-btn es-btn-primary" id="es-btn-new" type="button">📄 Nový projekt</button>
-        <button class="es-btn es-btn-secondary" id="es-btn-open" type="button">📂 Otevřít zip</button>
+  <div id="ws">
+    <div id="empty">
+      <div class="ei">✍️</div>
+      <h1 class="eh">md2web Editor</h1>
+      <p class="ep">Otevřete existující projekt (.md2web.zip) nebo vytvořte nový. Projekt lze také načíst přímo z GitHub repozitáře.</p>
+      <div class="ea">
+        <button class="eb ep1" id="es-new"  type="button">📄 Nový projekt</button>
+        <button class="eb ep2" id="es-open" type="button">📂 Otevřít ZIP</button>
       </div>
     </div>
 
-    <!-- WORKSPACE (hidden until project loaded) -->
-    <div id="workspace" hidden style="display:none;flex-direction:column;flex:1;overflow:hidden;">
-
-      <!-- TABS -->
-      <div id="tabs" role="tablist" aria-label="Části projektu">
-        <button class="tab active" role="tab" aria-selected="true" aria-controls="panel-settings" id="tab-settings" type="button">⚙️ Nastavení</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-content" id="tab-content" type="button">📝 Obsah</button>
-        <button class="tab" role="tab" aria-selected="false" aria-controls="panel-sidebar-md" id="tab-sidebar" type="button">📌 Sidebar</button>
+    <div id="editor" hidden style="display:none;flex-direction:column;flex:1;overflow:hidden">
+      <div id="tabs" role="tablist">
+        <button class="tab act" role="tab" aria-selected="true"  id="t-s" type="button">⚙️ Nastavení</button>
+        <button class="tab"     role="tab" aria-selected="false" id="t-c" type="button">📝 Obsah</button>
+        <button class="tab"     role="tab" aria-selected="false" id="t-b" type="button">📌 Sidebar</button>
       </div>
 
-      <!-- PANEL: SETTINGS -->
-      <div class="editor-panel active" id="panel-settings" role="tabpanel" aria-labelledby="tab-settings">
-        <div style="overflow-y:auto;flex:1;padding:1.5rem;">
-        <div class="settings-grid">
-
-          <div class="settings-card">
-            <div class="settings-card-title">🌐 Základní informace</div>
-            <div class="form-row">
-              <label class="form-label" for="s-title">Název webu</label>
-              <input class="form-input" id="s-title" type="text" placeholder="Můj web">
-            </div>
-            <div class="form-row">
-              <label class="form-label" for="s-tagline">Motto / tagline</label>
-              <input class="form-input" id="s-tagline" type="text" placeholder="Krátký popis webu">
-            </div>
-            <div class="form-row form-row-inline">
-              <div style="flex:1">
-                <label class="form-label" for="s-language">Jazyk rozhraní</label>
-                <select class="form-select" id="s-language">
-                  <option value="cs">Čeština (cs)</option>
-                  <option value="en">English (en)</option>
-                </select>
-              </div>
-            </div>
+      <div class="panel act" id="ps" role="tabpanel" aria-labelledby="t-s">
+        <div style="overflow-y:auto;flex:1;padding:1.25rem"><div class="sg">
+          <div class="sc">
+            <div class="sct">🌐 Základní informace</div>
+            <div class="fr"><label class="fl" for="s-ti">Název webu</label><input class="fi" id="s-ti" type="text" placeholder="Můj web"></div>
+            <div class="fr"><label class="fl" for="s-tg">Motto / tagline</label><input class="fi" id="s-tg" type="text" placeholder="Krátký popis"></div>
+            <div class="fr" style="max-width:200px"><label class="fl" for="s-la">Jazyk rozhraní</label>
+              <select class="fsl" id="s-la"><option value="cs">Čeština (cs)</option><option value="en">English (en)</option></select></div>
           </div>
-
-          <div class="settings-card">
-            <div class="settings-card-title">🎨 Barevná paleta</div>
-            <div class="palette-grid" id="palette-grid" role="radiogroup" aria-label="Výběr palety"></div>
+          <div class="sc"><div class="sct">🎨 Barevná paleta</div><div class="pg" id="pg" role="radiogroup" aria-label="Paleta"></div></div>
+          <div class="sc">
+            <div class="sct">© Copyright</div>
+            <div class="fr"><label class="fl" for="s-cn">Jméno</label><input class="fi" id="s-cn" type="text" placeholder="Jan Novák"></div>
+            <div class="fr"><label class="fl" for="s-cu">URL</label><input class="fi" id="s-cu" type="url" placeholder="https://example.com"></div>
+            <div class="fr" style="max-width:120px"><label class="fl" for="s-cy">Rok</label><input class="fi" id="s-cy" type="number" placeholder="2026" min="1990" max="2100"></div>
           </div>
-
-          <div class="settings-card">
-            <div class="settings-card-title">© Copyright</div>
-            <div class="form-row">
-              <label class="form-label" for="s-copy-name">Jméno / název</label>
-              <input class="form-input" id="s-copy-name" type="text" placeholder="Jan Novák">
-            </div>
-            <div class="form-row">
-              <label class="form-label" for="s-copy-url">URL</label>
-              <input class="form-input" id="s-copy-url" type="url" placeholder="https://example.com">
-            </div>
-            <div class="form-row">
-              <label class="form-label" for="s-copy-year">Rok</label>
-              <input class="form-input" id="s-copy-year" type="number" placeholder="2026" min="1990" max="2100" style="max-width:120px">
-            </div>
+          <div class="sc">
+            <div class="sct">🔗 Navigační odkazy (vpravo)</div>
+            <table class="lt"><thead><tr><th>Popisek</th><th>URL</th><th></th></tr></thead><tbody id="mb"></tbody></table>
+            <button class="ar" id="m-add" type="button">+ Přidat</button>
           </div>
-
-          <div class="settings-card">
-            <div class="settings-card-title">🔗 Odkazy v navigaci (vpravo)</div>
-            <table class="links-table" id="menu-links-table">
-              <thead><tr><th>Popisek</th><th>URL</th><th></th></tr></thead>
-              <tbody id="menu-links-body"></tbody>
-            </table>
-            <button class="add-row-btn" id="menu-links-add" type="button">+ Přidat odkaz</button>
+          <div class="sc">
+            <div class="sct">🔗 Patičkové odkazy</div>
+            <table class="lt"><thead><tr><th>Popisek</th><th>URL</th><th></th></tr></thead><tbody id="fb"></tbody></table>
+            <button class="ar" id="f-add" type="button">+ Přidat</button>
           </div>
-
-          <div class="settings-card">
-            <div class="settings-card-title">🔗 Odkazy v patičce</div>
-            <table class="links-table" id="footer-links-table">
-              <thead><tr><th>Popisek</th><th>URL</th><th></th></tr></thead>
-              <tbody id="footer-links-body"></tbody>
-            </table>
-            <button class="add-row-btn" id="footer-links-add" type="button">+ Přidat odkaz</button>
-          </div>
-
-        </div>
-        </div>
+        </div></div>
       </div>
 
-      <!-- PANEL: CONTENT -->
-      <div class="editor-panel" id="panel-content" role="tabpanel" aria-labelledby="tab-content">
-        <div class="md-editor-wrap" id="content-editor-wrap">
-          <div class="md-editor-header" id="content-toolbar">
-            <span class="md-editor-title" id="content-editor-label">Vyberte sekci</span>
-            <div class="md-sep" aria-hidden="true"></div>
-            <button class="fmt-btn" data-wrap="**" title="Tučně" aria-label="Tučně (Ctrl+B)">𝗕</button>
-            <button class="fmt-btn" data-wrap="*" title="Kurzíva" aria-label="Kurzíva (Ctrl+I)">𝐼</button>
-            <button class="fmt-btn" data-wrap="`" title="Kód" aria-label="Inline kód">&#96;&#96;</button>
-            <button class="fmt-btn" data-wrap="~~" title="Přeškrtnutí" aria-label="Přeškrtnutí">~~</button>
-            <div class="md-sep" aria-hidden="true"></div>
-            <button class="fmt-btn" data-insert="## " data-line="true" title="Nadpis H2" aria-label="Nadpis H2">H2</button>
-            <button class="fmt-btn" data-insert="### " data-line="true" title="Nadpis H3" aria-label="Nadpis H3">H3</button>
-            <button class="fmt-btn" data-insert="- " data-line="true" title="Seznam" aria-label="Odrážka">—</button>
-            <button class="fmt-btn" data-insert="> " data-line="true" title="Citace" aria-label="Citace">❝</button>
-            <div class="md-sep" aria-hidden="true"></div>
-            <button class="fmt-btn critic" data-wrap-critic="ins" title="CriticMarkup: Vložení" style="color:#2a6b3a">{++}</button>
-            <button class="fmt-btn critic" data-wrap-critic="del" title="CriticMarkup: Smazání" style="color:#8b1a1a">{--}</button>
-            <button class="fmt-btn critic" data-wrap-critic="mark" title="CriticMarkup: Zvýraznění" style="color:#8b6914">{==}</button>
-            <button class="fmt-btn critic" data-wrap-critic="comment" title="CriticMarkup: Komentář" style="color:#1a3a6b">{>>}</button>
+      <div class="panel" id="pc" role="tabpanel" aria-labelledby="t-c">
+        <div class="ew">
+          <div class="etb" id="etb">
+            <span class="etl" id="etl">Vyberte sekci</span>
+            <div class="eds"></div>
+            <button class="fb" data-w="**"  title="Tučné Ctrl+B"  aria-label="Tučné">𝗕</button>
+            <button class="fb" data-w="*"   title="Kurzíva Ctrl+I" aria-label="Kurzíva">𝐼</button>
+            <button class="fb" data-w="`"   title="Kód"            aria-label="Kód">&#96;&#96;</button>
+            <button class="fb" data-w="~~"  title="Přeškrtnutí"    aria-label="Přeškrtnutí">~~</button>
+            <div class="eds"></div>
+            <button class="fb" data-l="## "  title="H2" aria-label="H2">H2</button>
+            <button class="fb" data-l="### " title="H3" aria-label="H3">H3</button>
+            <button class="fb" data-l="- "   title="Odrážka" aria-label="Odrážka">—</button>
+            <button class="fb" data-l="> "   title="Citace"  aria-label="Citace">❝</button>
+            <div class="eds"></div>
+            <button class="fb cr" data-c="ins"     title="Vložení"    style="color:#2a6b3a" aria-label="CriticMarkup vložení">{++}</button>
+            <button class="fb cr" data-c="del"     title="Smazání"    style="color:#8b1a1a" aria-label="CriticMarkup smazání">{--}</button>
+            <button class="fb cr" data-c="mark"    title="Zvýraznění" style="color:#8b6914" aria-label="CriticMarkup zvýraznění">{==}</button>
+            <button class="fb cr" data-c="comment" title="Komentář"   style="color:#1a3a6b" aria-label="CriticMarkup komentář">{>>}</button>
           </div>
-          <textarea class="md-textarea" id="content-textarea" spellcheck="true"
-            placeholder="Vyberte sekci vlevo pro editaci obsahu…" aria-label="Obsah sekce"></textarea>
+          <textarea class="eta" id="eta" spellcheck="true" aria-label="Obsah sekce" placeholder="Vyberte sekci vlevo…"></textarea>
         </div>
-        <!-- Article meta panel (shown for articles sub-items) -->
-        <aside id="article-meta-panel" class="hidden" aria-label="Metadata článku">
-          <div>
-            <div class="meta-section-title">📅 Datum</div>
-            <input class="meta-input" id="art-date" type="text" placeholder="18.5.2026" aria-label="Datum článku">
-          </div>
-          <div>
-            <div class="meta-section-title">🏷 Tagy</div>
-            <input class="meta-input" id="art-tags" type="text" placeholder="tag1, tag2, tag3" aria-label="Tagy článku (oddělené čárkou)">
-          </div>
-          <div style="margin-top:auto;padding-top:1rem;border-top:1px solid var(--line);">
-            <p style="font-size:.75rem;color:var(--ink-light);line-height:1.5;">
-              Datum: <code>D.M.YYYY</code>, <code>DD.MM.YYYY</code>, <code>YYYY-MM-DD</code> nebo <code>M/D/YYYY</code>
-            </p>
-          </div>
+        <aside id="am" class="hide" aria-label="Metadata článku">
+          <div><div class="ml">📅 Datum</div><input class="mi" id="a-dt" type="text" placeholder="18.5.2026" aria-label="Datum"></div>
+          <div><div class="ml">🏷 Tagy</div><input class="mi" id="a-tg" type="text" placeholder="tag1, tag2" aria-label="Tagy"></div>
+          <p class="mn">Formáty: <code>D.M.YYYY</code>, <code>DD.MM.YYYY</code>,<br><code>YYYY-MM-DD</code>, <code>M/D/YYYY</code></p>
         </aside>
       </div>
 
-      <!-- PANEL: SIDEBAR MD -->
-      <div class="editor-panel" id="panel-sidebar-md" role="tabpanel" aria-labelledby="tab-sidebar">
-        <div class="md-editor-header">
-          <span class="md-editor-title">sidebar.md</span>
-          <div class="md-sep" aria-hidden="true"></div>
-          <button class="fmt-btn" data-wrap="**" data-area="sidebar-textarea" aria-label="Tučně">𝗕</button>
-          <button class="fmt-btn" data-wrap="*" data-area="sidebar-textarea" aria-label="Kurzíva">𝐼</button>
-          <button class="fmt-btn" data-wrap="`" data-area="sidebar-textarea" aria-label="Inline kód">&#96;&#96;</button>
-          <button class="fmt-btn" data-insert="## " data-line="true" data-area="sidebar-textarea" aria-label="Nadpis H2">H2</button>
-          <button class="fmt-btn" data-insert="- " data-line="true" data-area="sidebar-textarea" aria-label="Odrážka">—</button>
+      <div class="panel" id="pb" role="tabpanel" aria-labelledby="t-b">
+        <div class="etb" id="stb">
+          <span class="etl">sidebar.md</span><div class="eds"></div>
+          <button class="fb" data-w="**" data-ta="sta" aria-label="Tučné">𝗕</button>
+          <button class="fb" data-w="*"  data-ta="sta" aria-label="Kurzíva">𝐼</button>
+          <button class="fb" data-w="`"  data-ta="sta" aria-label="Kód">&#96;&#96;</button>
+          <button class="fb" data-l="## " data-ta="sta" aria-label="H2">H2</button>
+          <button class="fb" data-l="- "  data-ta="sta" aria-label="Odrážka">—</button>
         </div>
-        <textarea class="md-textarea" id="sidebar-textarea" spellcheck="true"
-          placeholder="Obsah sidebaru v Markdownu…&#10;Interní odkazy: [Název sekce]&#10;Zůstane prázdné = sidebar.md nebude v zipu."
-          aria-label="Obsah sidebar.md"></textarea>
+        <textarea class="eta" id="sta" spellcheck="true" aria-label="Sidebar obsah"
+          placeholder="Obsah sidebaru v Markdownu…&#10;Interní odkaz: [Název sekce]&#10;(prázdné = sidebar.md nebude v zipu)"></textarea>
       </div>
-
-    </div><!-- /workspace -->
-
-  </div><!-- /content-panel -->
-</div><!-- /main -->
-
-<!-- MODAL: nová sekce -->
-<div class="modal-overlay" id="modal-new-section" role="dialog" aria-modal="true" aria-labelledby="modal-new-section-title">
-  <div class="modal">
-    <h2 id="modal-new-section-title">Nová sekce</h2>
-    <div class="form-row">
-      <label class="form-label" for="new-section-title">Název sekce</label>
-      <input class="form-input" id="new-section-title" type="text" placeholder="Název stránky">
-    </div>
-    <div class="form-row">
-      <label class="form-label">Typ sekce</label>
-      <div class="type-options" role="radiogroup" aria-label="Typ sekce">
-        <div class="type-opt selected" data-type="normal" role="radio" aria-checked="true" tabindex="0">
-          <span class="type-opt-icon">📄</span>
-          <span class="type-opt-label">Stránka</span>
-        </div>
-        <div class="type-opt" data-type="multisection" role="radio" aria-checked="false" tabindex="0">
-          <span class="type-opt-icon">📂</span>
-          <span class="type-opt-label">Multisection</span>
-        </div>
-        <div class="type-opt" data-type="articles" role="radio" aria-checked="false" tabindex="0">
-          <span class="type-opt-icon">📰</span>
-          <span class="type-opt-label">Články</span>
-        </div>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn modal-btn-secondary" id="modal-new-cancel" type="button">Zrušit</button>
-      <button class="modal-btn modal-btn-primary" id="modal-new-ok" type="button">Přidat</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL: nová podstránka (multisection) -->
-<div class="modal-overlay" id="modal-new-sub" role="dialog" aria-modal="true" aria-labelledby="modal-new-sub-title">
-  <div class="modal">
-    <h2 id="modal-new-sub-title">Nová podstránka</h2>
-    <div class="form-row">
-      <label class="form-label" for="new-sub-title">Název podstránky</label>
-      <input class="form-input" id="new-sub-title" type="text" placeholder="Název podstránky">
-    </div>
-    <div class="modal-actions">
-      <button class="modal-btn modal-btn-secondary" id="modal-sub-cancel" type="button">Zrušit</button>
-      <button class="modal-btn modal-btn-primary" id="modal-sub-ok" type="button">Přidat</button>
-    </div>
+<!-- MODAL: nová sekce -->
+<div class="ov" id="m-ns" role="dialog" aria-modal="true" aria-labelledby="m-ns-h">
+  <div class="mo">
+    <h2 id="m-ns-h">Nová sekce</h2>
+    <div class="fr" style="margin-bottom:.75rem"><label class="fl" for="ns-t">Název</label><input class="fi" id="ns-t" type="text" placeholder="Název stránky"></div>
+    <div class="fr"><label class="fl">Typ</label>
+      <div class="tos" role="radiogroup" aria-label="Typ sekce">
+        <div class="to sel" data-type="normal"       role="radio" aria-checked="true"  tabindex="0"><span class="to-ic">📄</span><span class="to-lb">Stránka</span></div>
+        <div class="to"     data-type="multisection" role="radio" aria-checked="false" tabindex="0"><span class="to-ic">📂</span><span class="to-lb">Multisection</span></div>
+        <div class="to"     data-type="articles"     role="radio" aria-checked="false" tabindex="0"><span class="to-ic">📰</span><span class="to-lb">Články</span></div>
+      </div></div>
+    <div class="ma"><button class="mb mcl" id="ns-cl" type="button">Zrušit</button><button class="mb mok" id="ns-ok" type="button">Přidat</button></div>
+  </div>
+</div>
+
+<!-- MODAL: nová podstránka -->
+<div class="ov" id="m-sub" role="dialog" aria-modal="true" aria-labelledby="m-sub-h">
+  <div class="mo">
+    <h2 id="m-sub-h">Nová podstránka</h2>
+    <div class="fr"><label class="fl" for="sub-t">Název</label><input class="fi" id="sub-t" type="text" placeholder="Název"></div>
+    <div class="ma"><button class="mb mcl" id="sub-cl" type="button">Zrušit</button><button class="mb mok" id="sub-ok" type="button">Přidat</button></div>
   </div>
 </div>
 
 <!-- MODAL: import MD -->
-<div class="modal-overlay" id="modal-import-md" role="dialog" aria-modal="true" aria-labelledby="modal-import-title">
-  <div class="modal" style="max-width:640px;">
-    <h2 id="modal-import-title">📥 Importovat website.md</h2>
-    <p style="font-size:.82rem;color:var(--ink-mid);margin-bottom:.75rem;line-height:1.5;">
-      Vložte obsah <code>website.md</code> — přepíše celou strukturu webu. Existující obsah bude nahrazen.
-    </p>
-    <textarea id="import-md-textarea" style="
-      width:100%; height:280px; font-family:var(--font-mono); font-size:.82rem;
-      background:var(--paper-alt); border:1px solid var(--line); border-radius:var(--r);
-      padding:.75rem; color:var(--ink); resize:vertical; outline:none; line-height:1.6;
-      tab-size:2;"
-      placeholder="# Úvod&#10;&#10;Obsah první sekce...&#10;&#10;# Druhá sekce&#10;&#10;multisection&#10;&#10;## Podstránka"
-      aria-label="Markdown obsah k importu" spellcheck="false"></textarea>
-    <div style="display:flex;align-items:center;gap:.5rem;margin-top:.5rem;">
-      <button class="modal-btn" id="import-from-clipboard" type="button"
-        style="background:var(--paper-mid);color:var(--ink);">📋 Vložit ze schránky</button>
-      <span style="font-size:.75rem;color:var(--ink-light);flex:1;">nebo napište/vložte přímo do pole výše</span>
+<div class="ov" id="m-imp" role="dialog" aria-modal="true" aria-labelledby="m-imp-h">
+  <div class="mo" style="max-width:620px">
+    <h2 id="m-imp-h">📥 Importovat website.md</h2>
+    <p style="font-size:.8rem;color:var(--ink-mid);margin-bottom:.65rem;line-height:1.5">Vložte obsah website.md — přepíše celou strukturu webu.</p>
+    <textarea class="ita" id="imp-ta" spellcheck="false" aria-label="Markdown k importu" placeholder="# Úvod&#10;&#10;Obsah…&#10;&#10;# Druhá sekce"></textarea>
+    <div style="display:flex;gap:.5rem;align-items:center;margin-top:.45rem">
+      <button class="mb mcl" id="imp-cb" type="button">📋 Vložit ze schránky</button>
+      <span style="font-size:.72rem;color:var(--ink-light)">nebo vložte (Ctrl+V) · Ctrl+Enter potvrdí</span>
     </div>
-    <div class="modal-actions">
-      <button class="modal-btn modal-btn-secondary" id="modal-import-cancel" type="button">Zrušit</button>
-      <button class="modal-btn modal-btn-primary" id="modal-import-ok" type="button">✓ Importovat</button>
-    </div>
+    <div class="ma"><button class="mb mcl" id="imp-cl" type="button">Zrušit</button><button class="mb mok" id="imp-ok" type="button">✓ Importovat</button></div>
   </div>
 </div>
 
-<!-- NOTIFICATIONS -->
-<div id="notif" aria-live="polite" aria-atomic="false"></div>
+<div id="notifs" aria-live="polite" aria-atomic="false"></div>
 
 <script>
 'use strict';
 
-// =============================================
-//  STATE
-// =============================================
-const state = {
-  loaded: false,
-  sections: [],   // [{id, title, type:'normal'|'multisection'|'articles', content, children:[]}]
-  sidebarMD: '',
-  activeItem: null,  // {sectionId, childId?}
-  dirty: false
+const PALETTES={
+  blue:['#1a3a5c','#fafaf7'],green:['#1a4a2e','#f7faf5'],red:['#5c1a1a','#faf7f7'],
+  purple:['#3a1a5c','#f9f7fa'],teal:['#1a4a4a','#f5fafa'],orange:['#5c2e1a','#faf8f5'],
+  dark:['#2a2a2a','#1a1a1a'],slate:['#2a3550','#f5f7fa'],rose:['#5c1a30','#faf7f8'],
+  brown:['#4a2e1a','#faf8f5'],indigo:['#1e2a6a','#f5f6fa'],gold:['#3a2a0a','#fdfaf0'],
+  cyan:['#0e3a4a','#f2fafc'],forest:['#1e3820','#f5f8f2'],dusk:['#4a3050','#f8f5fa'],
+  mint:['#1a4040','#f2faf8'],night:['#0a0e2a','#0e1228'],warm:['#4a2a10','#fdf8f0'],
+  cool:['#1a2a4a','#f4f7fc'],earth:['#3a2e20','#faf5ee']
 };
+const CRITIC={ins:['{++','++}'],del:['{--','--}'],mark:['{==','==}'],comment:['{>>','<<}']};
 
-// =============================================
-//  PALETTES
-// =============================================
-const PALETTES = {
-  blue:   ['#1a3a5c','#fafaf7'],  green:  ['#1a4a2e','#f7faf5'],
-  red:    ['#5c1a1a','#faf7f7'],  purple: ['#3a1a5c','#f9f7fa'],
-  teal:   ['#1a4a4a','#f5fafa'],  orange: ['#5c2e1a','#faf8f5'],
-  dark:   ['#2a2a2a','#1a1a1a'],  slate:  ['#2a3550','#f5f7fa'],
-  rose:   ['#5c1a30','#faf7f8'],  brown:  ['#4a2e1a','#faf8f5'],
-  indigo: ['#1e2a6a','#f5f6fa'],  gold:   ['#3a2a0a','#fdfaf0'],
-  cyan:   ['#0e3a4a','#f2fafc'],  forest: ['#1e3820','#f5f8f2'],
-  dusk:   ['#4a3050','#f8f5fa'],  mint:   ['#1a4040','#f2faf8'],
-  night:  ['#0a0e2a','#0e1228'],  warm:   ['#4a2a10','#fdf8f0'],
-  cool:   ['#1a2a4a','#f4f7fc'],  earth:  ['#3a2e20','#faf5ee'],
-};
+const S={loaded:false,sections:[],sidebarMD:'',activeSec:null,activeChild:null,
+  palette:'blue',dirty:false,ghSha:{},origZip:null,projectName:'web',subIdx:null};
 
-// =============================================
-//  UTILS
-// =============================================
-function uid() { return Math.random().toString(36).slice(2,9); }
+function uid(){return Math.random().toString(36).slice(2,9)}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function slugify(t){return t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')}
+function $(id){return document.getElementById(id)}
+function notify(msg,type='ok'){const e=document.createElement('div');e.className='nf n'+type;e.textContent=msg;$('notifs').appendChild(e);setTimeout(()=>e.remove(),3200)}
 
-function notify(msg, type='ok') {
-  const el = document.createElement('div');
-  el.className = `notif-item notif-${type}`;
-  el.textContent = msg;
-  document.getElementById('notif').appendChild(el);
-  setTimeout(() => el.remove(), 3000);
-}
-
-function slugify(t) {
-  return t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-    .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-}
-
-function setDirty(v=true) {
-  state.dirty = v;
-  document.getElementById('btn-save').disabled = !state.loaded;
-  document.getElementById('btn-copy-md').disabled = !state.loaded;
-  document.getElementById('btn-import-md').disabled = !state.loaded;
-}
-
-// =============================================
-//  DEFAULT PROJECT
-// =============================================
-function defaultProject() {
-  return {
-    config: {
-      title: 'Nový web',
-      tagline: '',
-      language: 'cs',
-      color: 'blue',
-      copyright: { name: '', url: '', year: new Date().getFullYear() },
-      menu_links: [],
-      footer_links: []
-    },
-    sections: [
-      { id: uid(), title: 'Úvod', type: 'normal', content: '## Vítejte\n\nZde začíná váš web.\n' }
-    ],
-    sidebarMD: ''
-  };
-}
-
-// =============================================
-//  PARSE website.md → sections[]
-// =============================================
-function parseMDToSections(md) {
-  const lines = md.split('\n');
-  const sections = [];
-  let cur = null;
-
-  for (const line of lines) {
-    const h1 = line.match(/^#(?!#)\s+(.+)$/);
-    if (h1) {
-      if (cur) sections.push(cur);
-      cur = { id: uid(), title: h1[1].trim(), type: 'normal', content: '' };
-    } else if (cur) {
-      cur.content += line + '\n';
-    }
+// Parse
+function parseMD(md){
+  const lines=md.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+  const secs=[];let cur=null;
+  for(const ln of lines){
+    const h1=ln.match(/^#(?!#)\s+(.+)$/);
+    if(h1){if(cur)secs.push(cur);cur={id:uid(),title:h1[1].trim(),type:'normal',content:'',children:null}}
+    else if(cur)cur.content+=ln+'\n';
   }
-  if (cur) sections.push(cur);
-
-  // Detect type from first non-empty line
-  return sections.map(sec => {
-    const trimmed = sec.content.trimStart();
-    const firstLine = trimmed.split('\n')[0].trim().toLowerCase();
-
-    if (firstLine === 'multisection') {
-      const body = trimmed.replace(/^multisection[ \t]*\n/i, '');
-      const children = [];
-      let curChild = null;
-      for (const line of body.split('\n')) {
-        const h2 = line.match(/^##(?!#)\s+(.+)$/);
-        if (h2) {
-          if (curChild) children.push(curChild);
-          curChild = { id: uid(), title: h2[1].trim(), content: '' };
-        } else if (curChild) {
-          curChild.content += line + '\n';
-        }
+  if(cur)secs.push(cur);
+  return secs.map(s=>{
+    const tr=s.content.trimStart(),f=tr.split('\n')[0].trim().toLowerCase();
+    if(f==='multisection'||f==='articles'){
+      const type=f,body=tr.replace(/^(multisection|articles)[ \t]*\n/i,'');
+      const children=[];let ch=null;
+      for(const ln of body.split('\n')){
+        const h2=ln.match(/^##(?!#)\s+(.+)$/);
+        if(h2){if(ch)children.push(ch);ch={id:uid(),title:h2[1].trim(),content:''}}
+        else if(ch)ch.content+=ln+'\n';
       }
-      if (curChild) children.push(curChild);
-      return { ...sec, type: 'multisection', content: '', children };
-
-    } else if (firstLine === 'articles') {
-      const body = trimmed.replace(/^articles[ \t]*\n/i, '');
-      const children = [];
-      let curChild = null;
-      for (const line of body.split('\n')) {
-        const h2 = line.match(/^##(?!#)\s+(.+)$/);
-        if (h2) {
-          if (curChild) children.push(curChild);
-          curChild = { id: uid(), title: h2[1].trim(), content: '' };
-        } else if (curChild) {
-          curChild.content += line + '\n';
-        }
-      }
-      if (curChild) children.push(curChild);
-      return { ...sec, type: 'articles', content: '', children };
-
-    } else {
-      return sec;
+      if(ch)children.push(ch);
+      return{...s,type,content:'',children:children.map(c=>type==='articles'?{...c,...artMeta(c.content)}:c)};
     }
+    return{...s,children:null};
   });
 }
 
-// =============================================
-//  SERIALIZE sections[] → website.md
-// =============================================
-function sectionsToMD(sections) {
-  let md = '';
-  for (const sec of sections) {
-    md += `# ${sec.title}\n\n`;
-
-    if (sec.type === 'multisection') {
-      md += 'multisection\n\n';
-      for (const child of (sec.children || [])) {
-        md += `## ${child.title}\n\n`;
-        md += (child.content || '').trimEnd() + '\n\n';
-      }
-    } else if (sec.type === 'articles') {
-      md += 'articles\n\n';
-      for (const child of (sec.children || [])) {
-        md += `## ${child.title}\n\n`;
-        // Reconstruct meta lines from stored metadata
-        if (child.date) md += `Datum: ${child.date}\n`;
-        if (child.tags) md += `Tagy: ${child.tags}\n`;
-        if (child.date || child.tags) md += '\n';
-        md += (child.content || '').trimEnd() + '\n\n';
-      }
-    } else {
-      md += (sec.content || '').trimEnd() + '\n\n';
+function artMeta(raw){
+  const lines=raw.split('\n');let date='',tags='';const body=[];let done=false;
+  for(const ln of lines){
+    if(!done){
+      const dm=ln.match(/^(?:datum|date)\s*:\s*(.+)$/i);
+      const tm=ln.match(/^(?:tagy|tags)\s*:\s*(.+)$/i);
+      if(dm){date=dm[1].trim();continue}if(tm){tags=tm[1].trim();continue}
+      if(!ln.trim()&&!date&&!tags)continue;done=true;
     }
+    body.push(ln);
   }
-  return md.trimEnd() + '\n';
+  return{date,tags,body:body.join('\n').replace(/^\n+/,'')};
 }
 
-// =============================================
-//  EXTRACT article metadata from raw content
-// =============================================
-function extractArticleMeta(content) {
-  const lines = content.split('\n');
-  let date = '', tags = '';
-  const bodyLines = [];
-  let metaDone = false;
-
-  for (const line of lines) {
-    if (!metaDone) {
-      const dm = line.match(/^(?:datum|date)\s*:\s*(.+)$/i);
-      const tm = line.match(/^(?:tagy|tags)\s*:\s*(.+)$/i);
-      if (dm) { date = dm[1].trim(); continue; }
-      if (tm) { tags = tm[1].trim(); continue; }
-      if (!line.trim() && !date && !tags) continue; // skip leading blank
-      metaDone = true;
-    }
-    bodyLines.push(line);
-  }
-  return { date, tags, body: bodyLines.join('\n').trimStart() };
-}
-
-// =============================================
-//  LOAD PROJECT
-// =============================================
-async function loadZip(file) {
-  try {
-    const zip = await JSZip.loadAsync(file);
-
-    // Find files (may be in a subfolder)
-    const find = name => {
-      const direct = zip.files[name];
-      if (direct) return direct;
-      for (const [path, f] of Object.entries(zip.files)) {
-        if (!f.dir && path.endsWith('/' + name)) return f;
+function toMD(sections){
+  let out='';
+  for(const sec of sections){
+    out+=`# ${sec.title}\n\n`;
+    if(sec.type==='multisection'){
+      out+='multisection\n\n';
+      for(const ch of(sec.children||[])){out+=`## ${ch.title}\n\n`;out+=(ch.content||'').trimEnd()+'\n\n';}
+    }else if(sec.type==='articles'){
+      out+='articles\n\n';
+      for(const ch of(sec.children||[])){
+        out+=`## ${ch.title}\n\n`;
+        if(ch.date)out+=`Datum: ${ch.date}\n`;
+        if(ch.tags)out+=`Tagy: ${ch.tags}\n`;
+        if(ch.date||ch.tags)out+='\n';
+        out+=((ch.body!==undefined?ch.body:ch.content)||'').trimEnd()+'\n\n';
       }
-      return null;
-    };
-
-    const jsonFile = find('website.json');
-    const mdFile = find('website.md');
-    if (!jsonFile || !mdFile) {
-      notify('Neplatný archiv — chybí website.json nebo website.md', 'err');
-      return;
-    }
-
-    const config = JSON.parse(await jsonFile.async('text'));
-    const md = (await mdFile.async('text')).replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-
-    const sidebarFile = find('sidebar.md');
-    const sidebarMD = sidebarFile ? (await sidebarFile.async('text')).replace(/\r\n/g,'\n') : '';
-
-    state.sections = parseMDToSections(md);
-    state.sidebarMD = sidebarMD;
-
-    loadConfig(config);
-    state.loaded = true;
-    setDirty(false);
-    showWorkspace();
-    renderTree();
-    notify('Projekt načten ✓');
-
-    // Store original zip for engine files
-    state._zip = zip;
-    const pname = file.name.replace(/\.md2web\.zip$|\.zip$/, '');
-    state.projectName = pname;
-    updateProjectName(config.title || pname);
-
-  } catch(e) {
-    notify('Chyba při čtení: ' + e.message, 'err');
-    console.error(e);
+    }else{out+=(sec.content||'').trimEnd()+'\n\n';}
   }
+  return out.trimEnd()+'\n';
 }
 
-function loadConfig(cfg) {
-  document.getElementById('s-title').value = cfg.title || '';
-  document.getElementById('s-tagline').value = cfg.tagline || '';
-  document.getElementById('s-language').value = cfg.language || 'cs';
-  document.getElementById('s-copy-name').value = cfg.copyright?.name || '';
-  document.getElementById('s-copy-url').value = cfg.copyright?.url || '';
-  document.getElementById('s-copy-year').value = cfg.copyright?.year || new Date().getFullYear();
-  selectPalette(cfg.color || 'blue');
-  renderLinksTable('menu-links-body', cfg.menu_links || []);
-  renderLinksTable('footer-links-body', cfg.footer_links || []);
+function setDirty(v=true){
+  S.dirty=v;
+  const on=S.loaded;
+  $('btn-save').disabled=!on;$('btn-cp').disabled=!on;$('btn-imp').disabled=!on;
+  ghUpdateBtns();
 }
 
-function newProject() {
-  const p = defaultProject();
-  state.sections = p.sections;
-  state.sidebarMD = '';
-  state.projectName = 'novy-web';
-  state._zip = null;
-  loadConfig(p.config);
-  state.loaded = true;
-  setDirty(true);
-  showWorkspace();
-  renderTree();
-  updateProjectName(p.config.title);
+// Project
+async function openZip(file){
+  try{
+    const zip=await JSZip.loadAsync(file);
+    const find=n=>{if(zip.files[n])return zip.files[n];for(const[p,f]of Object.entries(zip.files))if(!f.dir&&p.endsWith('/'+n))return f;return null};
+    const jf=find('website.json'),mf=find('website.md');
+    if(!jf||!mf){notify('Chybí website.json nebo website.md','err');return;}
+    const cfg=JSON.parse(await jf.async('text')),md=await mf.async('text');
+    const sf=find('sidebar.md');
+    S.sections=parseMD(md);S.sidebarMD=sf?(await sf.async('text')).replace(/\r\n/g,'\n'):'';
+    S.origZip=zip;S.projectName=file.name.replace(/\.md2web\.zip$|\.zip$/,'');S.ghSha={};
+    applyConfig(cfg);S.loaded=true;setDirty(false);showEditor();renderTree();
+    setProjName(cfg.title||S.projectName);notify('Projekt načten ✓');
+  }catch(e){notify('Chyba: '+e.message,'err');console.error(e);}
+}
+
+function newProject(){
+  S.sections=[{id:uid(),title:'Úvod',type:'normal',content:'## Vítejte\n\nZde začíná váš web.\n',children:null}];
+  S.sidebarMD='';S.origZip=null;S.projectName='novy-web';S.ghSha={};
+  applyConfig({title:'Nový web',tagline:'',language:'cs',color:'blue',
+    copyright:{name:'',url:'',year:new Date().getFullYear()},menu_links:[],footer_links:[]});
+  S.loaded=true;setDirty(true);showEditor();renderTree();setProjName('Nový web');
   notify('Nový projekt vytvořen');
 }
 
-function showWorkspace() {
-  document.getElementById('empty-state').hidden = true;
-  const ws = document.getElementById('workspace');
-  ws.hidden = false;
-  ws.style.display = 'flex';
-  updateGhBtns();
+function showEditor(){
+  $('empty').hidden=true;const ed=$('editor');ed.hidden=false;ed.style.display='flex';
 }
 
-function updateProjectName(title) {
-  const el = document.getElementById('project-name');
-  el.textContent = title || 'Bez názvu';
-  el.classList.add('has-project');
+function setProjName(t){const el=$('tb-proj');el.textContent=t||'Bez názvu';el.classList.toggle('on',!!t);}
+
+// Config
+function applyConfig(c){
+  $('s-ti').value=c.title||'';$('s-tg').value=c.tagline||'';
+  $('s-la').value=c.language||'cs';$('s-cn').value=c.copyright?.name||'';
+  $('s-cu').value=c.copyright?.url||'';$('s-cy').value=c.copyright?.year||new Date().getFullYear();
+  selectPalette(c.color||'blue');
+  renderLinks('mb',c.menu_links||[]);renderLinks('fb',c.footer_links||[]);
 }
 
-// =============================================
-//  SAVE
-// =============================================
-async function saveZip() {
-  try {
-    const zip = new JSZip();
+function readConfig(){
+  return{title:$('s-ti').value.trim(),tagline:$('s-tg').value.trim(),language:$('s-la').value,
+    color:S.palette,copyright:{name:$('s-cn').value.trim(),url:$('s-cu').value.trim(),
+    year:parseInt($('s-cy').value)||new Date().getFullYear()},
+    menu_links:readLinks('mb'),footer_links:readLinks('fb')};
+}
 
-    // website.json
-    const config = readConfig();
-    zip.file('website.json', JSON.stringify(config, null, 2));
+// Palette
+function buildPalette(){
+  const g=$('pg');g.innerHTML='';
+  for(const[name,[pri,bg]]of Object.entries(PALETTES)){
+    const sw=document.createElement('div');sw.className='ps2';
+    sw.style.background=`linear-gradient(135deg,${pri} 50%,${bg} 50%)`;
+    sw.style.border='2px solid '+pri+'44';sw.dataset.p=name;
+    sw.setAttribute('role','radio');sw.setAttribute('aria-label',name);sw.setAttribute('tabindex','0');
+    sw.innerHTML=`<span>${name}</span>`;
+    sw.addEventListener('click',()=>selectPalette(name));
+    sw.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectPalette(name);}});
+    g.appendChild(sw);
+  }
+}
 
-    // website.md
-    zip.file('website.md', sectionsToMD(state.sections));
+function selectPalette(name){
+  S.palette=name;
+  document.querySelectorAll('.ps2').forEach(s=>{const on=s.dataset.p===name;s.classList.toggle('sel',on);s.setAttribute('aria-checked',on?'true':'false');});
+  setDirty();
+}
 
-    // sidebar.md
-    const sbMD = document.getElementById('sidebar-textarea').value.trim();
-    if (sbMD) zip.file('sidebar.md', sbMD + '\n');
+// Links
+function renderLinks(tbodyId,links){const tb=$(tbodyId);tb.innerHTML='';links.forEach(l=>addLink(tb,l.label||'',l.url||''));}
+function addLink(tbody,label='',url=''){
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input type="text" value="${esc(label)}" placeholder="Popisek" aria-label="Popisek"></td><td><input type="text" value="${esc(url)}" placeholder="https://…" aria-label="URL"></td><td><button class="ld" type="button" aria-label="Odebrat">✕</button></td>`;
+  tr.querySelector('.ld').addEventListener('click',()=>{tr.remove();setDirty();});
+  tr.querySelectorAll('input').forEach(i=>i.addEventListener('input',()=>setDirty()));
+  tbody.appendChild(tr);setDirty();
+}
+function readLinks(tbodyId){
+  return[...document.querySelectorAll(`#${tbodyId} tr`)].map(tr=>{const ins=tr.querySelectorAll('input');return{label:ins[0].value.trim(),url:ins[1].value.trim()};}).filter(l=>l.label||l.url);
+}
 
-    // Copy engine files from original zip or use bundled
-    const engineFiles = ['index.html', 'cs.json', 'en.json'];
-    for (const fname of engineFiles) {
-      let content = null;
-      if (state._zip) {
-        const find = name => {
-          const direct = state._zip.files[name];
-          if (direct) return direct;
-          for (const [path, f] of Object.entries(state._zip.files)) {
-            if (!f.dir && path.endsWith('/' + name)) return f;
-          }
-          return null;
-        };
-        const f = find(fname);
-        if (f) content = await f.async('uint8array');
+// Save ZIP
+async function saveZip(){
+  saveItem();
+  try{
+    const zip=new JSZip();
+    zip.file('website.json',JSON.stringify(readConfig(),null,2));
+    zip.file('website.md',toMD(S.sections));
+    const sb=$('sta').value.trim();if(sb)zip.file('sidebar.md',sb+'\n');
+    if(S.origZip){
+      for(const name of['index.html','cs.json','en.json']){
+        const find=n=>{if(S.origZip.files[n])return S.origZip.files[n];for(const[p,f]of Object.entries(S.origZip.files))if(!f.dir&&p.endsWith('/'+n))return f;return null};
+        const f=find(name);if(f)zip.file(name,await f.async('uint8array'));
       }
-      if (content) zip.file(fname, content);
     }
-
-    const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
-    const title = slugify(document.getElementById('s-title').value || state.projectName || 'web');
-    const filename = `${title}.md2web.zip`;
-
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(a.href);
-
-    setDirty(false);
-    notify(`Uloženo jako ${filename} ✓`);
-  } catch(e) {
-    notify('Chyba při ukládání: ' + e.message, 'err');
-    console.error(e);
-  }
+    const blob=await zip.generateAsync({type:'blob',compression:'DEFLATE'});
+    const fname=slugify($('s-ti').value||S.projectName||'web')+'.md2web.zip';
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fname;a.click();URL.revokeObjectURL(a.href);
+    setDirty(false);notify('Uloženo jako '+fname+' ✓');
+  }catch(e){notify('Chyba: '+e.message,'err');}
 }
 
-function readConfig() {
-  return {
-    title: document.getElementById('s-title').value.trim(),
-    tagline: document.getElementById('s-tagline').value.trim(),
-    language: document.getElementById('s-language').value,
-    color: state.selectedPalette || 'blue',
-    copyright: {
-      name: document.getElementById('s-copy-name').value.trim(),
-      url: document.getElementById('s-copy-url').value.trim(),
-      year: parseInt(document.getElementById('s-copy-year').value) || new Date().getFullYear()
-    },
-    menu_links: readLinksTable('menu-links-body'),
-    footer_links: readLinksTable('footer-links-body')
-  };
-}
-
-// =============================================
-//  PALETTE
-// =============================================
-state.selectedPalette = 'blue';
-
-function buildPaletteGrid() {
-  const grid = document.getElementById('palette-grid');
-  grid.innerHTML = '';
-  for (const [name, [primary, bg]] of Object.entries(PALETTES)) {
-    const sw = document.createElement('div');
-    sw.className = 'palette-swatch';
-    sw.style.background = `linear-gradient(135deg, ${primary} 50%, ${bg} 50%)`;
-    sw.style.border = '2px solid ' + primary + '40';
-    sw.setAttribute('role', 'radio');
-    sw.setAttribute('aria-label', name);
-    sw.setAttribute('tabindex', '0');
-    sw.dataset.palette = name;
-    sw.innerHTML = `<span>${name}</span>`;
-    sw.addEventListener('click', () => selectPalette(name));
-    sw.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectPalette(name); } });
-    grid.appendChild(sw);
-  }
-}
-
-function selectPalette(name) {
-  state.selectedPalette = name;
-  document.querySelectorAll('.palette-swatch').forEach(sw => {
-    const sel = sw.dataset.palette === name;
-    sw.classList.toggle('selected', sel);
-    sw.setAttribute('aria-checked', sel ? 'true' : 'false');
-  });
-  setDirty();
-}
-
-// =============================================
-//  LINKS TABLE
-// =============================================
-function renderLinksTable(tbodyId, links) {
-  const tbody = document.getElementById(tbodyId);
-  tbody.innerHTML = '';
-  links.forEach((l, i) => addLinkRow(tbody, l.label || '', l.url || ''));
-}
-
-function addLinkRow(tbody, label='', url='') {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td><input type="text" value="${escHtml(label)}" placeholder="Popisek" aria-label="Popisek odkazu"></td>
-    <td><input type="text" value="${escHtml(url)}" placeholder="https://..." aria-label="URL odkazu"></td>
-    <td><button class="del-btn" type="button" aria-label="Odebrat řádek">✕</button></td>`;
-  tr.querySelector('.del-btn').addEventListener('click', () => { tr.remove(); setDirty(); });
-  tr.querySelectorAll('input').forEach(i => i.addEventListener('input', setDirty));
-  tbody.appendChild(tr);
-  setDirty();
-}
-
-function readLinksTable(tbodyId) {
-  const rows = document.querySelectorAll(`#${tbodyId} tr`);
-  return [...rows].map(tr => {
-    const inputs = tr.querySelectorAll('input');
-    return { label: inputs[0].value.trim(), url: inputs[1].value.trim() };
-  }).filter(l => l.label || l.url);
-}
-
-function escHtml(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// =============================================
-//  TREE
-// =============================================
-function renderTree() {
-  const list = document.getElementById('tree-list');
-  list.innerHTML = '';
-
-  state.sections.forEach((sec, si) => {
-    const item = makeTreeItem(sec, si, null);
-    list.appendChild(item);
-
-    if ((sec.type === 'multisection' || sec.type === 'articles') && sec.children) {
-      sec.children.forEach((child, ci) => {
-        list.appendChild(makeTreeItem(child, si, ci));
-      });
-      // Add child button
-      const addBtn = document.createElement('div');
-      addBtn.className = 'tree-item tree-sub';
-      addBtn.style.cssText = 'cursor:pointer;opacity:.6;font-size:.78rem;color:var(--accent);padding-left:2rem;';
-      addBtn.innerHTML = `<span style="margin-right:.35rem">+</span> Přidat ${sec.type === 'articles' ? 'článek' : 'podstránku'}`;
-      addBtn.setAttribute('role', 'button');
-      addBtn.setAttribute('tabindex', '0');
-      addBtn.addEventListener('click', () => openNewSubModal(si));
-      addBtn.addEventListener('keydown', e => { if (e.key === 'Enter') openNewSubModal(si); });
-      list.appendChild(addBtn);
+// Tree
+function renderTree(){
+  const body=$('tb2');body.innerHTML='';
+  S.sections.forEach((sec,si)=>{
+    body.appendChild(makeItem(sec,si,null,null));
+    if(sec.children!==null){
+      (sec.children||[]).forEach((ch,ci)=>body.appendChild(makeItem(ch,si,ci,sec)));
+      const ab=document.createElement('div');ab.className='tac';
+      ab.setAttribute('role','button');ab.setAttribute('tabindex','0');
+      ab.setAttribute('aria-label','Přidat '+(sec.type==='articles'?'článek':'podstránku'));
+      ab.innerHTML=`<span style="font-size:.9rem">+</span> Přidat ${sec.type==='articles'?'článek':'podstránku'}`;
+      ab.addEventListener('click',()=>openSubModal(si));
+      ab.addEventListener('keydown',e=>{if(e.key==='Enter')openSubModal(si);});
+      body.appendChild(ab);
     }
   });
 }
 
-function makeTreeItem(item, sectionIdx, childIdx) {
-  const isChild = childIdx !== null;
-  const sec = state.sections[sectionIdx];
-
-  const div = document.createElement('div');
-  div.className = 'tree-item' + (isChild ? ' tree-sub' : '');
-  div.setAttribute('role', 'treeitem');
-  div.setAttribute('tabindex', '0');
-
-  // Check active
-  const isActive = state.activeItem &&
-    state.activeItem.sectionId === sec.id &&
-    (isChild ? state.activeItem.childId === item.id : !state.activeItem.childId);
-  if (isActive) div.classList.add('active');
-
-  // Icon
-  const icon = isChild
-    ? (sec.type === 'articles' ? '📰' : '📄')
-    : (item.type === 'multisection' ? '📂' : item.type === 'articles' ? '📰' : '📄');
-
-  // Badge
-  let badge = '';
-  if (!isChild) {
-    if (item.type === 'multisection') badge = '<span class="tree-badge tree-badge-group">skupina</span>';
-    else if (item.type === 'articles') badge = '<span class="tree-badge tree-badge-articles">články</span>';
-  }
-
-  // Move buttons (only for top-level)
-  let moveHTML = '';
-  if (!isChild) {
-    const canUp = sectionIdx > 0;
-    const canDown = sectionIdx < state.sections.length - 1;
-    moveHTML = `
-      <button class="tree-act" data-dir="up" ${canUp?'':'disabled'} aria-label="Posunout nahoru" title="Nahoru">↑</button>
-      <button class="tree-act" data-dir="down" ${canDown?'':'disabled'} aria-label="Posunout dolů" title="Dolů">↓</button>`;
-  } else {
-    const siblings = sec.children;
-    const canUp = childIdx > 0;
-    const canDown = childIdx < siblings.length - 1;
-    moveHTML = `
-      <button class="tree-act" data-dir="up" ${canUp?'':'disabled'} aria-label="Posunout nahoru">↑</button>
-      <button class="tree-act" data-dir="down" ${canDown?'':'disabled'} aria-label="Posunout dolů">↓</button>`;
-  }
-
-  div.innerHTML = `
-    <span class="tree-icon" aria-hidden="true">${icon}</span>
-    <span class="tree-label">${escHtml(item.title)}</span>
-    ${badge}
-    <div class="tree-actions">
-      ${moveHTML}
-      <button class="tree-act danger" data-act="del" aria-label="Smazat">✕</button>
-    </div>`;
-
-  div.addEventListener('click', e => {
-    if (e.target.closest('.tree-actions')) return;
-    selectItem(sec.id, isChild ? item.id : null);
-  });
-  div.addEventListener('keydown', e => {
-    if (e.key === 'Enter' && !e.target.closest('.tree-actions')) selectItem(sec.id, isChild ? item.id : null);
-  });
-
-  // Action buttons
-  div.querySelectorAll('.tree-act').forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.stopPropagation();
-      const dir = btn.dataset.dir;
-      const act = btn.dataset.act;
-      if (dir) moveItem(sectionIdx, isChild ? childIdx : null, dir);
-      if (act === 'del') deleteItem(sectionIdx, isChild ? childIdx : null);
-    });
-  });
-
+function makeItem(item,si,ci,parentSec){
+  const isChild=ci!==null,sec=isChild?parentSec:item;
+  const isAct=S.activeSec===sec.id&&(isChild?S.activeChild===item.id:!S.activeChild);
+  const div=document.createElement('div');
+  div.className='ti'+(isChild?' tsub':'')+(isAct?' act':'');
+  div.setAttribute('role','treeitem');div.setAttribute('tabindex','0');
+  div.setAttribute('aria-selected',isAct?'true':'false');
+  const icon=isChild?(sec.type==='articles'?'📰':'📄'):(item.type==='multisection'?'📂':item.type==='articles'?'📰':'📄');
+  const badge=!isChild&&item.type!=='normal'?`<span class="tbadge ${item.type==='multisection'?'bg':'ba'}">${item.type==='multisection'?'skupina':'články'}</span>`:'';
+  const canUp=isChild?ci>0:si>0;
+  const canDown=isChild?ci<sec.children.length-1:si<S.sections.length-1;
+  div.innerHTML=`<span class="tic" aria-hidden="true">${icon}</span><span class="tl">${esc(item.title)}</span>${badge}<div class="tas"><button class="ta" data-d="up" ${canUp?'':'disabled'} aria-label="Nahoru">↑</button><button class="ta" data-d="down" ${canDown?'':'disabled'} aria-label="Dolů">↓</button><button class="ta d" aria-label="Smazat">✕</button></div>`;
+  div.addEventListener('click',e=>{if(!e.target.closest('.tas'))selectItem(sec.id,isChild?item.id:null);});
+  div.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.target.closest('.tas'))selectItem(sec.id,isChild?item.id:null);});
+  div.querySelectorAll('[data-d]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();moveItem(si,isChild?ci:null,b.dataset.d);}));
+  div.querySelector('.d').addEventListener('click',e=>{e.stopPropagation();deleteItem(si,isChild?ci:null);});
   return div;
 }
 
-function moveItem(si, ci, dir) {
-  const d = dir === 'up' ? -1 : 1;
-  if (ci === null) {
-    const arr = state.sections;
-    const ni = si + d;
-    if (ni < 0 || ni >= arr.length) return;
-    [arr[si], arr[ni]] = [arr[ni], arr[si]];
-  } else {
-    const arr = state.sections[si].children;
-    const ni = ci + d;
-    if (ni < 0 || ni >= arr.length) return;
-    [arr[ci], arr[ni]] = [arr[ni], arr[ci]];
-  }
-  setDirty();
-  renderTree();
+function moveItem(si,ci,dir){
+  const d=dir==='up'?-1:1;
+  if(ci===null){const a=S.sections,n=si+d;if(n<0||n>=a.length)return;[a[si],a[n]]=[a[n],a[si]];}
+  else{const a=S.sections[si].children,n=ci+d;if(n<0||n>=a.length)return;[a[ci],a[n]]=[a[n],a[ci]];}
+  setDirty();renderTree();
 }
 
-function deleteItem(si, ci) {
-  if (ci === null) {
-    if (!confirm(`Smazat sekci "${state.sections[si].title}" a veškerý obsah?`)) return;
-    state.sections.splice(si, 1);
-    state.activeItem = null;
-    clearEditor();
-  } else {
-    const sec = state.sections[si];
-    if (!confirm(`Smazat "${sec.children[ci].title}"?`)) return;
-    sec.children.splice(ci, 1);
-    state.activeItem = null;
-    clearEditor();
-  }
-  setDirty();
-  renderTree();
+function deleteItem(si,ci){
+  if(ci===null){if(!confirm(`Smazat sekci "${S.sections[si].title}"?`))return;S.sections.splice(si,1);}
+  else{const s=S.sections[si];if(!confirm(`Smazat "${s.children[ci].title}"?`))return;s.children.splice(ci,1);}
+  S.activeSec=null;S.activeChild=null;clearEditor();setDirty();renderTree();
 }
 
-// =============================================
-//  ITEM SELECTION & EDITOR
-// =============================================
-function selectItem(sectionId, childId) {
-  // Save current before switching
-  saveCurrentItem();
-
-  state.activeItem = { sectionId, childId: childId || null };
-  renderTree();
-
-  const sec = state.sections.find(s => s.id === sectionId);
-  if (!sec) return;
-
-  // Switch to content tab if not there
-  if (!document.getElementById('panel-content').classList.contains('active')) {
-    activateTab('tab-content');
-  }
-
-  if (childId) {
-    const child = sec.children?.find(c => c.id === childId);
-    if (!child) return;
-
-    document.getElementById('content-editor-label').textContent = `${sec.title} › ${child.title}`;
-
-    if (sec.type === 'articles') {
-      // Show meta panel, load date/tags separately
-      const meta = extractArticleMeta(child.content || '');
-      document.getElementById('art-date').value = child.date || meta.date || '';
-      document.getElementById('art-tags').value = child.tags || meta.tags || '';
-      document.getElementById('content-textarea').value = child.body !== undefined ? child.body : meta.body;
-      document.getElementById('article-meta-panel').classList.remove('hidden');
-    } else {
-      document.getElementById('article-meta-panel').classList.add('hidden');
-      document.getElementById('content-textarea').value = child.content || '';
-    }
-  } else {
-    document.getElementById('article-meta-panel').classList.add('hidden');
-    if (sec.type === 'multisection' || sec.type === 'articles') {
-      document.getElementById('content-editor-label').textContent = sec.title + ' (přidat obsah přes podstránky)';
-      document.getElementById('content-textarea').value = '';
-      document.getElementById('content-textarea').disabled = true;
-    } else {
-      document.getElementById('content-editor-label').textContent = sec.title;
-      document.getElementById('content-textarea').value = sec.content || '';
-      document.getElementById('content-textarea').disabled = false;
-    }
+// Selection
+function selectItem(secId,childId){
+  saveItem();S.activeSec=secId;S.activeChild=childId||null;renderTree();
+  const sec=S.sections.find(s=>s.id===secId);if(!sec)return;
+  activateTab('t-c');
+  const ta=$('eta');ta.disabled=false;
+  if(childId){
+    const ch=sec.children?.find(c=>c.id===childId);if(!ch)return;
+    $('etl').textContent=sec.title+' › '+ch.title;
+    if(sec.type==='articles'){
+      $('a-dt').value=ch.date||'';$('a-tg').value=ch.tags||'';
+      ta.value=ch.body!==undefined?ch.body:(ch.content||'');
+      $('am').classList.remove('hide');
+    }else{ta.value=ch.content||'';$('am').classList.add('hide');}
+  }else{
+    $('am').classList.add('hide');$('etl').textContent=sec.title;
+    if(sec.type!=='normal'){ta.value='';ta.disabled=true;$('etl').textContent=sec.title+' — editujte podstránky';}
+    else{ta.value=sec.content||'';}
   }
 }
 
-function saveCurrentItem() {
-  if (!state.activeItem) return;
-  const { sectionId, childId } = state.activeItem;
-  const sec = state.sections.find(s => s.id === sectionId);
-  if (!sec) return;
+function saveItem(){
+  if(!S.activeSec)return;
+  const sec=S.sections.find(s=>s.id===S.activeSec);if(!sec)return;
+  const ta=$('eta');
+  if(S.activeChild){
+    const ch=sec.children?.find(c=>c.id===S.activeChild);if(!ch)return;
+    if(sec.type==='articles'){ch.date=$('a-dt').value.trim();ch.tags=$('a-tg').value.trim();ch.body=ta.value;}
+    else ch.content=ta.value;
+  }else if(sec.type==='normal'){sec.content=ta.value;}
+}
 
-  if (childId) {
-    const child = sec.children?.find(c => c.id === childId);
-    if (!child) return;
-    if (sec.type === 'articles') {
-      child.date = document.getElementById('art-date').value.trim();
-      child.tags = document.getElementById('art-tags').value.trim();
-      child.body = document.getElementById('content-textarea').value;
-      // Rebuild content with meta
-      let content = '';
-      if (child.date) content += `Datum: ${child.date}\n`;
-      if (child.tags) content += `Tagy: ${child.tags}\n`;
-      if (child.date || child.tags) content += '\n';
-      content += child.body;
-      child.content = content;
-    } else {
-      child.content = document.getElementById('content-textarea').value;
-    }
-  } else {
-    if (sec.type !== 'multisection' && sec.type !== 'articles') {
-      sec.content = document.getElementById('content-textarea').value;
-    }
+function clearEditor(){
+  const ta=$('eta');ta.value='';ta.disabled=false;
+  $('etl').textContent='Vyberte sekci';$('am').classList.add('hide');
+}
+
+// Tabs
+function activateTab(id){
+  if(id!=='t-c')saveItem();
+  const map={'t-s':'ps','t-c':'pc','t-b':'pb'};
+  document.querySelectorAll('.tab').forEach(t=>{const on=t.id===id;t.classList.toggle('act',on);t.setAttribute('aria-selected',on?'true':'false');});
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('act'));
+  const p=$(map[id]);if(p)p.classList.add('act');
+  if(id==='t-b')$('sta').value=S.sidebarMD;
+}
+
+// Toolbar
+function wrapText(ta,b,a){
+  const s=ta.selectionStart,e=ta.selectionEnd,sel=ta.value.slice(s,e);
+  ta.setRangeText(b+(sel||'text')+a,s,e,'select');
+  if(!sel){ta.selectionStart=s+b.length;ta.selectionEnd=s+b.length+4;}
+  ta.focus();setDirty();
+}
+function insertLine(ta,pre){
+  const s=ta.selectionStart,ls=ta.value.lastIndexOf('\n',s-1)+1;
+  ta.setRangeText(pre,ls,ls,'end');ta.focus();setDirty();
+}
+function setupTb(tbEl){
+  tbEl.querySelectorAll('[data-w]').forEach(b=>b.addEventListener('click',()=>{const ta=$(b.dataset.ta||'eta');wrapText(ta,b.dataset.w,b.dataset.w);}));
+  tbEl.querySelectorAll('[data-l]').forEach(b=>b.addEventListener('click',()=>{insertLine($(b.dataset.ta||'eta'),b.dataset.l);}));
+  tbEl.querySelectorAll('[data-c]').forEach(b=>b.addEventListener('click',()=>{const[bk,ak]=CRITIC[b.dataset.c];wrapText($('eta'),bk,ak);}));
+}
+
+// Modals
+function openMo(id){$(id).classList.add('open');}
+function closeMo(id){$(id).classList.remove('open');}
+function ovClick(id){$(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeMo(id);});}
+
+function openSubModal(si){S.subIdx=si;$('sub-t').value='';openMo('m-sub');$('sub-t').focus();}
+
+// GitHub
+const GH={
+  KEY:'md2web_gh_token',
+  get token(){try{return localStorage.getItem(this.KEY)||'';}catch{return'';}},
+  set token(v){try{v?localStorage.setItem(this.KEY,v):localStorage.removeItem(this.KEY);}catch{}},
+  get o(){return $('gh-o').value.trim();},
+  get r(){return $('gh-r').value.trim();},
+  get b(){return $('gh-b').value.trim()||'main';},
+  get p(){return $('gh-p').value.trim().replace(/^\/|\/$/g,'');},
+  fp(n){const p=this.p;return p?p+'/'+n:n;},
+  ready(){return!!(this.o&&this.r&&this.token);},
+  st(msg,type=''){const el=$('ghst');el.textContent=msg;el.className=type?'ghst '+type:'ghst';},
+  hd(){return{'Authorization':'token '+this.token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'};},
+  async get(name){
+    const url=`https://api.github.com/repos/${this.o}/${this.r}/contents/${this.fp(name)}?ref=${encodeURIComponent(this.b)}`;
+    const res=await fetch(url,{headers:this.hd()});
+    if(res.status===404)return null;
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(`GH ${res.status}: ${e.message||res.statusText}`);}
+    const d=await res.json();
+    return{content:decodeURIComponent(escape(atob(d.content.replace(/\n/g,'')))).replace(/\r\n/g,'\n').replace(/\r/g,'\n'),sha:d.sha};
+  },
+  async put(name,content,sha,msg){
+    const url=`https://api.github.com/repos/${this.o}/${this.r}/contents/${this.fp(name)}`;
+    const body={message:msg||`md2web editor: update ${name}`,content:btoa(unescape(encodeURIComponent(content))),branch:this.b};
+    if(sha)body.sha=sha;
+    const res=await fetch(url,{method:'PUT',headers:this.hd(),body:JSON.stringify(body)});
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(`GH ${res.status}: ${e.message||res.statusText}`);}
+    return res.json();
+  },
+  async pull(){
+    if(!this.ready()){this.st('Vyplňte owner, repo a token','err');return;}
+    this.st('Načítám…','busy');ghBusy(true);
+    try{
+      const jf=await this.get('website.json');if(!jf)throw new Error('website.json nenalezen');
+      const mf=await this.get('website.md');if(!mf)throw new Error('website.md nenalezen');
+      const sf=await this.get('sidebar.md');
+      S.sections=parseMD(mf.content);S.sidebarMD=sf?sf.content:'';
+      S.ghSha={'website.json':jf.sha,'website.md':mf.sha,'sidebar.md':sf?.sha||null};
+      const cfg=JSON.parse(jf.content);
+      applyConfig(cfg);S.loaded=true;setDirty(false);showEditor();renderTree();
+      setProjName(cfg.title||this.r);this.st('✓ '+this.o+'/'+this.r,'ok');notify('Načteno z GitHubu ✓');
+    }catch(e){this.st(e.message,'err');notify('Chyba: '+e.message,'err');}
+    finally{ghBusy(false);}
+  },
+  async push(){
+    if(!this.ready()||!S.loaded)return;
+    saveItem();this.st('Ukládám…','busy');ghBusy(true);
+    try{
+      const cfg=readConfig(),mdTx=toMD(S.sections),sbTx=$('sta').value.trim();
+      const sha=S.ghSha;
+      const msg=`md2web editor: ${new Date().toISOString().slice(0,16).replace('T',' ')}`;
+      if(!sha['website.json']){const f=await this.get('website.json');if(f)sha['website.json']=f.sha;}
+      if(!sha['website.md']){const f=await this.get('website.md');if(f)sha['website.md']=f.sha;}
+      await this.put('website.json',JSON.stringify(cfg,null,2),sha['website.json']||null,msg);
+      await this.put('website.md',mdTx,sha['website.md']||null,msg);
+      if(sbTx){if(!sha['sidebar.md']){const f=await this.get('sidebar.md');if(f)sha['sidebar.md']=f.sha;}await this.put('sidebar.md',sbTx+'\n',sha['sidebar.md']||null,msg);}
+      const nj=await this.get('website.json'),nm=await this.get('website.md');
+      S.ghSha={'website.json':nj?.sha||null,'website.md':nm?.sha||null,'sidebar.md':sbTx?(await this.get('sidebar.md'))?.sha||null:null};
+      setDirty(false);this.st('✓ Uloženo do '+this.o+'/'+this.r,'ok');notify('Uloženo na GitHub ✓');
+    }catch(e){this.st(e.message,'err');notify('Chyba: '+e.message,'err');}
+    finally{ghBusy(false);}
   }
-}
-
-function clearEditor() {
-  document.getElementById('content-textarea').value = '';
-  document.getElementById('content-textarea').disabled = false;
-  document.getElementById('content-editor-label').textContent = 'Vyberte sekci';
-  document.getElementById('article-meta-panel').classList.add('hidden');
-}
-
-// =============================================
-//  NEW SECTION MODAL
-// =============================================
-let newSubTargetIdx = null;
-
-function openNewSectionModal() {
-  document.getElementById('new-section-title').value = '';
-  document.querySelectorAll('.type-opt').forEach(o => {
-    o.classList.toggle('selected', o.dataset.type === 'normal');
-    o.setAttribute('aria-checked', o.dataset.type === 'normal' ? 'true' : 'false');
-  });
-  document.getElementById('modal-new-section').classList.add('active');
-  document.getElementById('new-section-title').focus();
-}
-
-function openNewSubModal(si) {
-  newSubTargetIdx = si;
-  document.getElementById('new-sub-title').value = '';
-  document.getElementById('modal-new-sub').classList.add('active');
-  document.getElementById('new-sub-title').focus();
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('active');
-}
-
-// =============================================
-//  TABS
-// =============================================
-function activateTab(tabId) {
-  // Save before switching
-  if (tabId !== 'tab-content') saveCurrentItem();
-
-  document.querySelectorAll('.tab').forEach(t => {
-    const active = t.id === tabId;
-    t.classList.toggle('active', active);
-    t.setAttribute('aria-selected', active ? 'true' : 'false');
-  });
-  document.querySelectorAll('.editor-panel').forEach(p => {
-    p.classList.remove('active');
-  });
-  const panelMap = { 'tab-settings': 'panel-settings', 'tab-content': 'panel-content', 'tab-sidebar': 'panel-sidebar-md' };
-  const panelId = panelMap[tabId];
-  if (panelId) document.getElementById(panelId).classList.add('active');
-
-  if (tabId === 'tab-sidebar') {
-    document.getElementById('sidebar-textarea').value = state.sidebarMD;
-  }
-}
-
-// =============================================
-//  MD TOOLBAR
-// =============================================
-function wrapText(textarea, before, after) {
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const sel = textarea.value.slice(start, end);
-  const replacement = before + (sel || 'text') + after;
-  textarea.setRangeText(replacement, start, end, 'select');
-  if (!sel) {
-    textarea.selectionStart = start + before.length;
-    textarea.selectionEnd = start + before.length + 4;
-  }
-  textarea.focus();
-  setDirty();
-}
-
-function insertLinePrefix(textarea, prefix) {
-  const start = textarea.selectionStart;
-  const lineStart = textarea.value.lastIndexOf('\n', start - 1) + 1;
-  textarea.setRangeText(prefix, lineStart, lineStart, 'end');
-  textarea.focus();
-  setDirty();
-}
-
-const CRITIC_PAIRS = {
-  ins:     ['{++', '++}'],
-  del:     ['{--', '--}'],
-  mark:    ['{==', '==}'],
-  comment: ['{>>', '<<}'],
 };
 
-function setupToolbar(toolbarEl, textareaEl) {
-  toolbarEl.querySelectorAll('[data-wrap]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const ta = btn.dataset.area ? document.getElementById(btn.dataset.area) : textareaEl;
-      const w = btn.dataset.wrap;
-      wrapText(ta, w, w);
-    });
-  });
-  toolbarEl.querySelectorAll('[data-wrap-critic]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const [b, a] = CRITIC_PAIRS[btn.dataset.wrapCritic];
-      wrapText(textareaEl, b, a);
-    });
-  });
-  toolbarEl.querySelectorAll('[data-insert]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const ta = btn.dataset.area ? document.getElementById(btn.dataset.area) : textareaEl;
-      if (btn.dataset.line) insertLinePrefix(ta, btn.dataset.insert);
-      else { ta.setRangeText(btn.dataset.insert, ta.selectionStart, ta.selectionEnd, 'end'); ta.focus(); setDirty(); }
-    });
+function ghBusy(v){
+  ['gh-pull','gh-push','btn-save'].forEach(id=>{const el=$(id);if(!el)return;el.disabled=v||(id==='btn-save'&&!S.loaded);});
+  if(!v)ghUpdateBtns();
+}
+function ghUpdateBtns(){
+  const ok=!!(GH.o&&GH.r),tok=!!GH.token;
+  $('gh-pull').disabled=!ok||!tok;$('gh-push').disabled=!ok||!tok||!S.loaded;
+}
+function buildUrlHint(){
+  const o=GH.o,r=GH.r,b=GH.b,p=GH.p;
+  if(!o||!r){$('url-val').textContent='Vyplňte owner a repo';return;}
+  let url=location.href.split('?')[0];
+  url+=`?owner=${encodeURIComponent(o)}&repo=${encodeURIComponent(r)}`;
+  if(b&&b!=='main')url+=`&branch=${encodeURIComponent(b)}`;
+  if(p)url+=`&path=${encodeURIComponent(p)}`;
+  $('url-val').textContent=url;
+}
+function loadFromUrl(){
+  const p=new URLSearchParams(location.search);
+  const o=p.get('owner')||p.get('o')||'',r=p.get('repo')||p.get('r')||'';
+  const b=p.get('branch')||p.get('b')||'',pt=p.get('path')||p.get('p')||'';
+  if(o)$('gh-o').value=o;if(r)$('gh-r').value=r;if(b)$('gh-b').value=b;if(pt)$('gh-p').value=pt;
+  ghUpdateBtns();
+  if(o&&r&&GH.token)GH.pull();
+  else if(o||r)GH.st('Uložte token a klikněte Načíst z GH');
+}
+
+// Copy MD
+function copyMD(){
+  saveItem();const md=toMD(S.sections);
+  if(navigator.clipboard?.writeText)navigator.clipboard.writeText(md).then(()=>notify('website.md zkopírován ✓')).catch(()=>fallbackCopy(md));
+  else fallbackCopy(md);
+}
+function fallbackCopy(text){
+  const ta=Object.assign(document.createElement('textarea'),{value:text,style:'position:fixed;top:-9999px;opacity:0'});
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');notify('website.md zkopírován ✓');}catch{notify('Kopírování selhalo','err');}
+  document.body.removeChild(ta);
+}
+
+// Drop zone
+function setupDrop(){
+  const dz=$('dz');let dc=0;
+  document.addEventListener('dragenter',e=>{if([...e.dataTransfer.items].some(i=>i.kind==='file')){dc++;if(dc===1){dz.classList.add('open');dz.setAttribute('aria-hidden','false');}}});
+  document.addEventListener('dragleave',()=>{dc=Math.max(0,dc-1);if(dc===0){dz.classList.remove('open');dz.setAttribute('aria-hidden','true');}});
+  document.addEventListener('dragover',e=>e.preventDefault());
+  document.addEventListener('drop',e=>{
+    e.preventDefault();dc=0;dz.classList.remove('open');dz.setAttribute('aria-hidden','true');
+    const f=e.dataTransfer.files[0];
+    if(f&&f.name.endsWith('.zip'))openZip(f);else notify('Přetáhněte .md2web.zip soubor','err');
   });
 }
 
-// Keyboard shortcuts for main textarea
-function setupKeyboardShortcuts(ta) {
-  ta.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'b') { e.preventDefault(); wrapText(ta, '**', '**'); }
-    if ((e.ctrlKey || e.metaKey) && e.key === 'i') { e.preventDefault(); wrapText(ta, '*', '*'); }
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); if (state.loaded) saveZip(); }
-    // Tab → 2 spaces
-    if (e.key === 'Tab') {
-      e.preventDefault();
-      ta.setRangeText('  ', ta.selectionStart, ta.selectionEnd, 'end');
-    }
-  });
-}
+// INIT
+document.addEventListener('DOMContentLoaded',()=>{
+  buildPalette();setupDrop();
+  setupTb($('etb'));setupTb($('stb'));
 
-// =============================================
-//  DROP ZONE
-// =============================================
-function setupDrop() {
-  const dz = document.getElementById('dropzone');
-  let dragCount = 0;
+  $('eta').addEventListener('input',()=>setDirty());
+  $('sta').addEventListener('input',()=>{S.sidebarMD=$('sta').value;setDirty();});
+  ['a-dt','a-tg'].forEach(id=>$(id).addEventListener('input',()=>setDirty()));
+  ['s-ti','s-tg','s-la','s-cn','s-cu','s-cy'].forEach(id=>$(id).addEventListener('input',()=>{setDirty();if(id==='s-ti')setProjName($('s-ti').value);}));
 
-  document.addEventListener('dragenter', e => {
-    if ([...e.dataTransfer.items].some(i => i.kind === 'file')) {
-      dragCount++;
-      if (dragCount === 1) { dz.classList.add('active'); dz.setAttribute('aria-hidden','false'); }
-    }
-  });
-  document.addEventListener('dragleave', () => {
-    dragCount = Math.max(0, dragCount - 1);
-    if (dragCount === 0) { dz.classList.remove('active'); dz.setAttribute('aria-hidden','true'); }
-  });
-  document.addEventListener('dragover', e => e.preventDefault());
-  document.addEventListener('drop', e => {
-    e.preventDefault();
-    dragCount = 0;
-    dz.classList.remove('active');
-    dz.setAttribute('aria-hidden','true');
-    const file = e.dataTransfer.files[0];
-    if (file && (file.name.endsWith('.zip') || file.name.endsWith('.md2web.zip'))) {
-      loadZip(file);
-    } else {
-      notify('Přetáhněte .md2web.zip soubor', 'err');
-    }
-  });
-}
-
-// =============================================
-//  INIT
-// =============================================
-// =============================================
-//  GITHUB ENGINE
-// =============================================
-
-const GH = {
-  TOKEN_KEY: 'md2web_gh_token',
-
-  get token() {
-    try { return localStorage.getItem(this.TOKEN_KEY) || ''; }
-    catch(e) { return ''; }
-  },
-  set token(v) {
-    try { if (v) localStorage.setItem(this.TOKEN_KEY, v); else localStorage.removeItem(this.TOKEN_KEY); }
-    catch(e) {}
-  },
-
-  // Aktuální konfigurace
-  get owner()  { return document.getElementById('gh-owner').value.trim(); },
-  get repo()   { return document.getElementById('gh-repo').value.trim(); },
-  get branch() { return document.getElementById('gh-branch').value.trim() || 'main'; },
-  get path()   { return document.getElementById('gh-path').value.trim().replace(/^\/|\/$/, ''); },
-
-  filePath(name) {
-    const p = this.path;
-    return p ? `${p}/${name}` : name;
-  },
-
-  ready() { return !!(this.owner && this.repo && this.token); },
-
-  setStatus(msg, type='') {
-    const el = document.getElementById('gh-status');
-    el.textContent = msg;
-    el.className = 'gh-status' + (type ? ' ' + type : '');
-  },
-
-  headers() {
-    return {
-      'Authorization': `token ${this.token}`,
-      'Accept': 'application/vnd.github.v3+json',
-      'Content-Type': 'application/json',
-    };
-  },
-
-  // Načíst jeden soubor — vrátí { content: string, sha: string } nebo null
-  async getFile(filename) {
-    const url = `https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.filePath(filename)}?ref=${encodeURIComponent(this.branch)}`;
-    const r = await fetch(url, { headers: this.headers() });
-    if (r.status === 404) return null;
-    if (!r.ok) {
-      const err = await r.json().catch(() => ({}));
-      throw new Error(`GitHub ${r.status}: ${err.message || r.statusText}`);
-    }
-    const data = await r.json();
-    // Obsah je base64
-    const content = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
-    return { content: content.replace(/\r\n/g, '\n').replace(/\r/g, '\n'), sha: data.sha };
-  },
-
-  // Uložit soubor — sha je nutné pro update, null pro nový soubor
-  async putFile(filename, content, sha, commitMsg) {
-    const url = `https://api.github.com/repos/${this.owner}/${this.repo}/contents/${this.filePath(filename)}`;
-    const body = {
-      message: commitMsg || `md2web editor: update ${filename}`,
-      content: btoa(unescape(encodeURIComponent(content))),
-      branch: this.branch,
-    };
-    if (sha) body.sha = sha;
-    const r = await fetch(url, { method: 'PUT', headers: this.headers(), body: JSON.stringify(body) });
-    if (!r.ok) {
-      const err = await r.json().catch(() => ({}));
-      throw new Error(`GitHub ${r.status}: ${err.message || r.statusText}`);
-    }
-    return r.json();
-  },
-
-  // Načíst projekt z GitHubu
-  async pull() {
-    if (!this.ready()) { this.setStatus('Vyplňte owner, repo a token', 'err'); return; }
-    this.setStatus('Načítám…', 'working');
-    setBtnsWorking(true);
-    try {
-      const jsonFile = await this.getFile('website.json');
-      if (!jsonFile) throw new Error('website.json nenalezen v zadané cestě');
-      const mdFile = await this.getFile('website.md');
-      if (!mdFile) throw new Error('website.md nenalezen v zadané cestě');
-      const sidebarFile = await this.getFile('sidebar.md');
-
-      const config = JSON.parse(jsonFile.content);
-      state.sections = parseMDToSections(mdFile.content);
-      state.sidebarMD = sidebarFile ? sidebarFile.content : '';
-
-      // Ulož SHA pro pozdější update
-      state._ghSha = {
-        'website.json': jsonFile.sha,
-        'website.md': mdFile.sha,
-        'sidebar.md': sidebarFile ? sidebarFile.sha : null,
-      };
-
-      loadConfig(config);
-      state.loaded = true;
-      setDirty(false);
-      showWorkspace();
-      renderTree();
-      updateProjectName(config.title || this.repo);
-
-      this.setStatus(`✓ Načteno z ${this.owner}/${this.repo}`, 'ok');
-      notify('Načteno z GitHubu ✓');
-    } catch(e) {
-      this.setStatus(e.message, 'err');
-      notify('Chyba: ' + e.message, 'err');
-    } finally {
-      setBtnsWorking(false);
-    }
-  },
-
-  // Uložit projekt na GitHub
-  async push() {
-    if (!this.ready()) { this.setStatus('Vyplňte owner, repo a token', 'err'); return; }
-    if (!state.loaded) return;
-
-    saveCurrentItem();
-    this.setStatus('Ukládám…', 'working');
-    setBtnsWorking(true);
-
-    try {
-      const config = readConfig();
-      const sha = state._ghSha || {};
-
-      const jsonContent = JSON.stringify(config, null, 2);
-      const mdContent = sectionsToMD(state.sections);
-      const sbContent = document.getElementById('sidebar-textarea').value.trim();
-
-      // Nejdřív získej aktuální SHA pokud je neznáme
-      if (!sha['website.json']) {
-        const f = await this.getFile('website.json');
-        if (f) sha['website.json'] = f.sha;
-      }
-      if (!sha['website.md']) {
-        const f = await this.getFile('website.md');
-        if (f) sha['website.md'] = f.sha;
-      }
-
-      const commitMsg = `md2web editor: update ${new Date().toISOString().slice(0,16).replace('T',' ')}`;
-
-      await this.putFile('website.json', jsonContent, sha['website.json'] || null, commitMsg);
-      const mdRes = await this.putFile('website.md', mdContent, sha['website.md'] || null, commitMsg);
-
-      if (sbContent) {
-        if (!sha['sidebar.md']) {
-          const f = await this.getFile('sidebar.md');
-          if (f) sha['sidebar.md'] = f.sha;
-        }
-        await this.putFile('sidebar.md', sbContent + '\n', sha['sidebar.md'] || null, commitMsg);
-      }
-
-      // Aktualizuj SHA po úspěšném uložení
-      const newJson = await this.getFile('website.json');
-      const newMd   = await this.getFile('website.md');
-      state._ghSha = {
-        'website.json': newJson?.sha || null,
-        'website.md':   newMd?.sha || null,
-        'sidebar.md':   sbContent ? (await this.getFile('sidebar.md'))?.sha || null : null,
-      };
-
-      setDirty(false);
-      this.setStatus(`✓ Uloženo do ${this.owner}/${this.repo}`, 'ok');
-      notify('Uloženo na GitHub ✓');
-    } catch(e) {
-      this.setStatus(e.message, 'err');
-      notify('Chyba: ' + e.message, 'err');
-    } finally {
-      setBtnsWorking(false);
-    }
-  },
-};
-
-function setBtnsWorking(working) {
-  ['gh-btn-pull','gh-btn-push','btn-save'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.disabled = working || (id === 'btn-save' && !state.loaded);
-  });
-}
-
-function updateGhBtns() {
-  const hasCoords = !!(GH.owner && GH.repo);
-  document.getElementById('gh-btn-pull').disabled = !hasCoords || !GH.token;
-  document.getElementById('gh-btn-push').disabled = !hasCoords || !GH.token || !state.loaded;
-}
-
-function loadGhFromUrl() {
-  const p = new URLSearchParams(location.search);
-  const owner  = p.get('owner')  || p.get('o') || '';
-  const repo   = p.get('repo')   || p.get('r') || '';
-  const branch = p.get('branch') || p.get('b') || '';
-  const path   = p.get('path')   || p.get('p') || '';
-  if (owner)  document.getElementById('gh-owner').value  = owner;
-  if (repo)   document.getElementById('gh-repo').value   = repo;
-  if (branch) document.getElementById('gh-branch').value = branch;
-  if (path)   document.getElementById('gh-path').value   = path;
-  // Pokud jsou owner+repo v URL a máme token, auto-načteme
-  if (owner && repo && GH.token) {
-    GH.pull();
-  } else if (owner || repo) {
-    updateGhBtns();
-    GH.setStatus('Vyplňte token a klikněte Načíst z GH');
-  }
-}
-
-function initGH() {
-  try {
-  const savedToken = GH.token;
-  if (savedToken) document.getElementById('gh-token').value = '••••••••••••••••';
-
-  document.getElementById('gh-btn-cfg').addEventListener('click', () => {
-    const d = document.getElementById('gh-config-drawer');
-    const open = d.classList.toggle('open');
-    document.getElementById('gh-btn-cfg').setAttribute('aria-expanded', String(open));
-    if (open) document.getElementById('gh-token').focus();
+  $('eta').addEventListener('keydown',e=>{
+    if((e.ctrlKey||e.metaKey)&&e.key==='b'){e.preventDefault();wrapText($('eta'),'**','**');}
+    if((e.ctrlKey||e.metaKey)&&e.key==='i'){e.preventDefault();wrapText($('eta'),'*','*');}
+    if(e.key==='Tab'){e.preventDefault();const ta=$('eta');ta.setRangeText('  ',ta.selectionStart,ta.selectionEnd,'end');}
   });
 
-  document.getElementById('gh-token-save').addEventListener('click', () => {
-    const val = document.getElementById('gh-token').value.trim();
-    if (!val || val.startsWith('•')) { notify('Zadejte platný token', 'err'); return; }
-    GH.token = val;
-    document.getElementById('gh-token').value = '••••••••••••••••';
-    document.getElementById('gh-config-drawer').classList.remove('open');
-    document.getElementById('gh-btn-cfg').setAttribute('aria-expanded', 'false');
-    updateGhBtns();
-    notify('Token uložen ✓');
+  document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>activateTab(t.id)));
+
+  // Topbar
+  $('btn-new').addEventListener('click',()=>{if(S.dirty&&!confirm('Neuložené změny budou ztraceny. Pokračovat?'))return;newProject();});
+  $('btn-open').addEventListener('click',()=>$('fin').click());
+  $('fin').addEventListener('change',e=>{if(e.target.files[0])openZip(e.target.files[0]);e.target.value='';});
+  $('btn-save').addEventListener('click',saveZip);
+  $('es-new').addEventListener('click',newProject);
+  $('es-open').addEventListener('click',()=>$('fin').click());
+  $('btn-cp').addEventListener('click',copyMD);
+
+  // Import MD
+  $('btn-imp').addEventListener('click',()=>{$('imp-ta').value='';openMo('m-imp');$('imp-ta').focus();});
+  $('imp-cb').addEventListener('click',async()=>{try{const t=await navigator.clipboard.readText();$('imp-ta').value=t;}catch{notify('Nelze číst schránku — vložte ručně (Ctrl+V)','err');}});
+  $('imp-cl').addEventListener('click',()=>closeMo('m-imp'));ovClick('m-imp');
+  $('imp-ta').addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='Enter')$('imp-ok').click();if(e.key==='Escape')closeMo('m-imp');});
+  $('imp-ok').addEventListener('click',()=>{
+    const text=$('imp-ta').value.trim();if(!text){notify('Textarea je prázdná','err');return;}
+    if(S.sections.length>0&&!confirm('Přepsat celý obsah webu?'))return;
+    S.sections=parseMD(text);setDirty(true);renderTree();closeMo('m-imp');
+    S.activeSec=null;S.activeChild=null;clearEditor();activateTab('t-c');
+    notify(`Importováno ${S.sections.length} sekcí ✓`);
   });
 
-  document.getElementById('gh-token').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('gh-token-save').click();
+  // Tree add
+  $('tadd').addEventListener('click',()=>{
+    $('ns-t').value='';
+    document.querySelectorAll('.to').forEach(o=>{const on=o.dataset.type==='normal';o.classList.toggle('sel',on);o.setAttribute('aria-checked',on?'true':'false');});
+    openMo('m-ns');$('ns-t').focus();
   });
-
-  document.getElementById('gh-token-clear').addEventListener('click', () => {
-    if (!confirm('Opravdu smazat uložený token?')) return;
-    GH.token = '';
-    document.getElementById('gh-token').value = '';
-    updateGhBtns();
-    notify('Token smazán');
+  document.querySelectorAll('.to').forEach(opt=>{
+    const sel=()=>{document.querySelectorAll('.to').forEach(o=>{o.classList.toggle('sel',o===opt);o.setAttribute('aria-checked',o===opt?'true':'false');});};
+    opt.addEventListener('click',sel);opt.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();sel();}});
   });
-
-  document.getElementById('gh-btn-pull').addEventListener('click', () => GH.pull());
-  document.getElementById('gh-btn-push').addEventListener('click', () => GH.push());
-  ['gh-owner','gh-repo','gh-branch','gh-path'].forEach(id =>
-    document.getElementById(id).addEventListener('input', updateGhBtns));
-
-  updateGhBtns();
-  loadGhFromUrl();
-  } catch(e) { console.error('initGH error:', e); }
-}
-
-// =============================================
-//  COPY / IMPORT MD
-// =============================================
-
-function initCopyImport() {
-  // Kopírovat MD do schránky
-  document.getElementById('btn-copy-md').addEventListener('click', () => {
-    saveCurrentItem();
-    const md = sectionsToMD(state.sections);
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(md).then(() => {
-        notify('website.md zkopírován do schránky ✓');
-      }).catch(() => {
-        fallbackCopy(md);
-      });
-    } else {
-      fallbackCopy(md);
-    }
-  });
-
-  function fallbackCopy(text) {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
-    document.body.appendChild(ta);
-    ta.select();
-    try {
-      document.execCommand('copy');
-      notify('website.md zkopírován do schránky ✓');
-    } catch(e) {
-      notify('Kopírování selhalo — použijte Ctrl+A, Ctrl+C v textovém poli', 'err');
-    }
-    document.body.removeChild(ta);
-  }
-
-  // Otevřít modal pro import
-  document.getElementById('btn-import-md').addEventListener('click', () => {
-    document.getElementById('import-md-textarea').value = '';
-    document.getElementById('modal-import-md').classList.add('active');
-    document.getElementById('import-md-textarea').focus();
-  });
-
-  // Vložit ze schránky do textarea v modalu
-  document.getElementById('import-from-clipboard').addEventListener('click', async () => {
-    try {
-      if (navigator.clipboard && navigator.clipboard.readText) {
-        const text = await navigator.clipboard.readText();
-        document.getElementById('import-md-textarea').value = text;
-        document.getElementById('import-md-textarea').focus();
-      } else {
-        notify('Přístup ke schránce není dostupný — vložte text ručně (Ctrl+V)', 'err');
-      }
-    } catch(e) {
-      notify('Nelze číst schránku — vložte text ručně (Ctrl+V)', 'err');
-    }
-  });
-
-  // Zrušit import
-  document.getElementById('modal-import-cancel').addEventListener('click', () => {
-    closeModal('modal-import-md');
-  });
-  document.getElementById('modal-import-md').addEventListener('click', e => {
-    if (e.target === e.currentTarget) closeModal('modal-import-md');
-  });
-
-  // Potvrdit import
-  document.getElementById('modal-import-ok').addEventListener('click', () => {
-    const text = document.getElementById('import-md-textarea').value.trim();
-    if (!text) { notify('Textarea je prázdná', 'err'); return; }
-
-    // Varování pokud projekt existuje
-    if (state.sections.length > 0) {
-      if (!confirm('Importem přepíšete celý obsah webu. Opravdu pokračovat?')) return;
-    }
-
-    const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
-    state.sections = parseMDToSections(normalized);
-    setDirty(true);
-    renderTree();
-    closeModal('modal-import-md');
-    state.activeItem = null;
-    clearEditor();
-    // Přejít na záložku Obsah
-    activateTab('tab-content');
-    notify(`Importováno ${state.sections.length} sekcí ✓`);
-  });
-
-  // Klávesa Enter v textarea nepotvrzuje — chceme víceřádkový vstup
-  // Ale Ctrl+Enter potvrdí
-  document.getElementById('import-md-textarea').addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      document.getElementById('modal-import-ok').click();
-    }
-    if (e.key === 'Escape') closeModal('modal-import-md');
-  });
-}
-
-function init() {
-  buildPaletteGrid();
-  setupDrop();
-
-  const ta = document.getElementById('content-textarea');
-  const toolbar = document.getElementById('content-toolbar');
-  setupToolbar(toolbar, ta);
-  setupKeyboardShortcuts(ta);
-  setupToolbar(document.querySelector('#panel-sidebar-md .md-editor-header'),
-               document.getElementById('sidebar-textarea'));
-
-  ta.addEventListener('input', setDirty);
-  document.getElementById('sidebar-textarea').addEventListener('input', () => {
-    state.sidebarMD = document.getElementById('sidebar-textarea').value;
-    setDirty();
-  });
-  ['art-date','art-tags'].forEach(id => {
-    document.getElementById(id).addEventListener('input', setDirty);
-  });
-
-  // Settings inputs
-  ['s-title','s-tagline','s-language','s-copy-name','s-copy-url','s-copy-year'].forEach(id => {
-    document.getElementById(id).addEventListener('input', () => {
-      setDirty();
-      if (id === 's-title') updateProjectName(document.getElementById('s-title').value);
-    });
-  });
-
-  // Tabs
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => activateTab(tab.id));
-    tab.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activateTab(tab.id); } });
-  });
-
-  // Topbar buttons
-  document.getElementById('btn-new').addEventListener('click', () => {
-    if (state.dirty && !confirm('Neuložené změny budou ztraceny. Pokračovat?')) return;
-    newProject();
-  });
-  document.getElementById('btn-open').addEventListener('click', () => document.getElementById('file-input').click());
-  document.getElementById('file-input').addEventListener('change', e => {
-    if (e.target.files[0]) loadZip(e.target.files[0]);
-    e.target.value = '';
-  });
-  document.getElementById('btn-save').addEventListener('click', () => { saveCurrentItem(); saveZip(); });
-
-  // Empty state buttons
-  document.getElementById('es-btn-new').addEventListener('click', newProject);
-  document.getElementById('es-btn-open').addEventListener('click', () => document.getElementById('file-input').click());
-
-  // Tree add button
-  document.getElementById('tree-add').addEventListener('click', openNewSectionModal);
-
-  // Links tables
-  document.getElementById('menu-links-add').addEventListener('click', () =>
-    addLinkRow(document.getElementById('menu-links-body')));
-  document.getElementById('footer-links-add').addEventListener('click', () =>
-    addLinkRow(document.getElementById('footer-links-body')));
-
-  // Type options in modal
-  document.querySelectorAll('.type-opt').forEach(opt => {
-    opt.addEventListener('click', () => {
-      document.querySelectorAll('.type-opt').forEach(o => {
-        o.classList.toggle('selected', o === opt);
-        o.setAttribute('aria-checked', o === opt ? 'true' : 'false');
-      });
-    });
-    opt.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        document.querySelectorAll('.type-opt').forEach(o => {
-          o.classList.toggle('selected', o === opt);
-          o.setAttribute('aria-checked', o === opt ? 'true' : 'false');
-        });
-      }
-    });
-  });
-
-  // New section modal
-  document.getElementById('modal-new-cancel').addEventListener('click', () => closeModal('modal-new-section'));
-  document.getElementById('modal-new-ok').addEventListener('click', () => {
-    const title = document.getElementById('new-section-title').value.trim();
-    if (!title) { notify('Zadejte název sekce', 'err'); return; }
-    const type = document.querySelector('.type-opt.selected')?.dataset.type || 'normal';
-    const newSec = {
-      id: uid(), title, type, content: '',
-      ...(type !== 'normal' ? { children: [] } : {})
-    };
-    state.sections.push(newSec);
-    setDirty();
-    renderTree();
-    closeModal('modal-new-section');
-    selectItem(newSec.id, null);
+  $('ns-cl').addEventListener('click',()=>closeMo('m-ns'));ovClick('m-ns');
+  $('ns-t').addEventListener('keydown',e=>{if(e.key==='Enter')$('ns-ok').click();});
+  $('ns-ok').addEventListener('click',()=>{
+    const title=$('ns-t').value.trim();if(!title){notify('Zadejte název','err');return;}
+    const type=document.querySelector('.to.sel')?.dataset.type||'normal';
+    const sec={id:uid(),title,type,content:'',children:type!=='normal'?[]:null};
+    S.sections.push(sec);setDirty();renderTree();closeMo('m-ns');selectItem(sec.id,null);
     notify(`Sekce "${title}" přidána`);
   });
-  document.getElementById('new-section-title').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('modal-new-ok').click();
-  });
 
-  // New sub modal
-  document.getElementById('modal-sub-cancel').addEventListener('click', () => closeModal('modal-new-sub'));
-  document.getElementById('modal-sub-ok').addEventListener('click', () => {
-    const title = document.getElementById('new-sub-title').value.trim();
-    if (!title) { notify('Zadejte název', 'err'); return; }
-    if (newSubTargetIdx === null) return;
-    const sec = state.sections[newSubTargetIdx];
-    if (!sec.children) sec.children = [];
-    const child = { id: uid(), title, content: '' };
-    sec.children.push(child);
-    setDirty();
-    renderTree();
-    closeModal('modal-new-sub');
-    selectItem(sec.id, child.id);
+  // Sub modal
+  $('sub-cl').addEventListener('click',()=>closeMo('m-sub'));ovClick('m-sub');
+  $('sub-t').addEventListener('keydown',e=>{if(e.key==='Enter')$('sub-ok').click();});
+  $('sub-ok').addEventListener('click',()=>{
+    const title=$('sub-t').value.trim();if(!title){notify('Zadejte název','err');return;}
+    if(S.subIdx===null)return;
+    const sec=S.sections[S.subIdx];if(!sec.children)sec.children=[];
+    const ch={id:uid(),title,content:''};
+    if(sec.type==='articles'){ch.date='';ch.tags='';ch.body='';}
+    sec.children.push(ch);setDirty();renderTree();closeMo('m-sub');selectItem(sec.id,ch.id);
     notify(`"${title}" přidáno`);
   });
-  document.getElementById('new-sub-title').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('modal-sub-ok').click();
-  });
 
-  // Close modals on overlay click
-  ['modal-new-section','modal-new-sub'].forEach(id => {
-    document.getElementById(id).addEventListener('click', e => {
-      if (e.target === e.currentTarget) closeModal(id);
-    });
-  });
+  // Links
+  $('m-add').addEventListener('click',()=>addLink($('mb')));
+  $('f-add').addEventListener('click',()=>addLink($('fb')));
 
-  // Ctrl+S globally
-  document.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 's' && state.loaded) {
-      e.preventDefault();
-      saveCurrentItem();
-      saveZip();
-    }
-  });
+  // GitHub
+  if(GH.token)$('gh-tok').value='••••••••••••••••';
 
-  // Warn on close if dirty
-  window.addEventListener('beforeunload', e => {
-    if (state.dirty) { e.preventDefault(); e.returnValue = ''; }
+  $('gh-tok-btn').addEventListener('click',()=>{
+    const d=$('gh-dr'),open=d.classList.toggle('open');
+    $('gh-tok-btn').setAttribute('aria-expanded',String(open));
+    if(open){$('gh-tok').focus();$('url-dr').classList.remove('open');$('gh-url-btn').setAttribute('aria-expanded','false');}
   });
-}
+  $('gh-url-btn').addEventListener('click',()=>{
+    const h=$('url-dr'),open=h.classList.toggle('open');
+    $('gh-url-btn').setAttribute('aria-expanded',String(open));
+    if(open){buildUrlHint();$('gh-dr').classList.remove('open');$('gh-tok-btn').setAttribute('aria-expanded','false');}
+  });
+  $('url-cp').addEventListener('click',()=>{
+    const text=$('url-val').textContent;
+    if(navigator.clipboard?.writeText)navigator.clipboard.writeText(text).then(()=>notify('URL zkopírována ✓')).catch(()=>fallbackCopy(text));
+    else fallbackCopy(text);
+  });
+  $('tok-save').addEventListener('click',()=>{
+    const val=$('gh-tok').value.trim();if(!val||val.startsWith('•')){notify('Zadejte platný token','err');return;}
+    GH.token=val;$('gh-tok').value='••••••••••••••••';
+    $('gh-dr').classList.remove('open');$('gh-tok-btn').setAttribute('aria-expanded','false');
+    ghUpdateBtns();notify('Token uložen ✓');
+  });
+  $('gh-tok').addEventListener('keydown',e=>{if(e.key==='Enter')$('tok-save').click();});
+  $('tok-clear').addEventListener('click',()=>{if(!confirm('Smazat uložený token?'))return;GH.token='';$('gh-tok').value='';ghUpdateBtns();notify('Token smazán');});
+  $('gh-pull').addEventListener('click',()=>GH.pull());
+  $('gh-push').addEventListener('click',()=>GH.push());
+  ['gh-o','gh-r','gh-b','gh-p'].forEach(id=>$(id).addEventListener('input',()=>{ghUpdateBtns();if($('url-dr').classList.contains('open'))buildUrlHint();}));
 
-document.addEventListener('DOMContentLoaded', () => { init(); initGH(); initCopyImport(); });
+  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='s'&&S.loaded){e.preventDefault();saveZip();}});
+  window.addEventListener('beforeunload',e=>{if(S.dirty){e.preventDefault();e.returnValue='';}});
+
+  ghUpdateBtns();loadFromUrl();
+});
 </script>
 </body>
 </html>
