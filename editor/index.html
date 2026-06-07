@@ -757,6 +757,9 @@ body {
   <input type="file" id="file-input" accept=".zip,.md2web.zip" style="display:none" aria-label="Otevřít zip soubor">
   <div class="topbar-spacer"></div>
   <button class="tb-btn tb-btn-green" id="btn-save" type="button" disabled>💾 Uložit jako .zip</button>
+  <div class="topbar-sep" aria-hidden="true"></div>
+  <button class="tb-btn tb-btn-ghost" id="btn-copy-md" type="button" disabled title="Zkopírovat celý website.md do schránky">📋 Kopírovat MD</button>
+  <button class="tb-btn tb-btn-ghost" id="btn-import-md" type="button" disabled title="Importovat MD ze schránky nebo textu">📥 Importovat MD</button>
 </header>
 
 <!-- GITHUB BAR -->
@@ -998,6 +1001,32 @@ body {
   </div>
 </div>
 
+<!-- MODAL: import MD -->
+<div class="modal-overlay" id="modal-import-md" role="dialog" aria-modal="true" aria-labelledby="modal-import-title">
+  <div class="modal" style="max-width:640px;">
+    <h2 id="modal-import-title">📥 Importovat website.md</h2>
+    <p style="font-size:.82rem;color:var(--ink-mid);margin-bottom:.75rem;line-height:1.5;">
+      Vložte obsah <code>website.md</code> — přepíše celou strukturu webu. Existující obsah bude nahrazen.
+    </p>
+    <textarea id="import-md-textarea" style="
+      width:100%; height:280px; font-family:var(--font-mono); font-size:.82rem;
+      background:var(--paper-alt); border:1px solid var(--line); border-radius:var(--r);
+      padding:.75rem; color:var(--ink); resize:vertical; outline:none; line-height:1.6;
+      tab-size:2;"
+      placeholder="# Úvod&#10;&#10;Obsah první sekce...&#10;&#10;# Druhá sekce&#10;&#10;multisection&#10;&#10;## Podstránka"
+      aria-label="Markdown obsah k importu" spellcheck="false"></textarea>
+    <div style="display:flex;align-items:center;gap:.5rem;margin-top:.5rem;">
+      <button class="modal-btn" id="import-from-clipboard" type="button"
+        style="background:var(--paper-mid);color:var(--ink);">📋 Vložit ze schránky</button>
+      <span style="font-size:.75rem;color:var(--ink-light);flex:1;">nebo napište/vložte přímo do pole výše</span>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-secondary" id="modal-import-cancel" type="button">Zrušit</button>
+      <button class="modal-btn modal-btn-primary" id="modal-import-ok" type="button">✓ Importovat</button>
+    </div>
+  </div>
+</div>
+
 <!-- NOTIFICATIONS -->
 <div id="notif" aria-live="polite" aria-atomic="false"></div>
 
@@ -1052,6 +1081,8 @@ function slugify(t) {
 function setDirty(v=true) {
   state.dirty = v;
   document.getElementById('btn-save').disabled = !state.loaded;
+  document.getElementById('btn-copy-md').disabled = !state.loaded;
+  document.getElementById('btn-import-md').disabled = !state.loaded;
 }
 
 // =============================================
@@ -1807,8 +1838,14 @@ function setupDrop() {
 const GH = {
   TOKEN_KEY: 'md2web_gh_token',
 
-  get token() { return localStorage.getItem(this.TOKEN_KEY) || ''; },
-  set token(v) { if (v) localStorage.setItem(this.TOKEN_KEY, v); else localStorage.removeItem(this.TOKEN_KEY); },
+  get token() {
+    try { return localStorage.getItem(this.TOKEN_KEY) || ''; }
+    catch(e) { return ''; }
+  },
+  set token(v) {
+    try { if (v) localStorage.setItem(this.TOKEN_KEY, v); else localStorage.removeItem(this.TOKEN_KEY); }
+    catch(e) {}
+  },
 
   // Aktuální konfigurace
   get owner()  { return document.getElementById('gh-owner').value.trim(); },
@@ -2003,6 +2040,7 @@ function loadGhFromUrl() {
 }
 
 function initGH() {
+  try {
   const savedToken = GH.token;
   if (savedToken) document.getElementById('gh-token').value = '••••••••••••••••';
 
@@ -2043,6 +2081,104 @@ function initGH() {
 
   updateGhBtns();
   loadGhFromUrl();
+  } catch(e) { console.error('initGH error:', e); }
+}
+
+// =============================================
+//  COPY / IMPORT MD
+// =============================================
+
+function initCopyImport() {
+  // Kopírovat MD do schránky
+  document.getElementById('btn-copy-md').addEventListener('click', () => {
+    saveCurrentItem();
+    const md = sectionsToMD(state.sections);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(md).then(() => {
+        notify('website.md zkopírován do schránky ✓');
+      }).catch(() => {
+        fallbackCopy(md);
+      });
+    } else {
+      fallbackCopy(md);
+    }
+  });
+
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand('copy');
+      notify('website.md zkopírován do schránky ✓');
+    } catch(e) {
+      notify('Kopírování selhalo — použijte Ctrl+A, Ctrl+C v textovém poli', 'err');
+    }
+    document.body.removeChild(ta);
+  }
+
+  // Otevřít modal pro import
+  document.getElementById('btn-import-md').addEventListener('click', () => {
+    document.getElementById('import-md-textarea').value = '';
+    document.getElementById('modal-import-md').classList.add('active');
+    document.getElementById('import-md-textarea').focus();
+  });
+
+  // Vložit ze schránky do textarea v modalu
+  document.getElementById('import-from-clipboard').addEventListener('click', async () => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.readText) {
+        const text = await navigator.clipboard.readText();
+        document.getElementById('import-md-textarea').value = text;
+        document.getElementById('import-md-textarea').focus();
+      } else {
+        notify('Přístup ke schránce není dostupný — vložte text ručně (Ctrl+V)', 'err');
+      }
+    } catch(e) {
+      notify('Nelze číst schránku — vložte text ručně (Ctrl+V)', 'err');
+    }
+  });
+
+  // Zrušit import
+  document.getElementById('modal-import-cancel').addEventListener('click', () => {
+    closeModal('modal-import-md');
+  });
+  document.getElementById('modal-import-md').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal('modal-import-md');
+  });
+
+  // Potvrdit import
+  document.getElementById('modal-import-ok').addEventListener('click', () => {
+    const text = document.getElementById('import-md-textarea').value.trim();
+    if (!text) { notify('Textarea je prázdná', 'err'); return; }
+
+    // Varování pokud projekt existuje
+    if (state.sections.length > 0) {
+      if (!confirm('Importem přepíšete celý obsah webu. Opravdu pokračovat?')) return;
+    }
+
+    const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    state.sections = parseMDToSections(normalized);
+    setDirty(true);
+    renderTree();
+    closeModal('modal-import-md');
+    state.activeItem = null;
+    clearEditor();
+    // Přejít na záložku Obsah
+    activateTab('tab-content');
+    notify(`Importováno ${state.sections.length} sekcí ✓`);
+  });
+
+  // Klávesa Enter v textarea nepotvrzuje — chceme víceřádkový vstup
+  // Ale Ctrl+Enter potvrdí
+  document.getElementById('import-md-textarea').addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      document.getElementById('modal-import-ok').click();
+    }
+    if (e.key === 'Escape') closeModal('modal-import-md');
+  });
 }
 
 function init() {
@@ -2186,7 +2322,7 @@ function init() {
   });
 }
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => { init(); initGH(); initCopyImport(); });
 </script>
 </body>
 </html>
