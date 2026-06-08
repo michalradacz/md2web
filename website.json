@@ -1,6 +1,6 @@
 {
-  "title": "MD2web mini CMD",
-  "tagline": "MiniCMS pro mikroweby z jednoho markdown souboru",
+  "title": "MD2web miniCMS",
+  "tagline": "MiniCMS for microsites from one markdown file",
   "language": "en",
   "color": "indigo",
   "copyright": {
@@ -30,6 +30,10 @@
     {
       "label": "Report issue",
       "url": "https://github.com/michalradacz/issues/new"
+    },
+    {
+      "label": "Editor",
+      "url": "https://michalradacz.github.io/md2web/editor"
     }
   ]
 }
