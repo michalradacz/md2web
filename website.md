@@ -1,59 +1,15 @@
-# Aktuality
+# Homepage
 
-7.6.2026: Opouštím platformu micro.blog, jednak nechci platit za něco, co si můžu udělat sám a jednak kdyź sám tvořím miniredakční systém pro mikroweby, tak je trochu ostuda, že bych ho sám nepoužíval. A tak hurá do toho
-
-
-# Já...
-
-multisection
-
-## Já jsem
-
-Já žiju. Sice [Já nevidím], ale normálně [Já pracuju] a [Já se bavím], jako IT novinář taky [Já publikuju], i jinak [Já tvořím], hraju s technikou a tak vůbec...
-
-### Kdo jsem? 
-
-Jmenuju se Michal Rada, narodil jsem se v roce 1979 (takže už jsem asi boomer, co) a dělám spoustu zajímavých i nezajímavých věcí. [Jsem nevidomý] a tedy mám na svět dost divný úhel pohledu. Mám zajímavou práci co mě baví, spoustu zájmů, rád čtu a vůbec dělám pár docela úchylných věcí kolem.
+Welcome to MD2web microweb. This is demo site and documentation for minCMS system MD2web.
 
 
 
 
-## ✏️ Já pracuju
-
-## ✏️ Já hasičím
-
-## ✏️ Já tvořím
-
-## ✏️ Já publikuju
-
-## ✏️ Já nevidím
+## News and releases
 
 
+6/8/2026: Because the project is growing, it got a separate repo and website. The website is at https://michalradacz.github.io/md2web (will be a better URL but I'm lazy now) and the repo is at https://github.com/michalradacz/md2web
 
-# Blogísek
+6/7/2026: I have new simple editor for websites created with MD2web. You can find it online at [/editor](https://michalradacz.github.io/md2web). Simple, but relativelly powerfull intefrace to struktural edit of site config and contents. Uses ZIP format to open and save website and can directly connect to GH if you are hosted website via Github pages.
 
-articles
-
-## Bože, tohle je ale kravina
-
-Datum: 7.6.2026
-
-Tagy: já tvořím, já publikuju, nesmysly, bleskovky
-
-Proč jsem tohle proboha pojmenoval Blogísek? Jsem já normální?
-
-
-# Jsem na...
-
-Jsem na 
-
-* Swopi: https://swopi.co/michalrada
-* SubStacku: https://michalrada.substack.com
-* Youtube: https://youtube.com/@michalrada
-* Xku: https://x.com/michalrada
-* LinkedInu: https://www.linkedin.com/in/michal-rada-68229517/
-
-byl jsem na [Médiumu](https://medium.seznam.cz/autor/michal-rada-536), [Forendors](https://forendors.cz/michalrada)
-* Micro.blogu: https://michalrada.micro.blog
-
-
+6/3/2026: Added new features, namely News (this listing) with a calendar in the sidebar and Articles (mini blog), as seen in the [Articles](#articles) section.
