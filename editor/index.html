@@ -109,7 +109,6 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
 
 .sec-link{flex:1;display:block;padding:.38rem .7rem .38rem .8rem;
   font-size:.82rem;color:var(--ink);text-decoration:none;line-height:1.35;
-  cursor:pointer;background:none;border:none;text-align:left;font-family:var(--font);
   min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sec-link:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 
@@ -287,9 +286,14 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
 ::-webkit-scrollbar-thumb{background:var(--paper-mid);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--line)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:2px}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip-link{position:absolute;top:-100%;left:0;background:var(--accent);color:#fff;padding:.5rem 1rem;z-index:9999;text-decoration:none;font-weight:600;border-radius:0 0 var(--r) 0;font-family:var(--font)}
+.skip-link:focus{top:0}
 </style>
 </head>
 <body>
+
+<a href="#workspace" class="skip-link">Přeskočit na editor</a>
 
 <div id="dropzone" aria-hidden="true" aria-live="polite">
   <div style="font-size:3.5rem">📦</div>
@@ -297,8 +301,8 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
 </div>
 
 <!-- TOP BAR -->
-<header id="topbar">
-  <span id="tb-logo">md2web <span>Editor</span></span>
+<header id="topbar" role="banner">
+  <span id="tb-logo" role="heading" aria-level="1">md2web <span>Editor</span></span>
   <div class="vsep" aria-hidden="true"></div>
   <span id="tb-proj" aria-live="polite">Bez projektu</span>
   <div class="vsep" aria-hidden="true"></div>
@@ -310,10 +314,14 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
   <button class="tbtn tg"  id="btn-import-md" type="button" disabled>📥 Importovat MD</button>
   <div class="vsep" aria-hidden="true"></div>
   <button class="tbtn tgr" id="btn-save"       type="button" disabled>💾 Uložit ZIP</button>
+  <button class="tbtn tg"  id="btn-export"     type="button" disabled title="Vygeneruje jeden spustitelný HTML soubor se vším obsahem — engine se stáhne aktuální z GitHubu">📦 Export HTML</button>
+  <a class="tbtn tg" id="btn-open-web" href="#" target="_blank" rel="noopener noreferrer"
+     hidden aria-label="Otevřít web v novém okně" title="Otevřít web">🌐 Otevřít web</a>
 </header>
 
 <!-- GITHUB BAR -->
-<div id="ghbar" role="region" aria-label="GitHub napojení">
+<div id="ghbar" role="region" aria-labelledby="gh-region-heading">
+  <h2 id="gh-region-heading" class="sr-only">GitHub napojení</h2>
   <span class="ghl">GitHub:</span>
   <input class="ghi gi-o" id="gh-owner"  type="text" placeholder="owner"        aria-label="GitHub owner / organizace">
   <span style="color:#484f58;font-size:.9rem" aria-hidden="true">/</span>
@@ -348,21 +356,22 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
 </div>
 
 <!-- MAIN -->
-<div id="main">
+<main id="main" aria-label="Editor projektu">
 
   <!-- LEFT: navigace sekcí -->
-  <nav id="left" aria-label="Sekce webu">
+  <nav id="left" aria-labelledby="left-heading">
     <div id="left-head">
-      <span>Struktura webu</span>
+      <h2 id="left-heading">Struktura webu</h2>
       <button id="btn-add-sec" type="button" aria-label="Přidat novou sekci" title="Přidat sekci">+</button>
     </div>
-    <div id="sec-nav">
+    <div id="sec-nav" role="region" aria-label="Seznam sekcí webu">
       <!-- Sem se vykresluje <ul> se sekcemi -->
     </div>
   </nav>
 
   <!-- RIGHT: workspace -->
-  <div id="workspace">
+  <div id="workspace" role="region" aria-labelledby="ws-heading">
+    <h2 id="ws-heading" class="sr-only">Pracovní plocha editoru</h2>
 
     <!-- Záložky -->
     <div id="tabs" role="tablist" aria-label="Části projektu">
@@ -376,11 +385,24 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
       <div style="overflow-y:auto;flex:1;padding:1.25rem"><div class="sg">
 
         <div class="sc">
-          <div class="sc-title">🌐 Základní informace</div>
+          <h3 class="sc-title">🌐 Základní informace</h3>
           <div class="fr"><label class="fl" for="s-title">Název webu</label>
             <input class="fi" id="s-title" type="text" placeholder="Můj web"></div>
           <div class="fr"><label class="fl" for="s-tagline">Motto / tagline</label>
             <input class="fi" id="s-tagline" type="text" placeholder="Krátký popis webu"></div>
+          <div class="fr"><label class="fl" for="s-workpath">Workpath <small style="font-weight:400;text-transform:none;letter-spacing:0">(volitelné — base URL pro website.md a sidebar.md)</small></label>
+            <input class="fi" id="s-workpath" type="text" placeholder="raw.sublimated.com/slozka/struktury/myweb"
+              aria-describedby="s-workpath-hint">
+            <span id="s-workpath-hint" style="font-size:.72rem;color:var(--ink-light);line-height:1.4">
+              Pokud vyplněno, engine načte <code>website.md</code> a <code>sidebar.md</code> z této URL.
+              Protokol https:// se doplní automaticky. <code>website.json</code> se vždy načítá lokálně.
+            </span></div>
+          <div class="fr"><label class="fl" for="s-baseurl">Base URL webu <small style="font-weight:400;text-transform:none;letter-spacing:0">(volitelné — adresa běžícího webu)</small></label>
+            <input class="fi" id="s-baseurl" type="url" placeholder="https://mujweb.github.io/projekt/"
+              aria-describedby="s-baseurl-hint">
+            <span id="s-baseurl-hint" style="font-size:.72rem;color:var(--ink-light);line-height:1.4">
+              Pokud vyplněno, zobrazí se tlačítko <strong>Otevřít web</strong> vedle Uložit ZIP.
+            </span></div>
           <div class="fr" style="max-width:200px"><label class="fl" for="s-lang">Jazyk rozhraní</label>
             <select class="fsl" id="s-lang">
               <option value="cs">Čeština (cs)</option>
@@ -389,12 +411,12 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
         </div>
 
         <div class="sc">
-          <div class="sc-title">🎨 Barevná paleta</div>
+          <h3 class="sc-title">🎨 Barevná paleta</h3>
           <div class="pg" id="pal-grid" role="radiogroup" aria-label="Výběr barevné palety"></div>
         </div>
 
         <div class="sc">
-          <div class="sc-title">© Copyright</div>
+          <h3 class="sc-title">© Copyright</h3>
           <div class="fr"><label class="fl" for="s-cname">Jméno / název</label>
             <input class="fi" id="s-cname" type="text" placeholder="Jan Novák"></div>
           <div class="fr"><label class="fl" for="s-curl">URL</label>
@@ -404,7 +426,7 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
         </div>
 
         <div class="sc">
-          <div class="sc-title">🔗 Navigační odkazy (vpravo v menu)</div>
+          <h3 class="sc-title">🔗 Navigační odkazy (vpravo v menu)</h3>
           <table class="lt" role="grid">
             <thead><tr><th scope="col">Popisek</th><th scope="col">URL</th><th scope="col"><span class="sr-only">Akce</span></th></tr></thead>
             <tbody id="menu-tbody"></tbody>
@@ -413,7 +435,7 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
         </div>
 
         <div class="sc">
-          <div class="sc-title">🔗 Patičkové odkazy</div>
+          <h3 class="sc-title">🔗 Patičkové odkazy</h3>
           <table class="lt" role="grid">
             <thead><tr><th scope="col">Popisek</th><th scope="col">URL</th><th scope="col"><span class="sr-only">Akce</span></th></tr></thead>
             <tbody id="footer-tbody"></tbody>
@@ -426,7 +448,8 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
 
     <!-- Panel: Obsah -->
     <div class="panel" id="p-cnt" role="tabpanel" aria-labelledby="tab-cnt">
-      <div class="ed-wrap">
+      <div class="ed-wrap" role="region" aria-labelledby="ed-region-heading">
+        <h3 id="ed-region-heading" class="sr-only">Markdown editor</h3>
         <div class="ed-tb" id="ed-toolbar">
           <span class="ed-label" id="ed-label" aria-live="polite">Vyberte sekci vlevo</span>
           <div class="ed-sep" aria-hidden="true"></div>
@@ -471,6 +494,7 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
 
     <!-- Panel: Sidebar -->
     <div class="panel" id="p-sb" role="tabpanel" aria-labelledby="tab-sb">
+      <h3 class="sr-only">Editor sidebar.md</h3>
       <div class="ed-tb" id="sb-toolbar">
         <span class="ed-label">sidebar.md</span>
         <div class="ed-sep" aria-hidden="true"></div>
@@ -486,7 +510,7 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
     </div>
 
   </div><!-- /workspace -->
-</div><!-- /main -->
+</main><!-- /main -->
 
 <!-- MODAL: nová sekce -->
 <div class="ov" id="m-new-sec" role="dialog" aria-modal="true" aria-labelledby="m-ns-title">
@@ -508,7 +532,7 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
       </div>
     </div>
     <div class="mo-acts">
-      <button class="mbtn mb-cl" id="ns-cancel" type="button">Zrušit</button>
+      <button class="mbtn mb-cl" id="ns-cancel" type="button">Zrušit<span class="sr-only"> (nebo stiskněte Escape)</span></button>
       <button class="mbtn mb-ok" id="ns-ok"     type="button">Přidat sekci</button>
     </div>
   </div>
@@ -552,6 +576,7 @@ body{font-family:var(--font);font-size:14px;color:var(--ink);
 
 <!-- NOTIFIKACE -->
 <div id="notifs" aria-live="polite" aria-atomic="false"></div>
+<div id="notifs-err" aria-live="assertive" aria-atomic="true" class="sr-only"></div>
 
 <script>
 'use strict';
@@ -605,6 +630,12 @@ function notify(msg, type='ok') {
   el.className = 'notif n-' + type;
   el.textContent = msg;
   g('notifs').appendChild(el);
+  // Chyby oznamuji přes assertive region pro okamžité přečtení odečítačem
+  if (type === 'err') {
+    const errEl = g('notifs-err');
+    errEl.textContent = msg;
+    setTimeout(() => { if (errEl.textContent === msg) errEl.textContent = ''; }, 4000);
+  }
   setTimeout(() => el.remove(), 3200);
 }
 
@@ -701,6 +732,7 @@ function toMD(sections) {
 function setDirty(v = true) {
   S.dirty = v;
   g('btn-save').disabled = !S.loaded;
+  g('btn-export').disabled = !S.loaded;
   g('btn-copy-md').disabled = !S.loaded;
   g('btn-import-md').disabled = !S.loaded;
   ghUpdateBtns();
@@ -768,6 +800,9 @@ function applyConfig(c) {
   g('s-title').value   = c.title    || '';
   g('s-tagline').value = c.tagline  || '';
   g('s-lang').value    = c.language || 'cs';
+  g('s-workpath').value = c.workpath || '';
+  g('s-baseurl').value   = c.baseurl  || '';
+  updateOpenWebBtn(c.baseurl || '');
   g('s-cname').value   = c.copyright?.name || '';
   g('s-curl').value    = c.copyright?.url  || '';
   g('s-cyear').value   = c.copyright?.year || new Date().getFullYear();
@@ -782,6 +817,8 @@ function readConfig() {
     tagline:  g('s-tagline').value.trim(),
     language: g('s-lang').value,
     color:    S.palette,
+    workpath: g('s-workpath').value.trim() || undefined,
+    baseurl:  g('s-baseurl').value.trim()  || undefined,
     copyright: {
       name:  g('s-cname').value.trim(),
       url:   g('s-curl').value.trim(),
@@ -883,6 +920,75 @@ async function saveZip() {
   } catch(e) { notify('Chyba při ukládání: ' + e.message, 'err'); }
 }
 
+// ── EXPORT: samostatný spustitelný HTML soubor ───────────────────────────────
+// Engine (index.html) a jazykové soubory (cs.json/en.json) se vždy stahují
+// čerstvé z michalradacz/md2web na GitHubu — jsou to zdroje pravdy pro engine,
+// nezávislé na tom, odkud byl projekt otevřen. website.json/website.md/sidebar.md
+// jsou z aktuálního stavu projektu v editoru.
+const ENGINE_REPO = { owner: 'michalradacz', repo: 'md2web', branch: 'main' };
+
+async function fetchEngineFile(name) {
+  const url = `https://raw.githubusercontent.com/${ENGINE_REPO.owner}/${ENGINE_REPO.repo}/${ENGINE_REPO.branch}/${name}`;
+  const r = await fetch(url, { cache: 'no-store' });
+  if (!r.ok) throw new Error(`Nelze načíst ${name} z michalradacz/md2web (HTTP ${r.status})`);
+  return r.text();
+}
+
+async function exportStandaloneHTML() {
+  saveCurrentItem();
+  g('btn-export').disabled = true;
+  notify('Stahuji aktuální engine z GitHubu…');
+  try {
+    // 1) Vždy čerstvý engine a jazykové soubory z michalradacz/md2web
+    const engineHTML = await fetchEngineFile('index.html');
+    let csJSON = '{}', enJSON = '{}';
+    try { csJSON = await fetchEngineFile('cs.json'); } catch {}
+    try { enJSON = await fetchEngineFile('en.json'); } catch {}
+
+    // 2) Aktuální data projektu z editoru
+    const config    = readConfig();
+    const websiteMD = toMD(S.sections);
+    const sidebarMD = g('sb-ta').value.trim();
+    const lang = (config.language === 'en') ? JSON.parse(enJSON) : JSON.parse(csJSON);
+
+    // 3) Sestavit embedded data blok
+    const embedded = {
+      config,
+      lang,
+      websiteMD,
+      sidebarMD,
+    };
+
+    const dataScript =
+      `\n<script>\nwindow.__MD2WEB_DATA__ = ${JSON.stringify(embedded)};\n<\/script>\n`;
+
+    // 4) Vložit blok těsně před </head>, aby byl k dispozici dřív než init() poběží
+    let finalHTML;
+    if (engineHTML.includes('</head>')) {
+      finalHTML = engineHTML.replace('</head>', dataScript + '</head>');
+    } else {
+      // Fallback: vložit na začátek souboru
+      finalHTML = dataScript + engineHTML;
+    }
+
+    // 5) Stáhnout jako jeden .html soubor
+    const blob = new Blob([finalHTML], { type: 'text/html;charset=utf-8' });
+    const fname = slugify(config.title || S.projectName || 'web') + '.standalone.html';
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = fname;
+    a.click();
+    URL.revokeObjectURL(a.href);
+
+    notify('Exportováno jako ' + fname + ' ✓');
+  } catch(e) {
+    notify('Export selhal: ' + e.message, 'err');
+    console.error(e);
+  } finally {
+    g('btn-export').disabled = !S.loaded;
+  }
+}
+
 // ── NAVIGACE SEKCÍ (přístupný seznam) ────────────────────────────────────────
 function renderNav() {
   const nav = g('sec-nav');
@@ -900,12 +1006,12 @@ function renderNav() {
     item.className = 'sec-item' + (S.activeSec === sec.id && !S.activeChild ? ' active' : '');
 
     // Hlavní odkaz (tlačítko) — název sekce
-    const link = document.createElement('button');
+    const link = document.createElement('a');
     link.className = 'sec-link';
-    link.type = 'button';
+    link.href = '#sec-' + sec.id;
     link.textContent = sec.title;
     link.setAttribute('aria-label', sec.title + (sec.type !== 'normal' ? ', ' + sec.type : ''));
-    link.addEventListener('click', () => selectItem(sec.id, null));
+    link.addEventListener('click', e => { e.preventDefault(); selectItem(sec.id, null); });
 
     // Badge pro typ
     let badgeEl = null;
@@ -969,12 +1075,12 @@ function renderNav() {
         const chItem = document.createElement('div');
         chItem.className = 'child-item' + (S.activeSec === sec.id && S.activeChild === ch.id ? ' active' : '');
 
-        const chLink = document.createElement('button');
-        chLink.type = 'button';
+        const chLink = document.createElement('a');
         chLink.className = 'sec-link';
+        chLink.href = '#sec-' + sec.id + '-' + ch.id;
         chLink.textContent = ch.title;
         chLink.setAttribute('aria-label', ch.title);
-        chLink.addEventListener('click', () => selectItem(sec.id, ch.id));
+        chLink.addEventListener('click', e => { e.preventDefault(); selectItem(sec.id, ch.id); });
 
         const chBtns = document.createElement('div');
         chBtns.className = 'sec-btns';
@@ -1389,6 +1495,18 @@ function setupDrop() {
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
+function updateOpenWebBtn(url) {
+  const btn = g('btn-open-web');
+  const trimmed = (url || '').trim();
+  if (trimmed) {
+    btn.href = trimmed.startsWith('http') ? trimmed : 'https://' + trimmed;
+    btn.hidden = false;
+  } else {
+    btn.hidden = true;
+    btn.href = '#';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   buildPaletteGrid();
   setupDrop();
@@ -1413,10 +1531,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Settings inputs
-  ['s-title','s-tagline','s-lang','s-cname','s-curl','s-cyear'].forEach(id => {
+  ['s-title','s-tagline','s-lang','s-workpath','s-baseurl','s-cname','s-curl','s-cyear'].forEach(id => {
     g(id).addEventListener('input', () => {
       setDirty();
-      if (id === 's-title') setProjName(g('s-title').value);
+      if (id === 's-title')   setProjName(g('s-title').value);
+      if (id === 's-baseurl') updateOpenWebBtn(g('s-baseurl').value);
     });
   });
 
@@ -1435,6 +1554,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.target.value = '';
   });
   g('btn-save').addEventListener('click', saveZip);
+  g('btn-export').addEventListener('click', exportStandaloneHTML);
   g('btn-copy-md').addEventListener('click', copyMD);
 
   // Import MD
